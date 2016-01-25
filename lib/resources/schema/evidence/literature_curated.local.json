@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "generic_evidence",
+  "description": "Generic evidence linking gene/protein to disease: author-curated or computational or both",
+  "type": "object",
+  "version": "1.2.1",
+  "allOf": [
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/base.local.json"
+    },
+    {
+      "properties": {
+        "evidence_codes": {
+          "type": "array",
+          "description": "An array of evidence codes",
+          "items": {
+            "type": "string",
+            "enum": [
+              "http://purl.obolibrary.org/obo/ECO_0000213",
+              "http://purl.obolibrary.org/obo/ECO_0000205",
+              "http://purl.obolibrary.org/obo/ECO_0000053",
+              "http://www.targetvalidation.org/evidence/literature_mining",
+              "http://purl.obolibrary.org/obo/ECO_0000204"
+            ]
+          },
+          "minItems": 1
+        },
+        "known_mutations": {
+          "type": "string",
+          "description": "A comma-separated list of mutations e.g. A613K,T50I etc."
+        },
+        "urls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/linkout/linkout.local.json"
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "resource_score": {},
+    "provenance_type": {},
+    "is_associated": {},
+    "date_asserted": {},
+    "evidence_codes": {},
+    "known_mutations": {},
+    "urls": {},
+    "unique_experiment_reference": {}
+  },
+  "required": [
+    "resource_score",
+    "provenance_type",
+    "is_associated",
+    "date_asserted",
+    "evidence_codes"
+  ],
+  "additionalProperties": false,
+  "import_remote_schemas": [
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/method.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/probability.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/summed_total.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/pvalue.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/rank.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/base.local.json"
+    }
+  ]  
+}
