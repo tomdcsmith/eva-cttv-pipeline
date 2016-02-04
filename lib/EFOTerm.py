@@ -57,13 +57,13 @@ class EFOTerm():
         return self.id
 
     def isObsolete(self):
-        if(self.id<>None and self.id in EFOTerm.obsoleteTerms):
+        if(self.id != None and self.id in EFOTerm.obsoleteTerms):
             raise EFOTerm.IsObsoleteException("Term "+self.id+" is obsolete. Cause/Description/Action: "+EFOTerm.obsoleteTerms[self.id])
         else:
             return False
 
     def isCttvAvailable(self):
-        if(self.id<>None and self.id in EFOTerm.cttvAvailableTerms):
+        if(self.id != None and self.id in EFOTerm.cttvAvailableTerms):
             return True
         else:
             raise EFOTerm.NotCttvAvailableException("Term "+self.id+" is not currently available at EFO.")

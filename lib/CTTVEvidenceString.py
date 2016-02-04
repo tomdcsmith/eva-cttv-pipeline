@@ -18,7 +18,7 @@ class CTTVEvidenceString(dict):
         self['target']['activity'] = activity
 
     def setPubmedrefs(self, pubmedList):
-        if(pubmedList<>None and len(pubmedList)>0):
+        if(pubmedList != None and len(pubmedList)>0):
             if('literature' in self['evidence']['provenance_type']):
                 self['evidence']['provenance_type']['literature']['pubmed_refs'] = pubmedList
             else:

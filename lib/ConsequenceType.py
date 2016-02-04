@@ -1,8 +1,6 @@
 __author__ = 'Javier Lopez: javild@gmail.com'
 
 
-import sets
-
 class ConsequenceType:
 
     class SoTerm:
@@ -78,7 +76,7 @@ class ConsequenceType:
             return self._soName
 
         def getAccession(self):
-            if(self._soAccession<>None):
+            if(self._soAccession != None):
                 accessionNumberStr = str(self._soAccession)
                 return 'SO:'+accessionNumberStr.rjust(7,'0')
             else:
@@ -104,8 +102,8 @@ class ConsequenceType:
         self._ensemblGeneId = ensemblGeneId
         self._ensemblTranscriptId = None
 
-        if(soNames<>None):
-            self._soTerms= sets.Set([ConsequenceType.SoTerm(soName) for soName in soNames])
+        if(soNames != None):
+            self._soTerms= set([ConsequenceType.SoTerm(soName) for soName in soNames])
         else:
             self._soTerms = None
 
@@ -113,8 +111,8 @@ class ConsequenceType:
         return self._ensemblGeneId
 
     def addSoTerm(self, soName):
-        if(self._soTerms==None):
-            self._soTerms = sets.Set([ConsequenceType.SoTerm(soName)])
+        if(self._soTerms == None):
+            self._soTerms = set([ConsequenceType.SoTerm(soName)])
         else:
             self._soTerms.add(ConsequenceType.SoTerm(soName))
 
