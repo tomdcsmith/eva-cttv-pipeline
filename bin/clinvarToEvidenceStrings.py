@@ -12,7 +12,7 @@ import progressbar
 import sys
 import os
 
-sys.path.append(os.path.dirname(os.path.dirname(__file__))+"/lib") # Adds cbtoes root dir to the PYTHONPATH
+sys.path.append(os.path.dirname(os.path.dirname(__file__)) + "/lib")  # Adds cbtoes root dir to the PYTHONPATH
 import ClinvarRecord
 import EFOTerm
 import CTTVGeneticsEvidenceString
@@ -21,7 +21,7 @@ import CTTVSomaticEvidenceString
 BATCH_SIZE = 200
 # HOST = 'localhost:8080'
 HOST = 'www.ebi.ac.uk'
-EFOMAPPINGFILE = os.path.dirname(ClinvarRecord.__file__)+"/resources/ClinVar_Traits_EFO_090915.xls"
+EFOMAPPINGFILE = os.path.dirname(ClinvarRecord.__file__) + "/resources/ClinVar_Traits_EFO_090915.xls"
 EVIDENCESTRINGSFILENAME = 'evidence_strings.json'
 EVIDENCERECORDSFILENAME = 'evidence_records.tsv'
 UNMAPPEDTRAITSFILENAME = 'unmappedTraits.tsv'
@@ -31,10 +31,9 @@ TMPDIR = '/tmp/'
 
 
 def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTermsFile=None, adaptTermsFile=None):
-
     trait2EFO, unavailableEFODict = loadEFOMapping(ignoreTermsFile, adaptTermsFile)
 
-    clinicalSignificance2Activity = {'unknown':'http://identifiers.org/cttv.activity/unknown',
+    clinicalSignificance2Activity = {'unknown': 'http://identifiers.org/cttv.activity/unknown',
                                      'untested': 'http://identifiers.org/cttv.activity/unknown',
                                      'non-pathogenic': 'http://identifiers.org/cttv.activity/tolerated_by_target',
                                      'probable-non-pathogenic': 'http://identifiers.org/cttv.activity/predicted_tolerated',
@@ -53,14 +52,14 @@ def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTer
                                      'conflicting data from submitters': 'http://identifiers.org/cttv.activity/unknown',
                                      'risk factor': 'http://identifiers.org/cttv.activity/predicted_damaging',
                                      'association': 'http://identifiers.org/cttv.activity/damaging_to_target'
-                                    }
+                                     }
 
     if allowedClinicalSignificance is None:
-        allowedClinicalSignificance = ['unknown','untested','non-pathogenic','probable-non-pathogenic',
-                                       'probable-pathogenic','pathogenic','drug-response','drug response',
-                                       'histocompatibility','other','benign','protective','not provided',
-                                       'likely benign','confers sensitivity','uncertain significance',
-                                       'likely pathogenic','conflicting data from submitters','risk factor',
+        allowedClinicalSignificance = ['unknown', 'untested', 'non-pathogenic', 'probable-non-pathogenic',
+                                       'probable-pathogenic', 'pathogenic', 'drug-response', 'drug response',
+                                       'histocompatibility', 'other', 'benign', 'protective', 'not provided',
+                                       'likely benign', 'confers sensitivity', 'uncertain significance',
+                                       'likely pathogenic', 'conflicting data from submitters', 'risk factor',
                                        'association']
     nsvList = []
     evidenceStringList = []
@@ -89,14 +88,16 @@ def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTer
     skip = 0
     limit = BATCH_SIZE
 
-    currResponse = json.loads(urllib2.urlopen('http://'+HOST+'/cellbase/webservices/rest/v3/hsapiens/feature/clinical/all?source=clinvar&skip='+str(skip)+'&limit='+str(limit)).read())['response'][0]
+    currResponse = json.loads(urllib2.urlopen(
+        'http://' + HOST + '/cellbase/webservices/rest/v3/hsapiens/feature/clinical/all?source=clinvar&skip=' + str(
+            skip) + '&limit=' + str(limit)).read())['response'][0]
     currResultList = currResponse['result']
 
     # A progress bar is initialized
     widgets = ['Loading evidence strings: ', progressbar.Percentage(), ' ',
-                progressbar.Bar(marker=progressbar.RotatingMarker()), ' ', progressbar.ETA()]
+               progressbar.Bar(marker=progressbar.RotatingMarker()), ' ', progressbar.ETA()]
     pbar = progressbar.ProgressBar(widgets=widgets, maxval=currResponse['numTotalResults']).start()
-    print str(currResponse['numTotalResults'])+' ClinVar records in total.'
+    print str(currResponse['numTotalResults']) + ' ClinVar records in total.'
     while len(currResultList) > 0:
         nTotalClinvarRecords += len(currResultList)
         for record in currResultList:
@@ -112,66 +113,76 @@ def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTer
                         consequenceType = clinvarRecord.getMainConsequenceTypes()
                         # Mapping rs->Gene was found at Mick's file and therefore ensemblGeneId will never be None
                         if consequenceType is not None:
-                            rcvToGeneEvidenceCodes = ['http://identifiers.org/eco/cttv_mapping_pipeline']  # Evidence codes provided by Mick
-                            ensemblGeneIdUri = 'http://identifiers.org/ensembl/'+consequenceType.getEnsemblGeneId()
+                            rcvToGeneEvidenceCodes = [
+                                'http://identifiers.org/eco/cttv_mapping_pipeline']  # Evidence codes provided by Mick
+                            ensemblGeneIdUri = 'http://identifiers.org/ensembl/' + consequenceType.getEnsemblGeneId()
                             ensemblGeneId = consequenceType.getEnsemblGeneId()
 
-                            traitRefsList = [['http://europepmc.org/abstract/MED/'+str(ref) for ref in refList] for refList in clinvarRecord.getTraitPubmedrefs()]
-                            observedRefsList = ['http://europepmc.org/abstract/MED/'+str(ref) for ref in clinvarRecord.getObservedPubmedrefs()]
-                            measureSetRefsList = ['http://europepmc.org/abstract/MED/'+str(ref) for ref in clinvarRecord.getMeasureSetPubmedrefs()]
+                            traitRefsList = [['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList] for
+                                             refList in clinvarRecord.getTraitPubmedrefs()]
+                            observedRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in
+                                                clinvarRecord.getObservedPubmedrefs()]
+                            measureSetRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in
+                                                  clinvarRecord.getMeasureSetPubmedrefs()]
                             for traitCounter, traitList in enumerate(clinvarRecord.getTraits()):
                                 clinvarTraitList, EFOList = mapEFO(trait2EFO, traitList)
                                 # Only ClinVar records associated to a trait with mapped EFO term will generate evidence_strings
                                 if len(EFOList) > 0:
                                     clinvaRecordAlleleOrigins = clinvarRecord.getAlleleOrigins()
-                                    nMultipleAlleleOrigin += (len(clinvaRecordAlleleOrigins)>1)
-                                    nGermlineSomatic += (('germline' in clinvaRecordAlleleOrigins) and ('somatic' in clinvaRecordAlleleOrigins))
-                                    nRecordsWoRecognizedAlleleOrigin += (('germline' not in clinvaRecordAlleleOrigins) and ('somatic' not in clinvaRecordAlleleOrigins))
+                                    nMultipleAlleleOrigin += (len(clinvaRecordAlleleOrigins) > 1)
+                                    nGermlineSomatic += (('germline' in clinvaRecordAlleleOrigins) and (
+                                    'somatic' in clinvaRecordAlleleOrigins))
+                                    nRecordsWoRecognizedAlleleOrigin += (
+                                    ('germline' not in clinvaRecordAlleleOrigins) and (
+                                    'somatic' not in clinvaRecordAlleleOrigins))
                                     for alleleOriginCounter, alleleOrigin in enumerate(clinvaRecordAlleleOrigins):
                                         if alleleOrigin == 'germline':
                                             evidenceString, nMoreThanOneEfoTerm = getCTTVGeneticsEvidenceString(EFOList,
-                                                                                                                   clinicalSignificance,
-                                                                                                                   clinicalSignificance2Activity,
-                                                                                                                   clinvarRecord,
-                                                                                                                   consequenceType,
-                                                                                                                   ensemblGeneId,
-                                                                                                                   ensemblGeneIdUri,
-                                                                                                                   ensemblGeneIdUris,
-                                                                                                                   measureSetRefsList,
-                                                                                                                   nMoreThanOneEfoTerm,
-                                                                                                                   observedRefsList,
-                                                                                                                   rcvToGeneEvidenceCodes,
-                                                                                                                   record, rs,
-                                                                                                                   traitCounter,
-                                                                                                                   traitRefsList,
-                                                                                                                   traits,
-                                                                                                                   unrecognizedClinicalSignificances)
+                                                                                                                clinicalSignificance,
+                                                                                                                clinicalSignificance2Activity,
+                                                                                                                clinvarRecord,
+                                                                                                                consequenceType,
+                                                                                                                ensemblGeneId,
+                                                                                                                ensemblGeneIdUri,
+                                                                                                                ensemblGeneIdUris,
+                                                                                                                measureSetRefsList,
+                                                                                                                nMoreThanOneEfoTerm,
+                                                                                                                observedRefsList,
+                                                                                                                rcvToGeneEvidenceCodes,
+                                                                                                                record,
+                                                                                                                rs,
+                                                                                                                traitCounter,
+                                                                                                                traitRefsList,
+                                                                                                                traits,
+                                                                                                                unrecognizedClinicalSignificances)
                                             nEvidenceStringsPerRecord = addEvidenceString(clinvarRecord, evidenceString,
                                                                                           evidenceStringList,
                                                                                           nEvidenceStringsPerRecord)
-                                            evidenceList.append([clinvarRecord.getAcc(), rs, string.join(clinvarTraitList, sep=','),
-                                                string.join(EFOList, sep=',')])
+                                            evidenceList.append(
+                                                [clinvarRecord.getAcc(), rs, string.join(clinvarTraitList, sep=','),
+                                                 string.join(EFOList, sep=',')])
                                             nValidRsAndNsv += (clinvarRecord.getNsv() is not None)
                                         elif alleleOrigin == 'somatic':
                                             evidenceString, nMoreThanOneEfoTerm = getCTTVSomaticEvidenceString(EFOList,
-                                                                                                                   clinicalSignificance,
-                                                                                                                   clinicalSignificance2Activity,
-                                                                                                                   clinvarRecord,
-                                                                                                                   ensemblGeneId,
-                                                                                                                   ensemblGeneIdUri,
-                                                                                                                   ensemblGeneIdUris,
-                                                                                                                   measureSetRefsList,
-                                                                                                                   nMoreThanOneEfoTerm,
-                                                                                                                   observedRefsList,
-                                                                                                                   traitCounter,
-                                                                                                                   traitRefsList,
-                                                                                                                   traits,
-                                                                                                                   unrecognizedClinicalSignificances)
+                                                                                                               clinicalSignificance,
+                                                                                                               clinicalSignificance2Activity,
+                                                                                                               clinvarRecord,
+                                                                                                               ensemblGeneId,
+                                                                                                               ensemblGeneIdUri,
+                                                                                                               ensemblGeneIdUris,
+                                                                                                               measureSetRefsList,
+                                                                                                               nMoreThanOneEfoTerm,
+                                                                                                               observedRefsList,
+                                                                                                               traitCounter,
+                                                                                                               traitRefsList,
+                                                                                                               traits,
+                                                                                                               unrecognizedClinicalSignificances)
                                             nEvidenceStringsPerRecord = addEvidenceString(clinvarRecord, evidenceString,
                                                                                           evidenceStringList,
                                                                                           nEvidenceStringsPerRecord)
-                                            evidenceList.append([clinvarRecord.getAcc(), rs, string.join(clinvarTraitList, sep=','),
-                                                string.join(EFOList, sep=',')])
+                                            evidenceList.append(
+                                                [clinvarRecord.getAcc(), rs, string.join(clinvarTraitList, sep=','),
+                                                 string.join(EFOList, sep=',')])
                                             nValidRsAndNsv += (clinvarRecord.getNsv() is not None)
                                         elif alleleOrigin not in nUnrecognizedAlleleOrigin:
                                             nUnrecognizedAlleleOrigin[alleleOrigin] = 1
@@ -204,39 +215,44 @@ def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTer
             pbar.update(recordCounter)
             recordCounter += 1
         skip += BATCH_SIZE
-        currResultList = json.loads(urllib2.urlopen('http://'+HOST+'/cellbase/webservices/rest/v3/hsapiens/feature/clinical/all?source=clinvar&skip='+str(skip)+'&limit='+str(limit)).read())['response'][0]['result']
+        currResultList = json.loads(urllib2.urlopen(
+            'http://' + HOST + '/cellbase/webservices/rest/v3/hsapiens/feature/clinical/all?source=clinvar&skip=' + str(
+                skip) + '&limit=' + str(limit)).read())['response'][0]['result']
     pbar.finish()
 
-    writeStringListToFile(nsvList, dirOut+'/'+NSVLISTFILE)
+    writeStringListToFile(nsvList, dirOut + '/' + NSVLISTFILE)
 
-    fdw = file(dirOut+'/'+UNMAPPEDTRAITSFILENAME, 'w')   # Contains traits without a mapping in Gary's xls
+    fdw = file(dirOut + '/' + UNMAPPEDTRAITSFILENAME, 'w')  # Contains traits without a mapping in Gary's xls
     fdw.write('Trait\tCount\n')
     for traitList in unmappedTraits:
-        fdw.write(traitList.encode('utf8')+'\t'+str(unmappedTraits[traitList])+'\n')
+        fdw.write(traitList.encode('utf8') + '\t' + str(unmappedTraits[traitList]) + '\n')
     fdw.close()
 
-    fdw = file(dirOut+'/'+UNAVAILABLEEFOFILENAME, 'w')   # Contains urls provided by Gary which are not yet included within EFO
+    fdw = file(dirOut + '/' + UNAVAILABLEEFOFILENAME,
+               'w')  # Contains urls provided by Gary which are not yet included within EFO
     fdw.write('Trait\tCount\n')
     for url in unavailableEFODict:
-        fdw.write(url.encode('utf8')+'\t'+str(unavailableEFODict[url])+'\n')
+        fdw.write(url.encode('utf8') + '\t' + str(unavailableEFODict[url]) + '\n')
     fdw.close()
 
-    fdw = file(dirOut+'/'+EVIDENCESTRINGSFILENAME, 'w')
+    fdw = file(dirOut + '/' + EVIDENCESTRINGSFILENAME, 'w')
     for evidenceString in evidenceStringList:
-        fdw.write(json.dumps(evidenceString)+'\n')
+        fdw.write(json.dumps(evidenceString) + '\n')
     fdw.close()
 
-    fdw = file(dirOut+'/'+EVIDENCERECORDSFILENAME, 'w')
+    fdw = file(dirOut + '/' + EVIDENCERECORDSFILENAME, 'w')
     for evidenceRecord in evidenceList:
-        fdw.write(string.join(evidenceRecord, sep='\t')+'\n')
+        fdw.write(string.join(evidenceRecord, sep='\t') + '\n')
     fdw.close()
 
     print str(nTotalClinvarRecords) + ' ClinVar records in total'
     print str(len(evidenceStringList)) + ' evidence string jsons generated'
     print str(nProcessedClinvarRecords) + ' ClinVar records generated at least one evidence string'
-    print str(len(unrecognizedClinicalSignificances)) + " Clinical significance string(s) not found among those described in ClinVar documentation:"
+    print str(len(
+        unrecognizedClinicalSignificances)) + " Clinical significance string(s) not found among those described in ClinVar documentation:"
     print str(unrecognizedClinicalSignificances)
-    print str(nSameRefAlt) + ' ClinVar records with allowed clinical significance did present the same reference and alternate and were skipped'
+    print str(
+        nSameRefAlt) + ' ClinVar records with allowed clinical significance did present the same reference and alternate and were skipped'
     print 'Activities of those ClinVar records with unrecognized clinical significances were set to "unknown".'
     print str(len(ensemblGeneIdUris)) + ' distinct ensembl gene ids appear in generated evidence string json objects'
     print str(len(traits)) + ' distinct trait names found to include in generated evidence string json objects'
@@ -246,23 +262,27 @@ def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTer
     print str(nMultipleAlleleOrigin) + ' ClinVar records with more than one allele origin'
     print 'Number valid ClinVar records with unprocessed allele origins:'
     for alleleOrigin in nUnrecognizedAlleleOrigin:
-        print ' '+alleleOrigin+': '+str(nUnrecognizedAlleleOrigin[alleleOrigin])
-    print str(noVariantToENSGMapping) + ' ClinVar records with allowed clinical significance and valid rs id were skipped due to a lack of Variant->ENSG mapping.'
-    print str(nMissedStringsUnmappedTraits) + ' ClinVar records with allowed clinical significance, valid rs id and Variant->ENSG mapping were skipped due to a lack of EFO mapping (see '+UNMAPPEDTRAITSFILENAME+').'
-    print str(nRecordsWoRecognizedAlleleOrigin) + ' ClinVar records with allowed clinical significance, valid rs id, valid Variant->ENSG mapping and valid EFO mapping were skipped due to a lack of a valid alleleOrigin.'
+        print ' ' + alleleOrigin + ': ' + str(nUnrecognizedAlleleOrigin[alleleOrigin])
+    print str(
+        noVariantToENSGMapping) + ' ClinVar records with allowed clinical significance and valid rs id were skipped due to a lack of Variant->ENSG mapping.'
+    print str(
+        nMissedStringsUnmappedTraits) + ' ClinVar records with allowed clinical significance, valid rs id and Variant->ENSG mapping were skipped due to a lack of EFO mapping (see ' + UNMAPPEDTRAITSFILENAME + ').'
+    print str(
+        nRecordsWoRecognizedAlleleOrigin) + ' ClinVar records with allowed clinical significance, valid rs id, valid Variant->ENSG mapping and valid EFO mapping were skipped due to a lack of a valid alleleOrigin.'
     print str(nMoreThanOneEfoTerm) + ' evidence strings with more than one trait mapped to EFO terms'
     print str(len(unavailableEFODict)) + ' evidence strings were generated with traits without EFO correspondence'
     print str(nValidRsAndNsv) + ' evidence strings were generated from ClinVar records with rs and nsv ids'
     print str(nNsvs) + ' total nsvs found'
-    print str(nNsvSkippedClinicalSignificance) + ' ClinVar nsvs were skipped because of a different clinical significance'
+    print str(
+        nNsvSkippedClinicalSignificance) + ' ClinVar nsvs were skipped because of a different clinical significance'
     print str(nNsvSkippedWrongRefAlt) + ' ClinVar nsvs were skipped because of same ref and alt'
 
 
 def getCTTVGeneticsEvidenceString(EFOList, clinicalSignificance, clinicalSignificance2Activity, clinvarRecord,
-                                     consequenceType, ensemblGeneId, ensemblGeneIdUri, ensemblGeneIdUris,
-                                     measureSetRefsList, nMoreThanOneEfoTerm, observedRefsList, rcvToGeneEvidenceCodes,
-                                     record, rs, traitCounter, traitRefsList, traits,
-                                     unrecognizedClinicalSignificances):
+                                  consequenceType, ensemblGeneId, ensemblGeneIdUri, ensemblGeneIdUris,
+                                  measureSetRefsList, nMoreThanOneEfoTerm, observedRefsList, rcvToGeneEvidenceCodes,
+                                  record, rs, traitCounter, traitRefsList, traits,
+                                  unrecognizedClinicalSignificances):
     evidenceString = CTTVGeneticsEvidenceString.CTTVGeneticsEvidenceString()
     evidenceString.addUniqueAssociationField('gene', ensemblGeneId)
     evidenceString.addUniqueAssociationField('clinvarAccession', clinvarRecord.getAcc())
@@ -305,10 +325,9 @@ def getCTTVGeneticsEvidenceString(EFOList, clinicalSignificance, clinicalSignifi
 
 
 def getCTTVSomaticEvidenceString(EFOList, clinicalSignificance, clinicalSignificance2Activity, clinvarRecord,
-                                     ensemblGeneId, ensemblGeneIdUri, ensemblGeneIdUris, measureSetRefsList,
-                                     nMoreThanOneEfoTerm, observedRefsList, traitCounter, traitRefsList, traits,
-                                     unrecognizedClinicalSignificances):
-
+                                 ensemblGeneId, ensemblGeneIdUri, ensemblGeneIdUris, measureSetRefsList,
+                                 nMoreThanOneEfoTerm, observedRefsList, traitCounter, traitRefsList, traits,
+                                 unrecognizedClinicalSignificances):
     evidenceString = CTTVSomaticEvidenceString.CTTVSomaticEvidenceString()
     evidenceString.addUniqueAssociationField('gene', ensemblGeneId)
     evidenceString.addUniqueAssociationField('clinvarAccession', clinvarRecord.getAcc())
@@ -375,19 +394,18 @@ def appendNsv(nsvList, clinvarRecord):
 
 
 def getCttvVariantType(record):
-    if len(record['reference'])<2 and len(record['alternate'])<2:
+    if len(record['reference']) < 2 and len(record['alternate']) < 2:
         cttvVariantType = 'snp single'
-    elif len(record['reference'])>50 or len(record['alternate'])>50:
+    elif len(record['reference']) > 50 or len(record['alternate']) > 50:
         cttvVariantType = 'structural variant'
     else:
-        cttvVariantType = 'snp single' # Sam asked for this in his email 21/05/2015
+        cttvVariantType = 'snp single'  # Sam asked for this in his email 21/05/2015
         # cttvVariantType = 'snp multiple'
 
     return cttvVariantType
 
 
 def mapEFO(trait2EFO, traitList):
-
     EFOList = []
     traitListToReturn = []
     traitString = traitList[0].lower()
@@ -409,7 +427,6 @@ def mapEFO(trait2EFO, traitList):
 
 
 def loadEFOMapping(ignoreTermsFile=None, adaptTermsFile=None):
-
     ignoreTerms = getTermsFromFile(ignoreTermsFile)
     adaptTerms = getTermsFromFile(adaptTermsFile)
 
@@ -420,9 +437,9 @@ def loadEFOMapping(ignoreTermsFile=None, adaptTermsFile=None):
     unavailableEFO = {}
     nEFOmappings = 0
     for i in range(1, EFOMappingReadSheet.nrows):
-        if EFOMappingReadSheet.cell_value(rowx=i, colx=1)!= '':
+        if EFOMappingReadSheet.cell_value(rowx=i, colx=1) != '':
             validEFO, urlsToAdapt = getUrls(EFOMappingReadSheet.cell_value(rowx=i, colx=1).split(', '), ignoreTerms,
-                                           adaptTerms)
+                                            adaptTerms)
             clinvarTrait = EFOMappingReadSheet.cell_value(rowx=i, colx=0).lower()
             if len(validEFO) > 0:
                 trait2EFO[clinvarTrait] = validEFO
@@ -436,8 +453,8 @@ def loadEFOMapping(ignoreTermsFile=None, adaptTermsFile=None):
                         unavailableEFO[url] += 1
                     trait2EFO[clinvarTrait].append(getUnmappedUrl(url))
 
-    print str(nEFOmappings)+' EFO mappings loaded'
-    print str(len(unavailableEFO))+' urls without an actual valid EFO mapping'
+    print str(nEFOmappings) + ' EFO mappings loaded'
+    print str(len(unavailableEFO)) + ' urls without an actual valid EFO mapping'
 
     return trait2EFO, unavailableEFO
 
@@ -445,11 +462,11 @@ def loadEFOMapping(ignoreTermsFile=None, adaptTermsFile=None):
 def getUnmappedUrl(url):
     parts = url.split('/')
     if parts[-1].startswith("Orphanet_"):
-        newUrl = "http://purl.bioontology.org/ORDO/"+parts[-1]
+        newUrl = "http://purl.bioontology.org/ORDO/" + parts[-1]
     elif parts[-1].startswith("HP_"):
-        newUrl = "http://purl.bioontology.org/obo/"+parts[-1]
+        newUrl = "http://purl.bioontology.org/obo/" + parts[-1]
     else:
-        print "Error. Unhandled url type: "+url
+        print "Error. Unhandled url type: " + url
         sys.exit(1)
 
     return newUrl
@@ -474,7 +491,7 @@ def getTermsFromFile(termsFile):
         fd = file(termsFile, 'r')
         termList = [line.rstrip() for line in fd]
         fd.close()
-        print str(len(termsFile))+' terms found at '+termsFile
+        print str(len(termsFile)) + ' terms found at ' + termsFile
     else:
         termList = []
 
@@ -487,7 +504,7 @@ def main():
     #### Options and arguments #####################
 
     ################################################
-    usage="""
+    usage = """
     ************************************************************************************************************************************************************
     Task: generate CTTV evidence strings from ClinVar mongo
     ************************************************************************************************************************************************************
@@ -497,10 +514,17 @@ def main():
     usage: %prog --clinSig <clinicalSignificanceList> --out <fileout>"""
 
     parser = optparse.OptionParser(usage)
-    parser.add_option("--clinSig", dest="clinSig", help="""Optional. String containing a comma-sparated list with the clinical significances that will be allowed to generate evidence-strings. By default all clinical significances will be considered. Possible tags: 'unknown','untested','non-pathogenic','probable-non-pathogenic','probable-pathogenic','pathogenic','drug-response','drug response','histocompatibility','other','benign','protective','not provided','likely benign','confers sensitivity','uncertain significance','likely pathogenic','conflicting data from submitters','risk factor','association' """, default=None)
-    parser.add_option("--ignore", dest="ignoreTermsFile", help="""Optional. String containing full path to a txt file containing a list of term urls which will be ignored during batch processing """, default=None)
-    parser.add_option("--adapt", dest="adaptTermsFile", help="""Optional. String containing full path to a txt file containing a list of invalid EFO urls which will be adapted to a general valid url during batch processing """, default=None)
-    parser.add_option("--out", dest="out", help="""String containing the name of the file were results will be stored.""")
+    parser.add_option("--clinSig", dest="clinSig",
+                      help="""Optional. String containing a comma-sparated list with the clinical significances that will be allowed to generate evidence-strings. By default all clinical significances will be considered. Possible tags: 'unknown','untested','non-pathogenic','probable-non-pathogenic','probable-pathogenic','pathogenic','drug-response','drug response','histocompatibility','other','benign','protective','not provided','likely benign','confers sensitivity','uncertain significance','likely pathogenic','conflicting data from submitters','risk factor','association' """,
+                      default=None)
+    parser.add_option("--ignore", dest="ignoreTermsFile",
+                      help="""Optional. String containing full path to a txt file containing a list of term urls which will be ignored during batch processing """,
+                      default=None)
+    parser.add_option("--adapt", dest="adaptTermsFile",
+                      help="""Optional. String containing full path to a txt file containing a list of invalid EFO urls which will be adapted to a general valid url during batch processing """,
+                      default=None)
+    parser.add_option("--out", dest="out",
+                      help="""String containing the name of the file were results will be stored.""")
 
     (options, args) = parser.parse_args()
 
@@ -511,7 +535,8 @@ def main():
 
     # call core function
     if options.clinSig is None:
-        clinvarToEvidenceStrings(options.out, ignoreTermsFile=options.ignoreTermsFile, adaptTermsFile=options.adaptTermsFile)
+        clinvarToEvidenceStrings(options.out, ignoreTermsFile=options.ignoreTermsFile,
+                                 adaptTermsFile=options.adaptTermsFile)
     else:
         clinvarToEvidenceStrings(options.out, allowedClinicalSignificance=options.clinSig.split(','),
                                  ignoreTermsFile=options.ignoreTermsFile, adaptTermsFile=options.adaptTermsFile)
@@ -519,5 +544,5 @@ def main():
     print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     main()

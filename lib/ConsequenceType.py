@@ -2,7 +2,6 @@ __author__ = 'Javier Lopez: javild@gmail.com'
 
 
 class ConsequenceType:
-
     class SoTerm:
 
         soAccessionToNameDict = {}
@@ -53,21 +52,21 @@ class ConsequenceType:
         soAccessionToNameDict['DNAseI_hypersensitive_site'] = 685
         soAccessionToNameDict['polypeptide_variation_site'] = 336
 
-        rankedSoNamesList = ['transcript_ablation','splice_acceptor_variant','splice_donor_variant','stop_gained',
-                                  'frameshift_variant','stop_lost','initiator_codon_variant','transcript_amplification',
-                                  'inframe_insertion','inframe_deletion','missense_variant','splice_region_variant',
-                                  'incomplete_terminal_codon_variant','stop_retained_variant','synonymous_variant',
-                                  'coding_sequence_variant','mature_miRNA_variant','5_prime_UTR_variant',
-                                  '3_prime_UTR_variant','non_coding_transcript_exon_variant','intron_variant',
-                                  'NMD_transcript_variant','non_coding_transcript_variant','upstream_gene_variant',
-                                  'downstream_gene_variant','TFBS_ablation','TFBS_amplification',
-                                  'TF_binding_site_variant','regulatory_region_ablation',
-                                  'regulatory_region_amplification','regulatory_region_variant','feature_elongation',
-                                  'feature_truncation','intergenic_variant']
+        rankedSoNamesList = ['transcript_ablation', 'splice_acceptor_variant', 'splice_donor_variant', 'stop_gained',
+                             'frameshift_variant', 'stop_lost', 'initiator_codon_variant', 'transcript_amplification',
+                             'inframe_insertion', 'inframe_deletion', 'missense_variant', 'splice_region_variant',
+                             'incomplete_terminal_codon_variant', 'stop_retained_variant', 'synonymous_variant',
+                             'coding_sequence_variant', 'mature_miRNA_variant', '5_prime_UTR_variant',
+                             '3_prime_UTR_variant', 'non_coding_transcript_exon_variant', 'intron_variant',
+                             'NMD_transcript_variant', 'non_coding_transcript_variant', 'upstream_gene_variant',
+                             'downstream_gene_variant', 'TFBS_ablation', 'TFBS_amplification',
+                             'TF_binding_site_variant', 'regulatory_region_ablation',
+                             'regulatory_region_amplification', 'regulatory_region_variant', 'feature_elongation',
+                             'feature_truncation', 'intergenic_variant']
 
         def __init__(self, soName):
             self._soName = soName
-            if(soName in ConsequenceType.SoTerm.soAccessionToNameDict):
+            if soName in ConsequenceType.SoTerm.soAccessionToNameDict:
                 self._soAccession = ConsequenceType.SoTerm.soAccessionToNameDict[soName]
             else:
                 self._soAccession = None
@@ -76,34 +75,35 @@ class ConsequenceType:
             return self._soName
 
         def getAccession(self):
-            if(self._soAccession != None):
+            if self._soAccession is not None:
                 accessionNumberStr = str(self._soAccession)
-                return 'SO:'+accessionNumberStr.rjust(7,'0')
+                return 'SO:' + accessionNumberStr.rjust(7, '0')
             else:
                 return None
 
         def getRank(self):
             # If So name not in Ensembl's ranked list, return the least severe rank
-            if(self.getName() not in ConsequenceType.SoTerm.rankedSoNamesList):
+            if self.getName() not in ConsequenceType.SoTerm.rankedSoNamesList:
                 return len(ConsequenceType.SoTerm.rankedSoNamesList)
             else:
                 return ConsequenceType.SoTerm.rankedSoNamesList.index(self.getName())
 
-        def getRankedSoNames(self):
+        @staticmethod
+        def getRankedSoNames():
             return ConsequenceType.SoTerm.rankedSoNamesList
 
         def __eq__(self, other):
-            return self.getAccession()==other.getAccession()
+            return self.getAccession() == other.getAccession()
 
         def __hash__(self):
-            return hash((self._soAccession))
+            return hash(self._soAccession)
 
     def __init__(self, ensemblGeneId=None, soNames=None):
         self._ensemblGeneId = ensemblGeneId
         self._ensemblTranscriptId = None
 
-        if(soNames != None):
-            self._soTerms= set([ConsequenceType.SoTerm(soName) for soName in soNames])
+        if soNames is not None:
+            self._soTerms = set([ConsequenceType.SoTerm(soName) for soName in soNames])
         else:
             self._soTerms = None
 
@@ -111,8 +111,8 @@ class ConsequenceType:
         return self._ensemblGeneId
 
     def addSoTerm(self, soName):
-        if(self._soTerms == None):
-            self._soTerms = set([ConsequenceType.SoTerm(soName)])
+        if self._soTerms is None:
+            self._soTerms = {ConsequenceType.SoTerm(soName)}
         else:
             self._soTerms.add(ConsequenceType.SoTerm(soName))
 
@@ -120,4 +120,4 @@ class ConsequenceType:
         return [soTerm.getAccession() for soTerm in self._soTerms]
 
     def getMostSevereSo(self):
-        return min(list(self._soTerms), key=lambda x:x.getRank())
+        return min(list(self._soTerms), key=lambda x: x.getRank())
