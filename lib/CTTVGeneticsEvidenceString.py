@@ -1,106 +1,105 @@
 __author__ = 'Javier Lopez: javild@gmail.com'
 
-
 from CTTVEvidenceString import CTTVEvidenceString
 import json
 import jsonschema
 import os
 
-SCHEMA_FILE = os.path.dirname(__file__)+"/resources/schema/genetics.local.json"
+SCHEMA_FILE = os.path.dirname(__file__) + "/resources/schema/genetics.local.json"
+
 
 class CTTVGeneticsEvidenceString(CTTVEvidenceString):
-
     schema = json.loads(open(SCHEMA_FILE, 'r').read())
 
     def __init__(self):
         CTTVEvidenceString.__init__(self,
-                                    {'sourceID' : 'eva',
-                                     'validated_against_schema_version' : '1.2.1',
-                                     'type' : 'genetic_association',
-                                     'access_level' : 'public',
-                                     'unique_association_fields' : {},
-                                     'target' : {
-                                         'id' : [],  # ENSEMBL ID
-                                         'target_type' : 'http://identifiers.org/cttv.target/gene_variant',
-                                         'activity' : None  # http://identifiers.org/cttv.activity/predicted_damaging
+                                    {'sourceID': 'eva',
+                                     'validated_against_schema_version': '1.2.1',
+                                     'type': 'genetic_association',
+                                     'access_level': 'public',
+                                     'unique_association_fields': {},
+                                     'target': {
+                                         'id': [],  # ENSEMBL ID
+                                         'target_type': 'http://identifiers.org/cttv.target/gene_variant',
+                                         'activity': None  # http://identifiers.org/cttv.activity/predicted_damaging
                                      },
-                                     'variant' : {
-                                         'id' : [],  # rs
-                                         'type' : None  # snp single
+                                     'variant': {
+                                         'id': [],  # rs
+                                         'type': None  # snp single
                                      },
-                                     'evidence' : {
-                                         'gene2variant' : {
-                                             'provenance_type' : {
-                                                 'expert' : {
-                                                     'status' : True,
-                                                     'statement' : 'Primary submitter of data'
+                                     'evidence': {
+                                         'gene2variant': {
+                                             'provenance_type': {
+                                                 'expert': {
+                                                     'status': True,
+                                                     'statement': 'Primary submitter of data'
                                                  },
-                                                 'database' : {
-                                                     'dbxref' : {
-                                                         'id' : 'http://identifiers.org/clinvar',
-                                                         'url' : None,
-                                                         'version' : '2015-04',
-                                                         },
-                                                     'id' : 'EVA',
-                                                     'version' : '1.0'
+                                                 'database': {
+                                                     'dbxref': {
+                                                         'id': 'http://identifiers.org/clinvar',
+                                                         'url': None,
+                                                         'version': '2015-04',
+                                                     },
+                                                     'id': 'EVA',
+                                                     'version': '1.0'
 
                                                  }
                                              },
                                              'is_associated': True,
                                              'date_asserted': None,
-                                             'evidence_codes' : [],
-                                             'functional_consequence' : None,
-                                             'urls' : [
+                                             'evidence_codes': [],
+                                             'functional_consequence': None,
+                                             'urls': [
                                                  {
-                                                     'nice_name' : 'Further details in ClinVar database',
-                                                     'url' : None  # http://www.ncbi.nlm.nih.gov/clinvar/RCV000038347
+                                                     'nice_name': 'Further details in ClinVar database',
+                                                     'url': None  # http://www.ncbi.nlm.nih.gov/clinvar/RCV000038347
                                                  }
                                              ]
                                          },
-                                         'variant2disease' : {
-                                            'resource_score' : {
-                                                            'type' : 'pvalue',
-                                                            'value' : 0.0000001,
-                                                            'method' : {
-                                                                        'url':'',
-                                                                        'description' : 'Not provided by data supplier'
-                                                                        }
-                                                            },
-                                             'provenance_type' : {
-                                                 'expert' : {
-                                                     'status' : True,
-                                                     'statement' : 'Primary submitter of data'
+                                         'variant2disease': {
+                                             'resource_score': {
+                                                 'type': 'pvalue',
+                                                 'value': 0.0000001,
+                                                 'method': {
+                                                     'url': '',
+                                                     'description': 'Not provided by data supplier'
+                                                 }
+                                             },
+                                             'provenance_type': {
+                                                 'expert': {
+                                                     'status': True,
+                                                     'statement': 'Primary submitter of data'
                                                  },
-                                                 'database' : {
-                                                     'dbxref' : {
-                                                         'id' : 'http://identifiers.org/clinvar',
-                                                         'url' : None,
-                                                         'version' : '2015-04',
-                                                         },
-                                                     'id' : 'EVA',
-                                                     'version' : '1.0'
+                                                 'database': {
+                                                     'dbxref': {
+                                                         'id': 'http://identifiers.org/clinvar',
+                                                         'url': None,
+                                                         'version': '2015-04',
+                                                     },
+                                                     'id': 'EVA',
+                                                     'version': '1.0'
 
                                                  }
                                              },
-                                             'unique_experiment_reference' : 'http://europepmc.org/abstract/MED/0',
+                                             'unique_experiment_reference': 'http://europepmc.org/abstract/MED/0',
                                              'is_associated': True,
                                              'date_asserted': None,
-                                             'evidence_codes' : [
+                                             'evidence_codes': [
                                                  'http://purl.obolibrary.org/obo/ECO_0000205'
                                              ],
-                                             'urls' : [
+                                             'urls': [
                                                  {
-                                                     'nice_name' : 'Further details in ClinVar database',
-                                                     'url' : None  # http://www.ncbi.nlm.nih.gov/clinvar/RCV000038347
+                                                     'nice_name': 'Further details in ClinVar database',
+                                                     'url': None  # http://www.ncbi.nlm.nih.gov/clinvar/RCV000038347
                                                  }
                                              ]
                                          },
-                                         },
-                                     'disease' : {
-                                         'id' : [],  # EFO terms
+                                     },
+                                     'disease': {
+                                         'id': [],  # EFO terms
                                      }
-                                    }
-        )
+                                     }
+                                    )
 
     def setDbxrefUrl(self, url):
         self['evidence']['gene2variant']['provenance_type']['database']['dbxref']['url'] = url
@@ -117,10 +116,13 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         self['evidence']['gene2variant']['functional_consequence'] = SOTerm
 
     def setVariant2DiseaseLiterature(self, referenceList):
-        if('literature' not in self['evidence']['variant2disease']['provenance_type']):
-            self['evidence']['variant2disease']['provenance_type']['literature'] = {'references' : [{'lit_id':reference} for reference in referenceList]}
+        if 'literature' not in self['evidence']['variant2disease']['provenance_type']:
+            self['evidence']['variant2disease']['provenance_type']['literature'] = {
+                'references': [{'lit_id': reference} for reference in referenceList]}
         else:
-            self['evidence']['variant2disease']['provenance_type']['literature']['references'] = [{'lit_id':reference} for reference in referenceList]
+            self['evidence']['variant2disease']['provenance_type']['literature']['references'] = [{'lit_id': reference}
+                                                                                                  for reference in
+                                                                                                  referenceList]
 
     def setAssociation(self, isAssociated):
         self['evidence']['gene2variant']['is_associated'] = isAssociated

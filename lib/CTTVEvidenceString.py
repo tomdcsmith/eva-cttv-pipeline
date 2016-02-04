@@ -3,6 +3,7 @@ __author__ = 'Javier Lopez: javild@gmail.com'
 
 import EFOTerm
 
+
 class CTTVEvidenceString(dict):
     def __init__(self, aDictionary):
         dict.__init__(self, aDictionary)
@@ -18,8 +19,8 @@ class CTTVEvidenceString(dict):
         self['target']['activity'] = activity
 
     def setPubmedrefs(self, pubmedList):
-        if(pubmedList != None and len(pubmedList)>0):
-            if('literature' in self['evidence']['provenance_type']):
+        if pubmedList is not None and len(pubmedList)>0:
+            if 'literature' in self['evidence']['provenance_type']:
                 self['evidence']['provenance_type']['literature']['pubmed_refs'] = pubmedList
             else:
                 self['evidence']['provenance_type']['literature'] = {'pubmed_refs' : pubmedList}
