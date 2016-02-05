@@ -6,7 +6,7 @@
   "version": "1.2.1",
   "allOf": [
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/base.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/base.local.json"
     },
     {
       "properties": {
@@ -35,7 +35,7 @@
           "description": "List of human phenotypes for this model",
           "items": {          
             "type": "object",
-            "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/phenotype.local.json"
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/bioentity/phenotype.local.json"
           },
           "minItems": 1
         },
@@ -44,7 +44,7 @@
           "description": "List of biomodel phenotypes for this model",
           "items": {          
             "type": "object",
-            "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/phenotype.local.json"
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/bioentity/phenotype.local.json"
           },
           "minItems": 1
         },
@@ -52,7 +52,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/linkout/linkout.local.json"
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/linkout/linkout.local.json"
           }
         }
       }
