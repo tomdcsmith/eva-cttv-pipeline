@@ -28,8 +28,8 @@ def getObsoleteTerms(sparqlep, user, password):
 
 
 def executeQuery(sparqlep, user, password, query):
-    fd = os.popen(
-        """curl --post301 -L --data-urlencode "query=""" + query + """" -u """ + user + ":" + password + """ -H "Accept: text/tab-separated-values" """ + sparqlep)
+    cmd = """curl --post301 -L --data-urlencode "query=""" + query + """" -u """ + user + ":" + password + """ -H "Accept: text/tab-separated-values" """ + sparqlep
+    fd = os.popen(cmd)
     print 'Loading obsolete terms...'
     terms = {}
     fd.readline()

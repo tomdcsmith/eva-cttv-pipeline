@@ -1,6 +1,7 @@
 /.python-version
 /lib/resources/clnsg_keep.txt
 /lib/resources/uniq_clnsg_rs.txt
+/output
 
 # General
 *.jar
