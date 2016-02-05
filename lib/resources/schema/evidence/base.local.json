@@ -22,16 +22,16 @@
       "type": "object",
       "oneOf": [
         {
-          "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/pvalue.local.json"
+          "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/pvalue.local.json"
         },
         {
-          "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/probability.local.json"
+          "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/probability.local.json"
         },
         {
-          "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/rank.local.json"
+          "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/rank.local.json"
         },
         {
-          "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/summed_total.local.json"
+          "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/summed_total.local.json"
         }
       ]
     },
@@ -141,7 +141,7 @@
         },
         "rank": {
           "type": "object",
-          "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/rank.local.json"
+          "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/rank.local.json"
         },
         "mined_sentences": {
           "type": "array",
@@ -207,10 +207,10 @@
   },
   "import_remote_schemas": [
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/method.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/method.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/base.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/base.local.json"
     }
   ]
 }

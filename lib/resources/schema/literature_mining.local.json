@@ -6,7 +6,7 @@
   "version": "1.2.1",
   "allOf": [
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/base.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/base.local.json"
     },
     {
       "properties": {
@@ -18,7 +18,7 @@
         },
         "evidence": {
           "type": "object",
-          "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/literature_mining.local.json"
+          "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/literature_mining.local.json"
         }
       }
     }
@@ -46,40 +46,40 @@
   "additionalProperties": false,
   "import_remote_schemas": [
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/base.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/bioentity/base.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/base.json#/single_lit_reference"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/base.json#/single_lit_reference"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/method.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/method.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/probability.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/probability.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/pvalue.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/pvalue.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/rank.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/rank.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/summed_total.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/summed_total.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/linkout/linkout.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/linkout/linkout.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/base.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/base.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/disease.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/bioentity/disease.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/target.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/bioentity/target.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/base.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/base.local.json"
     }
   ]
 }

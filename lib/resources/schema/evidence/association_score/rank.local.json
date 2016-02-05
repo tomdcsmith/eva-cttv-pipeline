@@ -23,7 +23,7 @@
     },
     "method": {
       "type": "object",
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/method.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/method.local.json"
     }
   },
   "additionalProperties": false,

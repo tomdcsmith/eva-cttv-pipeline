@@ -6,7 +6,7 @@
   "version": "1.2.1",
   "allOf": [
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/base.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/base.local.json"
     },
     {
       "properties": {
@@ -24,13 +24,13 @@
         },
         "max_phase_for_disease": {
           "type" : "object",
-          "$ref" : "file:///home/fjlopez/EBI/cttv/data/schema/evidence/drug/diseasephase.local.json"
+          "$ref" : "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/drug/diseasephase.local.json"
         },
         "urls": {
           "type": "array",
           "items": {
             "type" : "object",
-            "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/linkout/linkout.local.json"
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/linkout/linkout.local.json"
           }
         },
 		
@@ -63,22 +63,22 @@
   "additionalProperties": false,
   "import_remote_schemas": [
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/method.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/method.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/probability.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/probability.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/summed_total.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/summed_total.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/pvalue.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/pvalue.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/rank.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/rank.local.json"
     },
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/base.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/evidence/association_score/base.local.json"
     }
   ]
 }

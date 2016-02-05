@@ -2,6 +2,7 @@
 /lib/resources/clnsg_keep.txt
 /lib/resources/uniq_clnsg_rs.txt
 /output
+/lib/resources/change_json_ref.sh
 
 # General
 *.jar

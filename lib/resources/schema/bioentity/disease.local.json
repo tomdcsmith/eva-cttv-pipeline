@@ -6,7 +6,7 @@
   "version": "1.2.1",
   "allOf": [
     {
-      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/base.local.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/bioentity/base.local.json"
     },
     {
       "properties": {
