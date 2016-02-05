@@ -12,7 +12,11 @@ import progressbar
 import sys
 import os
 
-sys.path.append(os.path.dirname(os.path.dirname(__file__)) + "/lib")  # Adds cbtoes root dir to the PYTHONPATH
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/lib")
+# print(os.path.dirname(os.path.dirname(__file__)) + "/lib")
+# print(os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/lib")
+
+# sys.path.append(os.path.dirname(os.path.dirname(__file__)) + "/lib")  # Adds cbtoes root dir to the PYTHONPATH
 import ClinvarRecord
 import EFOTerm
 import CTTVGeneticsEvidenceString
@@ -319,7 +323,7 @@ def getCTTVGeneticsEvidenceString(EFOList, clinicalSignificance, clinicalSignifi
     evidenceString.setDisease(EFOList[0])
     evidenceString.addUniqueAssociationField('phenotype', EFOList[0])
     nMoreThanOneEfoTerm += (len(EFOList) > 1)
-    traits.union_update(set(EFOList))
+    traits.update(set(EFOList))
     ensemblGeneIdUris.add(ensemblGeneIdUri)
     return evidenceString, nMoreThanOneEfoTerm
 
@@ -354,7 +358,7 @@ def getCTTVSomaticEvidenceString(EFOList, clinicalSignificance, clinicalSignific
     evidenceString.setDisease(EFOList[0])
     evidenceString.addUniqueAssociationField('phenotype', EFOList[0])
     nMoreThanOneEfoTerm += (len(EFOList) > 1)
-    traits.union_update(set(EFOList))
+    traits.update(set(EFOList))
     ensemblGeneIdUris.add(ensemblGeneIdUri)
     return evidenceString, nMoreThanOneEfoTerm
 
