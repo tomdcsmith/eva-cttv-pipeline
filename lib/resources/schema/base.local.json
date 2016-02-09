@@ -37,15 +37,15 @@
     "target" : {
       "type": "object",
       "description" : "Target in CTTV's target ontology",
-      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/bioentity/target.local.json"
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/target.local.json"
     },
     "disease" : {
       "type": "object",
       "description" : "Disease in the EFO ontology",
-      "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/bioentity/disease.local.json"
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/disease.local.json"
     }
   },
   "import_remote_schemas": [
-    { "$ref": "file:///home/tom/Job_Working_Directory/Python/cbtoes/lib/resources/schema/bioentity/base.local.json" }
+    { "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/base.local.json" }
   ]
 }
