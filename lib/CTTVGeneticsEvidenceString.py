@@ -5,7 +5,7 @@ import json
 import jsonschema
 import os
 
-SCHEMA_FILE = os.path.dirname(__file__) + "/resources/schema/genetics.local.json"
+SCHEMA_FILE = os.path.dirname(__file__) + "/resources/schema_local/genetics.local.json"
 # SCHEMA_FILE = os.path.dirname(__file__) + "/resources/schema/genetics.json"
 
 

@@ -3,6 +3,7 @@
 /lib/resources/uniq_clnsg_rs.txt
 /output
 /lib/resources/change_json_ref.sh
+/lib/resources/schema_local
 
 # General
 *.jar
