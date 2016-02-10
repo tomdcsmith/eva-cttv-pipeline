@@ -4,6 +4,7 @@ from CTTVEvidenceString import CTTVEvidenceString
 import json
 import jsonschema
 import os
+import sys
 
 SCHEMA_FILE = os.path.dirname(__file__) + "/resources/schema_local/literature_curated.local.json"
 # SCHEMA_FILE = os.path.dirname(__file__) + "/resources/schema/literature_curated.json"

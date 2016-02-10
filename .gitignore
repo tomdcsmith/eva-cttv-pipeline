@@ -4,6 +4,12 @@
 /output
 /lib/resources/change_json_ref.sh
 /lib/resources/schema_local
+/bin/.python-version
+/lib/py3
+/lib/py2
+/bin/py3
+/bin/py2
+/nb_testing
 
 # General
 *.jar

@@ -30,20 +30,20 @@ def getObsoleteTerms(sparqlep, user, password):
 def executeQuery(sparqlep, user, password, query):
     cmd = """curl --post301 -L --data-urlencode "query=""" + query + """" -u """ + user + ":" + password + """ -H "Accept: text/tab-separated-values" """ + sparqlep
     fd = os.popen(cmd)
-    print 'Loading obsolete terms...'
+    print('Loading obsolete terms...')
     terms = {}
     fd.readline()
     for line in fd.readlines():
         parts = line.rstrip("\n").split('\t')
         if len(parts) > 1:
             terms[parts[0].rstrip('"').lstrip('"')] = parts[1].lstrip('"').rstrip('"')
-    print 'Done.'
+    print('Done.')
 
     return terms
 
 
 class EFOTerm():
-    print 'Querying EFO  web services for valid terms...'
+    print('Querying EFO  web services for valid terms...')
     # CONNECTION PARAMETERS
     sparqlep = ""
     user = ""
