@@ -1,15 +1,16 @@
 /.python-version
-/lib/resources/clnsg_keep.txt
-/lib/resources/uniq_clnsg_rs.txt
+/resources/clnsg_keep.txt
+/resources/uniq_clnsg_rs.txt
 /output
-/lib/resources/change_json_ref.sh
-/lib/resources/schema_local
+/resources/change_json_ref.sh
+/resources/schema_local
 /bin/.python-version
-/lib/py3
-/lib/py2
+/eva_cttv_pipeline/py3
+/eva_cttv_pipeline/py2
 /bin/py3
 /bin/py2
 /nb_testing
+/eva_cttv_pipeline/.fuse_hidden00000d9900000001
 
 # General
 *.jar

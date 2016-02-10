@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Rank",
+  "description": "Rank",
+  "id": "#rank",
+  "type": "object",
+  "version": "1.2.1",
+  "properties": {
+        "type": {
+          "type" : "string",          
+          "enum": [
+            "rank"
+          ]
+        },  	  
+  	  
+    "position": {
+      "type": "number",
+      "minimum": 1
+    },
+    "sample_size": {
+      "type": "number",
+      "minimum": 1
+    },
+    "method": {
+      "type": "object",
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/lib/resources/schema_local/evidence/association_score/method.local.json"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "position",
+    "sample_size",
+    "type"
+  ]
+}

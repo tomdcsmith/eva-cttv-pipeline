@@ -1,0 +1,39 @@
+{
+    "type": "object",
+    "id": "#probability",
+    "allOf": [
+        {
+            "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/base.local.json"
+        },
+        {
+            "properties": {
+        "type": {
+          "type" : "string",          
+          "enum": [
+            "probability"
+          ]
+        },
+                "value": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "exclusiveMinimum": true
+                },
+                "method": {
+                    "type": "object",
+                    "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/method.local.json"
+                }
+            }
+        }
+    ],
+    "properties": {
+        "value": {},
+        "method": {},
+        "type": {}
+    },
+    "required": [
+        "value",
+        "type"
+    ],
+    "additionalProperties": false
+}

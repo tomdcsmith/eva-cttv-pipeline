@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Method",
+  "description": "Method details",
+  "type": "object",
+  "version": "1.2.1",
+  "id":"#method",
+  "properties": {
+    "description": {
+      "type": "string"
+    },
+    "reference": {
+          "type": "string",
+          "description": "Note for pubmed identifiers, use the URI http://europepmc.org/abstract/MED/[0-9]+",
+          "pattern": "http://europepmc.org/abstract/MED/[0-9]+|http://europepmc.org/articles/PMC[0-9]{4,}$"
+    },
+    "url": {
+    	"type": "string",
+    	"format": "uri"
+    }
+  },
+  "additionalProperties": false
+}
