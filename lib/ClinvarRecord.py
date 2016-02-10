@@ -2,8 +2,8 @@ __author__ = 'Javier Lopez: javild@gmail.com'
 
 from datetime import datetime
 import json
-import urllib2
-import httplib
+import urllib.request, urllib.error, urllib.parse
+import http.client
 import time
 import sys
 import xlrd
@@ -18,7 +18,7 @@ class ClinvarRecord(dict):
     cachedSymbol2Ensembl = {}
     oneRsMultipleGenes = set()
 
-    print 'Loading mappintg rs->ENSG/SOterms '
+    print('Loading mappintg rs->ENSG/SOterms ')
     CTMappingReadBook = xlrd.open_workbook(CTMAPPINGFILE, formatting_info=True)
     CTMappingReadSheet = CTMappingReadBook.sheet_by_index(0)
     consequenceTypeDict = {}
@@ -28,12 +28,12 @@ class ClinvarRecord(dict):
             if CTMappingReadSheet.cell_value(rowx=i, colx=0) in consequenceTypeDict:
                 if ensemblGeneId != consequenceTypeDict[
                     CTMappingReadSheet.cell_value(rowx=i, colx=0)].getEnsemblGeneId():
-                    print 'WARNING (ClinvarRecord.py): different genes and annotations found for a given gene.'
-                    print ' Variant id: ' + CTMappingReadSheet.cell_value(rowx=i,
+                    print('WARNING (ClinvarRecord.py): different genes and annotations found for a given gene.')
+                    print(' Variant id: ' + CTMappingReadSheet.cell_value(rowx=i,
                                                                           colx=0) + ', ENSG: ' + CTMappingReadSheet.cell_value(
                         rowx=i, colx=1) + ', ENSG: ' + consequenceTypeDict[
-                              CTMappingReadSheet.cell_value(rowx=i, colx=0)].getEnsemblGeneId()
-                    print 'Skipping'
+                              CTMappingReadSheet.cell_value(rowx=i, colx=0)].getEnsemblGeneId())
+                    print('Skipping')
                     oneRsMultipleGenes.add(CTMappingReadSheet.cell_value(rowx=i, colx=0))
                 else:
                     consequenceTypeDict[CTMappingReadSheet.cell_value(rowx=i, colx=0)].addSoTerm(
@@ -41,14 +41,14 @@ class ClinvarRecord(dict):
             else:
                 consequenceTypeDict[CTMappingReadSheet.cell_value(rowx=i, colx=0)] = ConsequenceType.ConsequenceType(
                     CTMappingReadSheet.cell_value(rowx=i, colx=2), [CTMappingReadSheet.cell_value(rowx=i, colx=1)])
-    print str(len(consequenceTypeDict)) + ' rs->ENSG/SOterms mappings loaded'
-    print str(len(oneRsMultipleGenes)) + ' rsIds with multiple gene associations'
-    print ' Done.'
+    print(str(len(consequenceTypeDict)) + ' rs->ENSG/SOterms mappings loaded')
+    print(str(len(oneRsMultipleGenes)) + ' rsIds with multiple gene associations')
+    print(' Done.')
 
-    print 'Loading mapping RCV->rs/nsv'
+    print('Loading mapping RCV->rs/nsv')
     rcvToRs = {}
     rcvToNsv = {}
-    fdr = file(RCVTORSFILE)
+    fdr = open(RCVTORSFILE, "r")
     fdr.readline()
     for line in fdr:
         parts = line.split('\t')
@@ -60,7 +60,7 @@ class ClinvarRecord(dict):
             for rcvId in rcvList:
                 rcvToNsv[rcvId] = parts[7]
     fdr.close()
-    print ' Done.'
+    print(' Done.')
 
     def __init__(self, aDictionary=None):
         if aDictionary is None:
@@ -112,25 +112,25 @@ class ClinvarRecord(dict):
                                 notSolved = True
                                 while notSolved:
                                     try:
-                                        ensemblJson = json.loads(urllib2.urlopen(
+                                        ensemblJson = json.loads(urllib.request.urlopen(
                                             'http://rest.ensembl.org/lookup/symbol/homo_sapiens/' +
                                             symbol[i]['elementValue'][
                                                 'value'] + '?content-type=application/json').read())
                                         notSolved = False
-                                    except urllib2.HTTPError, e:
+                                    except urllib.error.HTTPError as e:
                                         if e.code == 400:
-                                            print 'WARNING: Bad request code returned from ENSEMBL rest.'
-                                            print ' ClinVar accession: ' + self.getAcc()
-                                            print ' Gene symbol: ' + symbol[i]['elementValue']['value']
-                                            print ' Error: '
-                                            print e
-                                            print ' Returning None.'
+                                            print('WARNING: Bad request code returned from ENSEMBL rest.')
+                                            print(' ClinVar accession: ' + self.getAcc())
+                                            print(' Gene symbol: ' + symbol[i]['elementValue']['value'])
+                                            print(' Error: ')
+                                            print(e)
+                                            print(' Returning None.')
                                             ClinvarRecord.cachedSymbol2Ensembl[
                                                 symbol[i]['elementValue']['value']] = None
                                             return None
                                         else:
                                             time.sleep(0.05)
-                                    except httplib.BadStatusLine:
+                                    except http.client.BadStatusLine:
                                         time.sleep(3)
 
                                 if len(ensemblJson) > 0:
@@ -139,11 +139,11 @@ class ClinvarRecord(dict):
                                             ensemblJson['id']
                                         return ensemblJson['id']
                                     else:
-                                        print "WARNING at ClinvarRecord.py: ENSEMBL's REST API returned an unexpected json object"
-                                        print " Queried gene symbol: " + symbol[i]['elementValue']['value']
-                                        print " ENSEMBL's API response:"
-                                        print ensemblJson
-                                        print "Exiting."
+                                        print("WARNING at ClinvarRecord.py: ENSEMBL's REST API returned an unexpected json object")
+                                        print(" Queried gene symbol: " + symbol[i]['elementValue']['value'])
+                                        print(" ENSEMBL's API response:")
+                                        print(ensemblJson)
+                                        print("Exiting.")
                                         sys.exit(1)
                                 else:
                                     ClinvarRecord.cachedSymbol2Ensembl[symbol[i]['elementValue']['value']] = None
