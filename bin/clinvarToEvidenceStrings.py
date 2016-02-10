@@ -2,9 +2,12 @@
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
-import optparse
 import json
-import urllib.request, urllib.error, urllib.parse
+import optparse
+import urllib.error
+import urllib.parse
+import urllib.request
+
 import xlrd
 # import string
 import jsonschema
@@ -18,10 +21,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))) 
 # print(os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/lib")
 
 # sys.path.append(os.path.dirname(os.path.dirname(__file__)) + "/lib")  # Adds eva_cttv_pipeline root dir to the PYTHONPATH
-import ClinvarRecord
-import EFOTerm
-import CTTVGeneticsEvidenceString
-import CTTVSomaticEvidenceString
+from eva_cttv_pipeline import CTTVGeneticsEvidenceString, CTTVSomaticEvidenceString, EFOTerm, ClinvarRecord
 
 BATCH_SIZE = 200
 # HOST = 'localhost:8080'

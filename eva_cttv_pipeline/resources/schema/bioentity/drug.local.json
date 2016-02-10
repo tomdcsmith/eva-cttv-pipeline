@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Drug",
+  "description": "CTTV drug model",
+  "type": "object",
+  "version": "1.2.1",
+  "allOf": [
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/base.local.json"
+    },
+    {
+      "properties": {
+        "id": {
+          "type" : "array",
+          "items": {
+            "type" : "string",
+            "description": "An array of drug identifiers",
+            "pattern": "^http://identifiers.org/chembl.compound/CHEMBL[0-9]+$|^http://private/.+$"
+          }
+        },
+        "molecule_name": {
+          "type": "string"
+        },
+        "molecule_type": {
+          "type": "string"
+        },
+        "max_phase_for_all_diseases": {
+          "type": "object",
+          "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/drug/diseasephase.local.json"
+        }
+      }
+    }
+  ],
+  "properties": {
+    "id": {},
+    "molecule_name": {},
+    "molecule_type": {},
+    "max_phase_for_all_diseases": {}
+  },
+  "required": [
+    "id",
+    "molecule_name",
+    "molecule_type"
+  ],
+  "additionalProperties": false
+}

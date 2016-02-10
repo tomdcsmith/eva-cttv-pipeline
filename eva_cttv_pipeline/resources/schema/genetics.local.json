@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Genetics-based evidence strings",
+  "description": "Schema for target-disease evidence where there is genetics / variation knowledge",
+  "type": "object",
+  "version": "1.2.1",
+  "allOf": [
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/base.local.json"
+    },
+    {
+      "properties": {
+        "type": {
+          "type" : "string",
+          "enum": [
+            "genetic_association"
+          ]
+        },
+        "variant": {
+          "type": "object",
+          "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/variant.local.json"
+        },
+        "evidence": {
+          "type": "object",
+          "properties": {
+            "gene2variant": {
+              "type": "object",
+              "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/genetics/gene2variant.local.json"
+            },
+            "variant2disease": {
+              "type": "object",
+              "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/genetics/variant2disease.local.json"
+            }
+          },
+          "required": [
+            "gene2variant",
+            "variant2disease"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  ],
+  "properties": {
+    "type": {},
+    "sourceID": {},
+    "validated_against_schema_version": {},
+    "unique_association_fields": {},
+    "access_level" :{},
+    "target": {},
+    "disease": {},
+    "evidence": {},
+    "variant": {}
+  },
+  "required": [
+    "type",
+    "sourceID",
+    "access_level",
+    "validated_against_schema_version",
+    "unique_association_fields",
+    "target",
+    "variant",
+    "disease",
+    "evidence"
+  ],
+  "additionalProperties": false,
+  "import_remote_schemas": [
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/base.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/method.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/probability.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/pvalue.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/rank.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/summed_total.local.json"
+    },    
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/linkout/linkout.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/base.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/disease.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/bioentity/target.local.json"
+    },
+    {
+      "$ref": "file:///home/fjlopez/EBI/cttv/data/schema/evidence/association_score/base.local.json"
+    }
+  ]
+}

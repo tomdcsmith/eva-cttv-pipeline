@@ -1,0 +1,74 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "literature_mining_evidence",
+    "description": "Literature mining evidence linking gene/protein to disease",
+    "type": "object",
+    "version": "1.2.1",
+    "allOf": [
+        {
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/lib/resources/schema_local/evidence/base.local.json"
+        },
+        {
+            "properties": {
+                "evidence_codes": {
+                    "type": "array",
+                    "description": "An array of evidence codes",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "http://www.targetvalidation.org/evidence/literature_mining",
+                            "http://purl.obolibrary.org/obo/ECO_0000213"
+                        ]
+                    },
+                    "minItems": 1
+                },
+                "literature_ref": {
+                    "type": "object",
+                    "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/lib/resources/schema_local/evidence/base.json#base_evidence/definitions/single_lit_reference"
+                }
+            }
+        }
+    ],
+    "properties": {
+        "resource_score": {},
+        "provenance_type": {},
+        "is_associated": {},
+        "date_asserted": {},
+        "evidence_codes": {},
+        "literature_ref": {},
+        "unique_experiment_reference": {}
+    },
+    "required": [
+        "resource_score",
+        "provenance_type",
+        "is_associated",
+        "date_asserted",
+        "evidence_codes",
+        "literature_ref",
+        "unique_experiment_reference"
+    ],
+    "additionalProperties": false,
+    "import_remote_schemas": [
+        {
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/lib/resources/schema_local/evidence/association_score/method.local.json"
+        },
+        {
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/lib/resources/schema_local/evidence/base.local.json"
+        },
+        {
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/lib/resources/schema_local/evidence/association_score/probability.local.json"
+        },
+        {
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/lib/resources/schema_local/evidence/association_score/summed_total.local.json"
+        },
+        {
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/lib/resources/schema_local/evidence/association_score/pvalue.local.json"
+        },
+        {
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/lib/resources/schema_local/evidence/association_score/rank.local.json"
+        },
+        {
+          "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/lib/resources/schema_local/evidence/association_score/base.local.json"
+        }
+    ]
+}
