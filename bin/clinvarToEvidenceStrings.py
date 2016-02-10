@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))) 
 # print(os.path.dirname(os.path.dirname(__file__)) + "/lib")
 # print(os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/lib")
 
-# sys.path.append(os.path.dirname(os.path.dirname(__file__)) + "/lib")  # Adds cbtoes root dir to the PYTHONPATH
+# sys.path.append(os.path.dirname(os.path.dirname(__file__)) + "/lib")  # Adds eva_cttv_pipeline root dir to the PYTHONPATH
 import ClinvarRecord
 import EFOTerm
 import CTTVGeneticsEvidenceString
