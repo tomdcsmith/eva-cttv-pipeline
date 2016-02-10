@@ -1,0 +1,3 @@
+[submodule "json_schema"]
+	path = json_schema
+	url = git@github.com:CTTV/json_schema.git
