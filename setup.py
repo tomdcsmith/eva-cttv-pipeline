@@ -11,10 +11,18 @@ setup(name='eva_cttv_pipeline',
           'jsonschema>=v2.5.0',
           'optparse',
           'os',
+          'setuptools-git',
           'sys',
           'time',
           'urllib.error',
           'urllib.parse',
           'urllib.request',
-          'xlrd'
-      ])
+          'xlrd',
+      ],
+      package_data={
+        'eva_cttv_pipeline': [
+            'resources/*.xls',
+            'resources/variant_summary.txt'
+        ]
+      },
+      include_package_data=True)

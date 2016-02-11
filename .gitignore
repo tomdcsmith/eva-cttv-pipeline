@@ -11,6 +11,12 @@
 /bin/py2
 /nb_testing
 /eva_cttv_pipeline/.fuse_hidden00000d9900000001
+/req.txt
+/eva_cttv_pipeline.egg-info
+/build
+/dist
+/venv
+
 
 # General
 *.jar
