@@ -5,9 +5,7 @@ setup(name='eva_cttv_pipeline',
       packages=['eva_cttv_pipeline'],
       install_requires=[
           'datetime',
-          'http.client',
           'jsonschema>=v2.5.0',
-          'optparse',
           'setuptools-git',
           'xlrd'
       ],

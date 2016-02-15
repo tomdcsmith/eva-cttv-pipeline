@@ -7,16 +7,14 @@ import optparse
 import urllib.error
 import urllib.parse
 import urllib.request
-
 import xlrd
-# import string
 import jsonschema
-# import progressbar
 import sys
 import os
 import codecs
+import argparse
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/lib")
+# sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/lib")
 # print(os.path.dirname(os.path.dirname(__file__)) + "/lib")
 # print(os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/lib")
 
@@ -505,48 +503,51 @@ def getTermsFromFile(termsFile):
     return termList
 
 
-def main():
-    ################################################
-
-    #### Options and arguments #####################
-
-    ################################################
-    usage = """
-    ************************************************************************************************************************************************************
-    Task: generate CTTV evidence strings from ClinVar mongo
-    ************************************************************************************************************************************************************
-
+class ArgParser(object):
+    """
+    For parsing command line arguments
+    """
+    def __init__(self, argv):
+        usage = """
+        ************************************************************************************************************************************************************
+        Task: generate CTTV evidence strings from ClinVar mongo
+        ************************************************************************************************************************************************************
 
 
-    usage: %prog --clinSig <clinicalSignificanceList> --out <fileout>"""
 
-    parser = optparse.OptionParser(usage)
-    parser.add_option("--clinSig", dest="clinSig",
+        usage: %prog --clinSig <clinicalSignificanceList> --out <fileout>"""
+        parser = argparse.ArgumentParser(usage)
+
+        parser.add_argument("--clinSig", dest="clinSig",
                       help="""Optional. String containing a comma-sparated list with the clinical significances that will be allowed to generate evidence-strings. By default all clinical significances will be considered. Possible tags: 'unknown','untested','non-pathogenic','probable-non-pathogenic','probable-pathogenic','pathogenic','drug-response','drug response','histocompatibility','other','benign','protective','not provided','likely benign','confers sensitivity','uncertain significance','likely pathogenic','conflicting data from submitters','risk factor','association' """,
-                      default=None)
-    parser.add_option("--ignore", dest="ignoreTermsFile",
+                      default="pathogenic,likely pathogenic")
+        parser.add_argument("--ignore", dest="ignoreTermsFile",
                       help="""Optional. String containing full path to a txt file containing a list of term urls which will be ignored during batch processing """,
                       default=None)
-    parser.add_option("--adapt", dest="adaptTermsFile",
+        parser.add_argument("--adapt", dest="adaptTermsFile",
                       help="""Optional. String containing full path to a txt file containing a list of invalid EFO urls which will be adapted to a general valid url during batch processing """,
                       default=None)
-    parser.add_option("--out", dest="out",
-                      help="""String containing the name of the file were results will be stored.""")
+        parser.add_argument("--out", dest="out",
+                      help="""String containing the name of the file were results will be stored.""", required=True)
 
-    (options, args) = parser.parse_args()
+        args = parser.parse_args(args=argv[1:])
 
-    # Check number of arguments
-    if len(sys.argv) < 3:
-        parser.print_help()
-        sys.exit(1)
+        self.clinSig = args.clinSig
+        self.ignoreTermsFile = args.ignoreTermsFile
+        self.adaptTermsFile = args.adaptTermsFile
+        self.out = args.out
+
+
+def main():
+    parser = ArgParser(sys.argv)
 
     # call core function
-    if options.clinSig is None:
-        clinvarToEvidenceStrings(options.out, ignoreTermsFile=options.ignoreTermsFile,
-                                 adaptTermsFile=options.adaptTermsFile)
+    if parser.clinSig is None:
+        clinvarToEvidenceStrings(parser.out, ignoreTermsFile=parser.ignoreTermsFile,
+                                 adaptTermsFile=parser.adaptTermsFile)
     else:
-        clinvarToEvidenceStrings(options.out, allowedClinicalSignificance=options.clinSig.split(','),
-                                 ignoreTermsFile=options.ignoreTermsFile, adaptTermsFile=options.adaptTermsFile)
+        clinvarToEvidenceStrings(parser.out, allowedClinicalSignificance=parser.clinSig.split(','),
+                                 ignoreTermsFile=parser.ignoreTermsFile, adaptTermsFile=parser.adaptTermsFile)
 
     print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
 
