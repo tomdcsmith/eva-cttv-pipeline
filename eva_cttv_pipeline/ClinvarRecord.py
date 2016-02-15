@@ -12,10 +12,10 @@ from datetime import datetime
 import pkgutil
 import xlrd
 from eva_cttv_pipeline import ConsequenceType
+import eva_cttv_pipeline.utilities as utilities
 
-#  pkgutil.get_data('pkgwithdata', 'templates/base.html')
-CTMAPPINGFILE = os.path.dirname(__file__) + "/resources/eva_cttv_snp2gene_mapping_20150512.xls"
-RCVTORSFILE = os.path.dirname(__file__) + "/resources/variant_summary.txt"
+CTMAPPINGFILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/eva_cttv_snp2gene_mapping_20150512.xls")
+RCVTORSFILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/variant_summary.txt")
 
 
 class ClinvarRecord(dict):
