@@ -69,10 +69,8 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
     def setDbxrefUrl(self, url):
         self['evidence']['provenance_type']['database']['dbxref']['url'] = url
-        self['evidence']['provenance_type']['database']['dbxref']['url'] = url
 
     def setUrl(self, url):
-        self['evidence']['urls'][0]['url'] = url
         self['evidence']['urls'][0]['url'] = url
 
     def setLiterature(self, referenceList):

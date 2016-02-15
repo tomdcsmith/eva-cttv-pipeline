@@ -9,11 +9,11 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime
-
+import pkgutil
 import xlrd
-
 from eva_cttv_pipeline import ConsequenceType
 
+#  pkgutil.get_data('pkgwithdata', 'templates/base.html')
 CTMAPPINGFILE = os.path.dirname(__file__) + "/resources/eva_cttv_snp2gene_mapping_20150512.xls"
 RCVTORSFILE = os.path.dirname(__file__) + "/resources/variant_summary.txt"
 
