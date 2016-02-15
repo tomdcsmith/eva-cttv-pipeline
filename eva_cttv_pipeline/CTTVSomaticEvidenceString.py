@@ -2,13 +2,12 @@ __author__ = 'Javier Lopez: javild@gmail.com'
 
 import json
 import os
-
 import jsonschema
-
 from eva_cttv_pipeline.CTTVEvidenceString import CTTVEvidenceString
+import eva_cttv_pipeline.utilities as utilities
 
-SCHEMA_FILE = os.path.dirname(__file__) + "/resources/schema_local/literature_curated.local.json"
-# SCHEMA_FILE = os.path.dirname(__file__) + "/resources/schema/literature_curated.json"
+
+SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/schema_local/literature_curated.local.json")
 
 
 class CTTVSomaticEvidenceString(CTTVEvidenceString):
