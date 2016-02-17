@@ -2,25 +2,25 @@
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
+import argparse
+import codecs
 import json
-import optparse
+import os
+import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-import xlrd
-import jsonschema
-import sys
-import os
-import codecs
-import argparse
 
+import jsonschema
+import xlrd
 # sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/lib")
 # print(os.path.dirname(os.path.dirname(__file__)) + "/lib")
 # print(os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/lib")
 
 # sys.path.append(os.path.dirname(os.path.dirname(__file__)) + "/lib")  # Adds eva_cttv_pipeline root dir to the
 #  PYTHONPATH
-from eva_cttv_pipeline import CTTVGeneticsEvidenceString, CTTVSomaticEvidenceString, EFOTerm, ClinvarRecord
+from eva_cttv_pipeline.eva_cttv_pipeline import EFOTerm, ClinvarRecord, CTTVGeneticsEvidenceString, \
+    CTTVSomaticEvidenceString
 
 BATCH_SIZE = 200
 # HOST = 'localhost:8080'
