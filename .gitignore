@@ -4,18 +4,19 @@
 /output
 /resources/change_json_ref.sh
 /resources/schema_local
-/bin/.python-version
+/eva_cttv_pipeline/bin/.python-version
 /eva_cttv_pipeline/py3
 /eva_cttv_pipeline/py2
-/bin/py3
-/bin/py2
+/eva_cttv_pipeline/bin/py3
+/eva_cttv_pipeline/bin/py2
 /nb_testing
 /eva_cttv_pipeline/.fuse_hidden00000d9900000001
 /req.txt
 /eva_cttv_pipeline.egg-info
 /build
-/dist
+/eva_cttv_pipeline/dist
 /venv
+/eva_cttv_pipeline/eva_cttv_pipeline.egg-info
 
 
 # General

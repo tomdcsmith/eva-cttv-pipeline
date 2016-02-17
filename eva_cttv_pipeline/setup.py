@@ -1,13 +1,6 @@
-from setuptools import setup, find_packages
-from setuptools.command.install import install
-import eva_cttv_pipeline.utilities as utilities
-import glob
-import shutil
-import errno
 import os
-import fnmatch
-import eva_cttv_pipeline.utilities
-from pathlib import Path
+
+from setuptools import setup, find_packages
 
 
 # def copy_and_overwrite(from_path, to_path):
@@ -48,8 +41,8 @@ from pathlib import Path
 
 def get_package_data():
     package_data = ['*.xls', 'variant_summary.txt']
-    for root, dirnames, filenames in os.walk('./eva_cttv_pipeline/resources/json_schema/src'):
-        root = root.replace("./eva_cttv_pipeline/resources/", "")
+    for root, dirnames, filenames in os.walk('./eva_cttv_pipeline/resources/json_schema'):
+        root = root.replace("./eva_cttv_pipeline/", "")
         for filename in filenames:
             new_fn = os.path.join(root, filename)
             package_data.append(new_fn)
@@ -66,7 +59,6 @@ setup(name='eva_cttv_pipeline',
           'xlrd'
       ],
       package_data={
-        'eva_cttv_pipeline.resources': get_package_data()
-      },
-      include_package_data=True
+        'eva_cttv_pipeline': get_package_data()
+      }
       )

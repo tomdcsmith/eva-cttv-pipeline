@@ -1,11 +1,11 @@
 __author__ = 'Javier Lopez: javild@gmail.com'
 
 import json
-import os
-import jsonschema
-from eva_cttv_pipeline.CTTVEvidenceString import CTTVEvidenceString
-import eva_cttv_pipeline.utilities as utilities
 
+import eva_cttv_pipeline.utilities as utilities
+import jsonschema
+
+from eva_cttv_pipeline.eva_cttv_pipeline.CTTVEvidenceString import CTTVEvidenceString
 
 # SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/schema_local/genetics.local.json")
 SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/json_schema/src/genetics.json")
