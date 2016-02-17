@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.install import install
 import eva_cttv_pipeline.utilities as utilities
 import glob
@@ -47,9 +47,9 @@ from pathlib import Path
 
 
 def get_package_data():
-    package_data = ['resources/*.xls', 'resources/variant_summary.txt', 'resources/json_schema']
+    package_data = ['*.xls', 'variant_summary.txt']
     for root, dirnames, filenames in os.walk('./eva_cttv_pipeline/resources/json_schema/src'):
-        root = root.replace("./eva_cttv_pipeline/", "")
+        root = root.replace("./eva_cttv_pipeline/resources/", "")
         for filename in filenames:
             new_fn = os.path.join(root, filename)
             package_data.append(new_fn)
@@ -58,7 +58,7 @@ def get_package_data():
 
 setup(name='eva_cttv_pipeline',
       version='0.1',
-      packages=['eva_cttv_pipeline'],
+      packages=find_packages(),
       install_requires=[
           'datetime',
           'jsonschema>=v2.5.0',
@@ -66,8 +66,7 @@ setup(name='eva_cttv_pipeline',
           'xlrd'
       ],
       package_data={
-        'eva_cttv_pipeline': [
-            'resources/json_schema/src/genetics.json'
-        ]
+        'eva_cttv_pipeline.resources': get_package_data()
       },
-      include_package_data=True)
+      include_package_data=True
+      )
