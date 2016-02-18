@@ -10,6 +10,7 @@
 /bin/py3
 /bin/py2
 /nb_testing
+/venv
 
 # General
 *.jar
