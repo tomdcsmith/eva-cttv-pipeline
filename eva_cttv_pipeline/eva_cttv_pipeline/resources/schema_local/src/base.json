@@ -37,15 +37,15 @@
     "target" : {
       "type": "object",
       "description" : "Target in CTTV's target ontology",
-      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/target.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/target.json"
     },
     "disease" : {
       "type": "object",
       "description" : "Disease in the EFO ontology",
-      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/disease.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/disease.json"
     }
   },
   "import_remote_schemas": [
-    { "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/base.json" }
+    { "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/base.json" }
   ]
 }

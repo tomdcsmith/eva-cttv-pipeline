@@ -3,7 +3,7 @@
     "id": "#pvalue",
     "allOf": [
         {
-            "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/base.json"
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/base.json"
         },
         {
             "properties": {
@@ -21,7 +21,7 @@
                 },
                 "method": {
                     "type": "object",
-                    "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/method.json"
+                    "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/method.json"
                 }
             }
         }
