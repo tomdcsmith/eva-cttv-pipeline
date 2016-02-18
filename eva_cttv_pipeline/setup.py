@@ -1,6 +1,6 @@
 import os
-
 from setuptools import setup, find_packages
+from setuptools.command.install import install as _install
 
 
 # def copy_and_overwrite(from_path, to_path):
@@ -39,8 +39,14 @@ from setuptools import setup, find_packages
 #         install.run(self)
 
 
+# class Install(_install):
+#     def run(self):
+#         # do stuff here
+#         _install.run(self)
+
+
 def get_package_data():
-    package_data = ['*.xls', 'variant_summary.txt']
+    package_data = ['resources/*.xls', 'resources/variant_summary.txt']
     for root, dirnames, filenames in os.walk('./eva_cttv_pipeline/resources/json_schema'):
         root = root.replace("./eva_cttv_pipeline/", "")
         for filename in filenames:

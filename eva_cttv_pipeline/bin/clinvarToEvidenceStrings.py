@@ -19,8 +19,7 @@ import xlrd
 
 # sys.path.append(os.path.dirname(os.path.dirname(__file__)) + "/lib")  # Adds eva_cttv_pipeline root dir to the
 #  PYTHONPATH
-from eva_cttv_pipeline.eva_cttv_pipeline import EFOTerm, ClinvarRecord, CTTVGeneticsEvidenceString, \
-    CTTVSomaticEvidenceString
+from eva_cttv_pipeline import EFOTerm, ClinvarRecord, CTTVGeneticsEvidenceString, CTTVSomaticEvidenceString
 
 BATCH_SIZE = 200
 # HOST = 'localhost:8080'
