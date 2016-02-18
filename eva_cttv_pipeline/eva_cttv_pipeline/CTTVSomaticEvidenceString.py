@@ -57,9 +57,6 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                                              'http://purl.obolibrary.org/obo/ECO_0000205'
                                          ],
                                          'known_mutations': [
-                                             {
-                                                 'functional_consequence': None
-                                             }
                                          ],
                                          'urls': [
                                              {
@@ -98,3 +95,12 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
     def setDate(self, dateString):
         self['evidence']['date_asserted'] = dateString
+
+    def add_known_mutation(self, so_accession):
+        new_functional_consequence = "http://purl.obolibrary.org/obo/" + so_accession.replace(':', '_')
+        new_known_mutation = {'preferred_name': '', 'functional_consequence': new_functional_consequence}
+        self['evidence']['known_mutations'].append(new_known_mutation)
+
+    def set_known_mutations(self, consequence_type):
+        for so_accession in consequence_type.getSoAccessions():
+            self.add_known_mutation(so_accession)

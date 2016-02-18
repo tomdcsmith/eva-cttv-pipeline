@@ -1,8 +1,8 @@
 __author__ = 'Javier Lopez: javild@gmail.com'
 
 
-class ConsequenceType:
-    class SoTerm:
+class ConsequenceType(object):
+    class SoTerm(object):
 
         soAccessionToNameDict = {}
         soAccessionToNameDict['transcript_ablation'] = 1893
