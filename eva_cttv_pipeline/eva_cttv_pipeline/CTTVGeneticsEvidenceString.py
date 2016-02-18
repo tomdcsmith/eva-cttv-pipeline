@@ -5,8 +5,8 @@ import eva_cttv_pipeline.utilities as utilities
 import jsonschema
 from eva_cttv_pipeline.CTTVEvidenceString import CTTVEvidenceString
 
-# SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/schema_local/genetics.local.json")
-SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/json_schema/src/genetics.json")
+SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/schema_local/src/genetics.json")
+# SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/json_schema/src/genetics.json")
 
 
 class CTTVGeneticsEvidenceString(CTTVEvidenceString):

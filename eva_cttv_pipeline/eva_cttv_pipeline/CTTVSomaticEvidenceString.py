@@ -7,8 +7,8 @@ import jsonschema
 
 from eva_cttv_pipeline.CTTVEvidenceString import CTTVEvidenceString
 
-# SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/schema_local/literature_curated.local.json")
-SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/json_schema/src/literature_curated.json")
+SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/schema_local/src/literature_curated.json")
+# SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/json_schema/src/literature_curated.json")
 
 
 class CTTVSomaticEvidenceString(CTTVEvidenceString):
@@ -16,7 +16,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
     def __init__(self):
 
-        CTTVEvidenceString.__init__(self,
+         CTTVEvidenceString.__init__(self,
                                     {'sourceID': 'eva_somatic',
                                      'validated_against_schema_version': '1.2.1',
                                      'type': 'somatic_mutation',
@@ -27,6 +27,9 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                                          'target_type': 'http://identifiers.org/cttv.target/gene_variant',
                                          'activity': None  # http://identifiers.org/cttv.activity/predicted_damaging
                                      },
+                                     'literature': [
+                                     ]
+                                     ,
                                      'evidence': {
                                          'resource_score': {
                                              'type': 'probability',
@@ -52,6 +55,11 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                                          'date_asserted': None,
                                          'evidence_codes': [
                                              'http://purl.obolibrary.org/obo/ECO_0000205'
+                                         ],
+                                         'known_mutations': [
+                                             {
+                                                 'functional_consequence': None
+                                             }
                                          ],
                                          'urls': [
                                              {

@@ -6,7 +6,7 @@
   "version": "1.2.1",
   "allOf": [
     {
-      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/base.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/base.json"
     },
     {
       "properties": {
@@ -33,7 +33,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/linkout/linkout.json"
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/linkout/linkout.json"
           }
         }
       }
@@ -59,22 +59,22 @@
   "additionalProperties": false,
   "import_remote_schemas": [
     {
-      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/method.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/method.json"
     },
     {
-      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/probability.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/probability.json"
     },
     {
-      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/summed_total.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/summed_total.json"
     },
     {
-      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/pvalue.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/pvalue.json"
     },
     {
-      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/rank.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/rank.json"
     },
     {
-      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/base.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/base.json"
     }
   ]  
 }

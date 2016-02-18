@@ -6,7 +6,7 @@
   "version": "1.2.1",
   "allOf": [
     {
-      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/base.json"
+      "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/base.json"
     },
     {
       "properties": {
@@ -35,7 +35,7 @@
           "description": "List of human phenotypes for this model",
           "items": {          
             "type": "object",
-            "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/phenotype.json"
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/phenotype.json"
           },
           "minItems": 1
         },
@@ -44,7 +44,7 @@
           "description": "List of biomodel phenotypes for this model",
           "items": {          
             "type": "object",
-            "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/phenotype.json"
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/phenotype.json"
           },
           "minItems": 1
         },
@@ -52,7 +52,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/linkout/linkout.json"
+            "$ref": "file:///home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/linkout/linkout.json"
           }
         }
       }
