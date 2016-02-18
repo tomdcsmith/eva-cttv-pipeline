@@ -11,7 +11,7 @@ from datetime import datetime
 
 import xlrd
 
-import eva_cttv_pipeline.eva_cttv_pipeline.utilities as utilities
+import eva_cttv_pipeline.utilities as utilities
 from eva_cttv_pipeline import ConsequenceType
 
 CTMAPPINGFILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/eva_cttv_snp2gene_mapping_20150512.xls")
