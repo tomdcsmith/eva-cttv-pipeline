@@ -178,7 +178,8 @@ def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTer
                                                                                                                traitCounter,
                                                                                                                traitRefsList,
                                                                                                                traits,
-                                                                                                               unrecognizedClinicalSignificances)
+                                                                                                               unrecognizedClinicalSignificances,
+                                                                                                               consequenceType)
                                             nEvidenceStringsPerRecord = addEvidenceString(clinvarRecord, evidenceString,
                                                                                           evidenceStringList,
                                                                                           nEvidenceStringsPerRecord)
@@ -331,7 +332,7 @@ def getCTTVGeneticsEvidenceString(EFOList, clinicalSignificance, clinicalSignifi
 def getCTTVSomaticEvidenceString(EFOList, clinicalSignificance, clinicalSignificance2Activity, clinvarRecord,
                                  ensemblGeneId, ensemblGeneIdUri, ensemblGeneIdUris, measureSetRefsList,
                                  nMoreThanOneEfoTerm, observedRefsList, traitCounter, traitRefsList, traits,
-                                 unrecognizedClinicalSignificances):
+                                 unrecognizedClinicalSignificances, consequenceType):
     evidenceString = CTTVSomaticEvidenceString.CTTVSomaticEvidenceString()
     evidenceString.addUniqueAssociationField('gene', ensemblGeneId)
     evidenceString.addUniqueAssociationField('clinvarAccession', clinvarRecord.getAcc())
@@ -348,6 +349,8 @@ def getCTTVSomaticEvidenceString(EFOList, clinicalSignificance, clinicalSignific
     evidenceString.setAssociation(
         clinicalSignificance != 'non-pathogenic' and clinicalSignificance != 'probable-non-pathogenic'
         and clinicalSignificance != 'likely benign' and clinicalSignificance != 'benign')
+
+    evidenceString.set_known_mutations(consequenceType)
 
     referenceList = list(set(traitRefsList[traitCounter] + observedRefsList + measureSetRefsList))
     if len(referenceList) > 0:
