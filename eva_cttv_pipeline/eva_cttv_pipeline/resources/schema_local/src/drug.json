@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Drug-based evidence strings",
+  "description": "Schema for target-disease evidence where there is drug knowledge",
+  "type": "object",
+  "version": "1.2.1",
+  "allOf": [
+    {
+      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/base.json"
+    },
+    {
+      "properties": {
+        "type": {
+          "type" : "string",
+          "enum": [
+            "known_drug"
+          ]
+        },
+        "drug": {
+          "type": "object",
+          "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/drug.json"
+        },
+        "evidence": {
+          "type": "object",
+          "properties": {
+            "target2drug": {
+              "type": "object",
+              "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/drug/target2drug.json"
+            },
+            "drug2clinic": {
+              "type": "object",
+              "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/drug/drug2clinic.json"
+            }
+          },
+          "required": [
+            "target2drug",
+            "drug2clinic"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  ],
+  "properties": {
+    "type": {},
+    "sourceID": {},
+    "validated_against_schema_version": {},
+    "unique_association_fields": {},
+    "target": {},
+    "disease": {},
+    "access_level" :{},
+    "evidence": {},
+    "drug": {}
+  },
+  "required": [
+    "type",
+    "access_level",
+    "sourceID",
+    "validated_against_schema_version",
+    "unique_association_fields",
+    "target",
+    "drug",
+    "disease",
+    "evidence"
+  ],
+  "additionalProperties": false,
+  "import_remote_schemas": [
+    {
+      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/base.json"
+    },
+    {
+      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/method.json"
+    },
+    {
+      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/probability.json"
+    },
+    {
+      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/pvalue.json"
+    },
+    {
+      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/rank.json"
+    },
+    {
+      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/summed_total.json"
+    },
+    {
+      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/linkout/linkout.json"
+    },
+    {
+      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/base.json"
+    },
+    {
+      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/disease.json"
+    },
+    {
+      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/bioentity/target.json"
+    },
+    {
+      "$ref" : "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/drug/diseasephase.json"      
+    },
+    {
+      "$ref": "/home/tom/Job_Working_Directory/Python/eva_cttv_pipeline/eva_cttv_pipeline/eva_cttv_pipeline/resources/json_schema/master/src/evidence/association_score/base.json"
+    }
+  ]
+}
