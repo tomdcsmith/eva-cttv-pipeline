@@ -15,7 +15,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
     def __init__(self):
         CTTVEvidenceString.__init__(self,
                                     {'sourceID': 'eva',
-                                     'validated_against_schema_version': '1.2.1',
+                                     'validated_against_schema_version': '1.2.2',
                                      'type': 'genetic_association',
                                      'access_level': 'public',
                                      'unique_association_fields': {},

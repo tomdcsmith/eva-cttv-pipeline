@@ -20,6 +20,9 @@
 /eva_cttv_pipeline/build
 /venv
 /eva_cttv_pipeline/eva_cttv_pipeline.egg-info
+/eva_cttv_pipeline/eva_cttv_pipeline/resources/copy_schema_files.sh
+
+/eva_cttv_pipeline/eva_cttv_pipeline/resources/schema_local
 
 
 # General

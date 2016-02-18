@@ -18,7 +18,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
          CTTVEvidenceString.__init__(self,
                                     {'sourceID': 'eva_somatic',
-                                     'validated_against_schema_version': '1.2.1',
+                                     'validated_against_schema_version': '1.2.2',
                                      'type': 'somatic_mutation',
                                      'access_level': 'public',
                                      'unique_association_fields': {},
