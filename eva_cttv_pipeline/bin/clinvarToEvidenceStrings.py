@@ -319,6 +319,7 @@ def getCTTVGeneticsEvidenceString(EFOList, clinicalSignificance, clinicalSignifi
         evidenceString.setVariant2DiseaseLiterature(referenceList)
         # Arbitrarily select only one reference among all
         evidenceString.setUniqueReference(referenceList[0])
+        evidenceString.set_top_level_literature(referenceList)
     EFOList.sort()
     # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
     evidenceString.setDisease(EFOList[0])
@@ -354,7 +355,8 @@ def getCTTVSomaticEvidenceString(EFOList, clinicalSignificance, clinicalSignific
 
     referenceList = list(set(traitRefsList[traitCounter] + observedRefsList + measureSetRefsList))
     if len(referenceList) > 0:
-        evidenceString.setLiterature(referenceList)
+        evidenceString.set_evidence_literature(referenceList)
+        evidenceString.set_top_level_literature(referenceList)
 
     EFOList.sort()
     # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints

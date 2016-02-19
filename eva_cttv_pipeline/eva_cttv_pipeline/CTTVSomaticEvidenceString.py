@@ -77,7 +77,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
     def setUrl(self, url):
         self['evidence']['urls'][0]['url'] = url
 
-    def setLiterature(self, referenceList):
+    def set_evidence_literature(self, referenceList):
         if 'literature' not in self['evidence']['provenance_type']:
             self['evidence']['provenance_type']['literature'] = {
                 'references': [{'lit_id': reference} for reference in referenceList]}
@@ -96,7 +96,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
         self['evidence']['date_asserted'] = dateString
 
     def add_known_mutation(self, new_functional_consequence):
-        new_known_mutation = {'preferred_name': '', 'functional_consequence': new_functional_consequence}
+        new_known_mutation = {'functional_consequence': new_functional_consequence}
         self['evidence']['known_mutations'].append(new_known_mutation)
 
     def set_known_mutations(self, consequence_type):

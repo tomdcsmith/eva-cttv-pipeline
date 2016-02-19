@@ -1,3 +1,6 @@
+import sys
+import traceback
+
 __author__ = 'Javier Lopez: javild@gmail.com'
 
 import json
@@ -130,7 +133,13 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         self['evidence']['variant2disease']['is_associated'] = isAssociated
 
     def validate(self):
+        # try:
         jsonschema.validate(self, CTTVGeneticsEvidenceString.schema, format_checker=jsonschema.FormatChecker())
+        # except Exception as e:
+        #     print(str(self))
+        #     print(e)
+        #     traceback.print_stack()
+        #     sys.exit()
         self.getDisease().isObsolete()
 
     def setVariant(self, id, type):

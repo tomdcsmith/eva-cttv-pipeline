@@ -35,3 +35,9 @@ class CTTVEvidenceString(dict):
 
     def getEvidenceCodes(self):
         return self['evidence']['evidence_codes']
+
+    def set_top_level_literature(self, reference_list):
+        if 'literature' not in self:
+            self['literature'] = {'references': [{'lit_id': reference} for reference in reference_list]}
+        else:
+            self['literature']['references'] = [{'lit_id': reference} for reference in reference_list]
