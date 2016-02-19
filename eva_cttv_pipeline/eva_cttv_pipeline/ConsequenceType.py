@@ -121,3 +121,6 @@ class ConsequenceType(object):
 
     def getMostSevereSo(self):
         return min(list(self._soTerms), key=lambda x: x.getRank())
+
+    def get_so_terms(self):
+        return self._soTerms

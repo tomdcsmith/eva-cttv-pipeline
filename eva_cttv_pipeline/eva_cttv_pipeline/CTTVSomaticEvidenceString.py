@@ -1,3 +1,5 @@
+import sys
+
 __author__ = 'Javier Lopez: javild@gmail.com'
 
 import json
@@ -27,9 +29,6 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                                          'target_type': 'http://identifiers.org/cttv.target/gene_variant',
                                          'activity': None  # http://identifiers.org/cttv.activity/predicted_damaging
                                      },
-                                     'literature': [
-                                     ]
-                                     ,
                                      'evidence': {
                                          'resource_score': {
                                              'type': 'probability',
@@ -96,11 +95,14 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
     def setDate(self, dateString):
         self['evidence']['date_asserted'] = dateString
 
-    def add_known_mutation(self, so_accession):
-        new_functional_consequence = "http://purl.obolibrary.org/obo/" + so_accession.replace(':', '_')
+    def add_known_mutation(self, new_functional_consequence):
         new_known_mutation = {'preferred_name': '', 'functional_consequence': new_functional_consequence}
         self['evidence']['known_mutations'].append(new_known_mutation)
 
     def set_known_mutations(self, consequence_type):
-        for so_accession in consequence_type.getSoAccessions():
-            self.add_known_mutation(so_accession)
+        for so_term in consequence_type.get_so_terms():
+            if so_term.getAccession():
+                new_functional_consequence = "http://purl.obolibrary.org/obo/" + so_term.getAccession().replace(':', '_')
+            else:
+                new_functional_consequence = 'http://targetvalidation.org/sequence/' + so_term.getName()
+            self.add_known_mutation(new_functional_consequence)
