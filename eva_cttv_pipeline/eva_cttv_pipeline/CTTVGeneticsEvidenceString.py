@@ -1,14 +1,14 @@
-import sys
-import traceback
-
-__author__ = 'Javier Lopez: javild@gmail.com'
-
 import json
 import eva_cttv_pipeline.utilities as utilities
 import jsonschema
 from eva_cttv_pipeline.CTTVEvidenceString import CTTVEvidenceString
+import eva_cttv_pipeline.config as config
 
-SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/schema_local/src/genetics.json")
+__author__ = 'Javier Lopez: javild@gmail.com'
+
+
+utilities.check_for_local_schema()
+SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/" + config.local_schema + "/src/genetics.json")
 # SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/json_schema/src/genetics.json")
 
 
@@ -140,7 +140,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         #     print(e)
         #     traceback.print_stack()
         #     sys.exit()
-        self.getDisease().isObsolete()
+        self.get_disease().isObsolete()
 
     def setVariant(self, id, type):
         self['variant']['id'].append(id)

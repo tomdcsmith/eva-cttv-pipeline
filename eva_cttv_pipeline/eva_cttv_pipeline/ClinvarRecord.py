@@ -1,5 +1,3 @@
-__author__ = 'Javier Lopez: javild@gmail.com'
-
 import http.client
 import json
 import sys
@@ -8,11 +6,11 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime
-
 import xlrd
-
 import eva_cttv_pipeline.utilities as utilities
 from eva_cttv_pipeline import ConsequenceType
+
+__author__ = 'Javier Lopez: javild@gmail.com'
 
 CTMAPPINGFILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/eva_cttv_snp2gene_mapping_20150512.xls")
 RCVTORSFILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/variant_summary.txt")
