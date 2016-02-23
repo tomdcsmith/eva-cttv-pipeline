@@ -1,15 +1,14 @@
-import sys
+import json
+import eva_cttv_pipeline.utilities as utilities
+import jsonschema
+from eva_cttv_pipeline.CTTVEvidenceString import CTTVEvidenceString
+import eva_cttv_pipeline.config as config
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
-import json
 
-import eva_cttv_pipeline.utilities as utilities
-import jsonschema
-
-from eva_cttv_pipeline.CTTVEvidenceString import CTTVEvidenceString
-
-SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/schema_local/src/literature_curated.json")
+utilities.check_for_local_schema()
+SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/" + config.local_schema + "/src/literature_curated.json")
 # SCHEMA_FILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/json_schema/src/literature_curated.json")
 
 

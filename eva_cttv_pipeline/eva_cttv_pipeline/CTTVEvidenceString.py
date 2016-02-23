@@ -1,6 +1,6 @@
-__author__ = 'Javier Lopez: javild@gmail.com'
-
 from eva_cttv_pipeline import EFOTerm
+
+__author__ = 'Javier Lopez: javild@gmail.com'
 
 
 class CTTVEvidenceString(dict):
@@ -27,7 +27,7 @@ class CTTVEvidenceString(dict):
     def setDisease(self, id):
         self['disease']['id'].append(id)
 
-    def getDisease(self):
+    def get_disease(self):
         return EFOTerm.EFOTerm(self['disease']['id'][0])
 
     def setEvidenceCodes(self, evidenceCodeList):

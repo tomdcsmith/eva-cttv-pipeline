@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-__author__ = 'Javier Lopez: javild@gmail.com'
-
 import argparse
 import codecs
 import json
@@ -10,16 +8,18 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-
 import jsonschema
 import xlrd
+from eva_cttv_pipeline import EFOTerm, ClinvarRecord, CTTVGeneticsEvidenceString, CTTVSomaticEvidenceString, utilities
+
+__author__ = 'Javier Lopez: javild@gmail.com'
+
 # sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/lib")
 # print(os.path.dirname(os.path.dirname(__file__)) + "/lib")
 # print(os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/lib")
 
 # sys.path.append(os.path.dirname(os.path.dirname(__file__)) + "/lib")  # Adds eva_cttv_pipeline root dir to the
 #  PYTHONPATH
-from eva_cttv_pipeline import EFOTerm, ClinvarRecord, CTTVGeneticsEvidenceString, CTTVSomaticEvidenceString
 
 BATCH_SIZE = 200
 # HOST = 'localhost:8080'
@@ -381,7 +381,7 @@ def addEvidenceString(clinvarRecord, evidenceString, evidenceStringList, nEviden
         sys.exit(1)
     except EFOTerm.EFOTerm.IsObsoleteException as err:
         print('Error: obsolete EFO term.')
-        print('Term: ' + evidenceString.getDisease().getId())
+        print('Term: ' + evidenceString.get_disease().getId())
         print(err)
         print(json.dumps(evidenceString))
         sys.exit(1)
@@ -537,6 +537,8 @@ class ArgParser(object):
 
 def main():
     parser = ArgParser(sys.argv)
+
+    utilities.check_for_local_schema()
 
     # call core function
     if parser.clinSig is None:

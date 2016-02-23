@@ -33,6 +33,9 @@
 *.so.*
 *.out
 *.log
+/eva_cttv_pipeline/eva_cttv_pipeline/resources/rs_ids_2015_05_sortuniq.txt
+/eva_cttv_pipeline/eva_cttv_pipeline/resources/variant_summary_2015-05.txt.gz
+/eva_cttv_pipeline/eva_cttv_pipeline/resources/rs_ids_2015_05.txt
 sonar-project.properties
 
 # Maven
