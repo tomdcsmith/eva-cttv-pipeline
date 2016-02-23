@@ -10,7 +10,7 @@ import urllib.parse
 import urllib.request
 import jsonschema
 import xlrd
-from eva_cttv_pipeline import EFOTerm, ClinvarRecord, CTTVGeneticsEvidenceString, CTTVSomaticEvidenceString, utilities
+from eva_cttv_pipeline import EFOTerm, ClinvarRecord, evidence_strings, utilities
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
@@ -288,7 +288,7 @@ def getCTTVGeneticsEvidenceString(EFOList, clinicalSignificance, clinicalSignifi
                                   measureSetRefsList, nMoreThanOneEfoTerm, observedRefsList, rcvToGeneEvidenceCodes,
                                   record, rs, traitCounter, traitRefsList, traits,
                                   unrecognizedClinicalSignificances):
-    evidenceString = CTTVGeneticsEvidenceString.CTTVGeneticsEvidenceString()
+    evidenceString = evidence_strings.CTTVGeneticsEvidenceString()
     evidenceString.addUniqueAssociationField('gene', ensemblGeneId)
     evidenceString.addUniqueAssociationField('clinvarAccession', clinvarRecord.getAcc())
     evidenceString.addUniqueAssociationField('alleleOrigin', 'germline')
@@ -334,7 +334,7 @@ def getCTTVSomaticEvidenceString(EFOList, clinicalSignificance, clinicalSignific
                                  ensemblGeneId, ensemblGeneIdUri, ensemblGeneIdUris, measureSetRefsList,
                                  nMoreThanOneEfoTerm, observedRefsList, traitCounter, traitRefsList, traits,
                                  unrecognizedClinicalSignificances, consequenceType):
-    evidenceString = CTTVSomaticEvidenceString.CTTVSomaticEvidenceString()
+    evidenceString = evidence_strings.CTTVSomaticEvidenceString()
     evidenceString.addUniqueAssociationField('gene', ensemblGeneId)
     evidenceString.addUniqueAssociationField('clinvarAccession', clinvarRecord.getAcc())
     evidenceString.addUniqueAssociationField('alleleOrigin', 'somatic')
