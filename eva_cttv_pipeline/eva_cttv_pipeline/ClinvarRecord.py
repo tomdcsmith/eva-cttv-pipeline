@@ -12,18 +12,20 @@ from eva_cttv_pipeline import ConsequenceType
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
-CTMAPPINGFILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/eva_cttv_snp2gene_mapping_20150512.xls")
-RCVTORSFILE = utilities.get_resource_file("eva_cttv_pipeline", "resources/variant_summary.txt")
+CTMAPPINGFILE = utilities.get_resource_file(__package__, "resources/eva_cttv_snp2gene_mapping_20150512.xls")
+RCVTORSFILE = utilities.get_resource_file(__package__, "resources/variant_summary.txt")
 
 
-class ClinvarRecord(dict):
-    cachedSymbol2Ensembl = {}
+def _process_con_type_file():
+
     oneRsMultipleGenes = set()
+    consequenceTypeDict = {}
 
-    print('Loading mappintg rs->ENSG/SOterms ')
+
+    print('Loading mappintg rs->ENSG/SOterms')
+
     CTMappingReadBook = xlrd.open_workbook(CTMAPPINGFILE, formatting_info=True)
     CTMappingReadSheet = CTMappingReadBook.sheet_by_index(0)
-    consequenceTypeDict = {}
     for i in range(1, CTMappingReadSheet.nrows):
         if CTMappingReadSheet.cell_value(rowx=i, colx=2) != 'Not found':
             ensemblGeneId = CTMappingReadSheet.cell_value(rowx=i, colx=2)
@@ -46,6 +48,14 @@ class ClinvarRecord(dict):
     print(str(len(consequenceTypeDict)) + ' rs->ENSG/SOterms mappings loaded')
     print(str(len(oneRsMultipleGenes)) + ' rsIds with multiple gene associations')
     print(' Done.')
+
+    return consequenceTypeDict
+
+
+class ClinvarRecord(dict):
+    cachedSymbol2Ensembl = {}
+
+    consequenceTypeDict = _process_con_type_file()
 
     print('Loading mapping RCV->rs/nsv')
     rcvToRs = {}
