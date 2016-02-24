@@ -8,46 +8,85 @@ import urllib.request
 from datetime import datetime
 import xlrd
 import eva_cttv_pipeline.utilities as utilities
+import eva_cttv_pipeline.config as config
 from eva_cttv_pipeline import ConsequenceType
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
-CTMAPPINGFILE = utilities.get_resource_file(__package__, "resources/eva_cttv_snp2gene_mapping_20150512.xls")
-RCVTORSFILE = utilities.get_resource_file(__package__, "resources/variant_summary.txt")
+CTMAPPINGFILE = utilities.get_resource_file(__package__, config.con_type_file)
+RCVTORSFILE = utilities.get_resource_file(__package__, config.variant_summary)
 
 
-def _process_con_type_file():
+def _process_con_type_file_xls():
 
     oneRsMultipleGenes = set()
     consequenceTypeDict = {}
-
-
-    print('Loading mappintg rs->ENSG/SOterms')
 
     CTMappingReadBook = xlrd.open_workbook(CTMAPPINGFILE, formatting_info=True)
     CTMappingReadSheet = CTMappingReadBook.sheet_by_index(0)
     for i in range(1, CTMappingReadSheet.nrows):
         if CTMappingReadSheet.cell_value(rowx=i, colx=2) != 'Not found':
+
+            rs_id = CTMappingReadSheet.cell_value(rowx=i, colx=0)
             ensemblGeneId = CTMappingReadSheet.cell_value(rowx=i, colx=2)
-            if CTMappingReadSheet.cell_value(rowx=i, colx=0) in consequenceTypeDict:
-                if ensemblGeneId != consequenceTypeDict[
-                    CTMappingReadSheet.cell_value(rowx=i, colx=0)].getEnsemblGeneId():
+            so_term = CTMappingReadSheet.cell_value(rowx=i, colx=1)
+
+            if rs_id in consequenceTypeDict:
+                if ensemblGeneId != consequenceTypeDict[rs_id].getEnsemblGeneId():
                     print('WARNING (ClinvarRecord.py): different genes and annotations found for a given gene.')
-                    print(' Variant id: ' + CTMappingReadSheet.cell_value(rowx=i,
-                                                                          colx=0) + ', ENSG: ' + CTMappingReadSheet.cell_value(
-                        rowx=i, colx=1) + ', ENSG: ' + consequenceTypeDict[
-                              CTMappingReadSheet.cell_value(rowx=i, colx=0)].getEnsemblGeneId())
+                    print(' Variant id: ' + rs_id + ', ENSG: ' + so_term + ', ENSG: ' + consequenceTypeDict[rs_id].getEnsemblGeneId())
                     print('Skipping')
-                    oneRsMultipleGenes.add(CTMappingReadSheet.cell_value(rowx=i, colx=0))
+                    oneRsMultipleGenes.add(rs_id)
                 else:
-                    consequenceTypeDict[CTMappingReadSheet.cell_value(rowx=i, colx=0)].addSoTerm(
-                        CTMappingReadSheet.cell_value(rowx=i, colx=1))
+                    consequenceTypeDict[rs_id].addSoTerm(so_term)
             else:
-                consequenceTypeDict[CTMappingReadSheet.cell_value(rowx=i, colx=0)] = ConsequenceType.ConsequenceType(
-                    CTMappingReadSheet.cell_value(rowx=i, colx=2), [CTMappingReadSheet.cell_value(rowx=i, colx=1)])
+                consequenceTypeDict[rs_id] = ConsequenceType.ConsequenceType(ensemblGeneId, [so_term])
+
+    return oneRsMultipleGenes, consequenceTypeDict
+
+
+def _process_con_type_file_tsv():
+    oneRsMultipleGenes = set()
+    consequenceTypeDict = {}
+
+    with open(CTMAPPINGFILE, "rt") as f:
+        for line in f:
+            line = line.rstrip()
+            line_list = line.split("\t")
+
+            rs_id = line_list[0]
+            ensembl_gene_id = line_list[2]
+            if not ensembl_gene_id:
+                continue
+            gene_symbol = line_list[3]
+            so_term = line_list[4]
+
+            if rs_id in consequenceTypeDict:
+                if ensembl_gene_id != consequenceTypeDict[rs_id].getEnsemblGeneId():
+                    print('WARNING (ClinvarRecord.py): different genes and annotations found for a given gene.')
+                    print('Variant id: ' + rs_id + ', ENSG: ' + ensembl_gene_id + ', ENSG: ' + consequenceTypeDict[rs_id].getEnsemblGeneId())
+                    print('Skipping')
+                    oneRsMultipleGenes.add(rs_id)
+                else:
+                    consequenceTypeDict[rs_id].addSoTerm(so_term)
+            else:
+                consequenceTypeDict[rs_id] = ConsequenceType.ConsequenceType(ensembl_gene_id, [so_term])
+
+    return oneRsMultipleGenes, consequenceTypeDict
+
+
+def _process_con_type_file():
+
+    print('Loading mappintg rs->ENSG/SOterms')
+
+    if config.con_type_file.endswith(".xls"):
+        oneRsMultipleGenes, consequenceTypeDict = _process_con_type_file_xls()
+    else:
+        oneRsMultipleGenes, consequenceTypeDict = _process_con_type_file_tsv()
+
     print(str(len(consequenceTypeDict)) + ' rs->ENSG/SOterms mappings loaded')
     print(str(len(oneRsMultipleGenes)) + ' rsIds with multiple gene associations')
-    print(' Done.')
+    print('Done.')
 
     return consequenceTypeDict
 
