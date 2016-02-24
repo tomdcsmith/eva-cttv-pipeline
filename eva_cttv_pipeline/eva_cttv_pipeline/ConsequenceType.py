@@ -98,8 +98,11 @@ class ConsequenceType(object):
         def __hash__(self):
             return hash(self._soAccession)
 
-    def __init__(self, ensemblGeneId=None, soNames=None):
-        self._ensemblGeneId = ensemblGeneId
+    def __init__(self, ensembl_gene_ids=None, soNames=None):
+        if ensembl_gene_ids:
+            self._ensembl_gene_ids = set(ensembl_gene_ids)
+        else:
+            self._ensembl_gene_ids = set()
         self._ensemblTranscriptId = None
 
         if soNames is not None:
@@ -107,8 +110,11 @@ class ConsequenceType(object):
         else:
             self._soTerms = None
 
-    def getEnsemblGeneId(self):
-        return self._ensemblGeneId
+    # def getEnsemblGeneId(self):
+    #     return self._ensemblGeneId
+
+    def get_ensembl_gene_ids(self):
+        return self._ensembl_gene_ids
 
     def addSoTerm(self, soName):
         if self._soTerms is None:
@@ -124,3 +130,6 @@ class ConsequenceType(object):
 
     def get_so_terms(self):
         return self._soTerms
+
+    def add_ensembl_gene_id(self, new_ensembl_gene_id):
+        self._ensembl_gene_ids.add(new_ensembl_gene_id)
