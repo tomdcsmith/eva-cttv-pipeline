@@ -115,89 +115,90 @@ def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTer
                         consequenceType = clinvarRecord.getMainConsequenceTypes()
                         # Mapping rs->Gene was found at Mick's file and therefore ensemblGeneId will never be None
                         if consequenceType is not None:
-                            rcvToGeneEvidenceCodes = ['http://identifiers.org/eco/cttv_mapping_pipeline']  # Evidence codes provided by Mick
-                            ensemblGeneIdUri = 'http://identifiers.org/ensembl/' + consequenceType.getEnsemblGeneId()
-                            ensemblGeneId = consequenceType.getEnsemblGeneId()
 
-                            traitRefsList = [['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList] for refList in clinvarRecord.getTraitPubmedrefs()]
-                            observedRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.getObservedPubmedrefs()]
-                            measureSetRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.getMeasureSetPubmedrefs()]
-                            for traitCounter, traitList in enumerate(clinvarRecord.getTraits()):
-                                clinvarTraitList, EFOList = mapEFO(trait2EFO, traitList)
-                                # Only ClinVar records associated to a trait with mapped EFO term will generate evidence_strings
-                                if len(EFOList) > 0:
-                                    clinvaRecordAlleleOrigins = clinvarRecord.getAlleleOrigins()
-                                    nMultipleAlleleOrigin += (len(clinvaRecordAlleleOrigins) > 1)
-                                    nGermlineSomatic += (('germline' in clinvaRecordAlleleOrigins) and (
-                                    'somatic' in clinvaRecordAlleleOrigins))
-                                    nRecordsWoRecognizedAlleleOrigin += (
-                                    ('germline' not in clinvaRecordAlleleOrigins) and (
-                                    'somatic' not in clinvaRecordAlleleOrigins))
-                                    for alleleOriginCounter, alleleOrigin in enumerate(clinvaRecordAlleleOrigins):
-                                        if alleleOrigin == 'germline':
-                                            evidenceString, nMoreThanOneEfoTerm = getCTTVGeneticsEvidenceString(EFOList,
-                                                                                                                clinicalSignificance,
-                                                                                                                clinicalSignificance2Activity,
-                                                                                                                clinvarRecord,
-                                                                                                                consequenceType,
-                                                                                                                ensemblGeneId,
-                                                                                                                ensemblGeneIdUri,
-                                                                                                                ensemblGeneIdUris,
-                                                                                                                measureSetRefsList,
-                                                                                                                nMoreThanOneEfoTerm,
-                                                                                                                observedRefsList,
-                                                                                                                rcvToGeneEvidenceCodes,
-                                                                                                                record,
-                                                                                                                rs,
-                                                                                                                traitCounter,
-                                                                                                                traitRefsList,
-                                                                                                                traits,
-                                                                                                                unrecognizedClinicalSignificances)
-                                            nEvidenceStringsPerRecord = addEvidenceString(clinvarRecord, evidenceString,
-                                                                                          evidenceStringList,
-                                                                                          nEvidenceStringsPerRecord)
-                                            evidenceList.append(
-                                                [clinvarRecord.getAcc(), rs, ','.join(clinvarTraitList),
-                                                 ','.join(EFOList)])
-                                            nValidRsAndNsv += (clinvarRecord.getNsv() is not None)
-                                        elif alleleOrigin == 'somatic':
-                                            evidenceString, nMoreThanOneEfoTerm = getCTTVSomaticEvidenceString(EFOList,
-                                                                                                               clinicalSignificance,
-                                                                                                               clinicalSignificance2Activity,
-                                                                                                               clinvarRecord,
-                                                                                                               ensemblGeneId,
-                                                                                                               ensemblGeneIdUri,
-                                                                                                               ensemblGeneIdUris,
-                                                                                                               measureSetRefsList,
-                                                                                                               nMoreThanOneEfoTerm,
-                                                                                                               observedRefsList,
-                                                                                                               traitCounter,
-                                                                                                               traitRefsList,
-                                                                                                               traits,
-                                                                                                               unrecognizedClinicalSignificances,
-                                                                                                               consequenceType)
-                                            nEvidenceStringsPerRecord = addEvidenceString(clinvarRecord, evidenceString,
-                                                                                          evidenceStringList,
-                                                                                          nEvidenceStringsPerRecord)
-                                            evidenceList.append(
-                                                [clinvarRecord.getAcc(), rs, ','.join(clinvarTraitList),
-                                                 ','.join(EFOList)])
-                                            nValidRsAndNsv += (clinvarRecord.getNsv() is not None)
-                                        elif alleleOrigin not in nUnrecognizedAlleleOrigin:
-                                            nUnrecognizedAlleleOrigin[alleleOrigin] = 1
-                                        else:
-                                            nUnrecognizedAlleleOrigin[alleleOrigin] += 1
-                                else:
-                                    nMissedStringsUnmappedTraits += 1
-                                    if traitList[0] in unmappedTraits:
-                                        unmappedTraits[traitList[0]] += 1
+                            for ensemblGeneId in consequenceType.get_ensembl_gene_ids():
+
+                                rcvToGeneEvidenceCodes = ['http://identifiers.org/eco/cttv_mapping_pipeline']  # Evidence codes provided by Mick
+                                ensemblGeneIdUri = 'http://identifiers.org/ensembl/' + ensemblGeneId
+                                traitRefsList = [['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList] for refList in clinvarRecord.getTraitPubmedrefs()]
+                                observedRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.getObservedPubmedrefs()]
+                                measureSetRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.getMeasureSetPubmedrefs()]
+                                for traitCounter, traitList in enumerate(clinvarRecord.getTraits()):
+                                    clinvarTraitList, EFOList = mapEFO(trait2EFO, traitList)
+                                    # Only ClinVar records associated to a trait with mapped EFO term will generate evidence_strings
+                                    if len(EFOList) > 0:
+                                        clinvaRecordAlleleOrigins = clinvarRecord.getAlleleOrigins()
+                                        nMultipleAlleleOrigin += (len(clinvaRecordAlleleOrigins) > 1)
+                                        nGermlineSomatic += (('germline' in clinvaRecordAlleleOrigins) and (
+                                        'somatic' in clinvaRecordAlleleOrigins))
+                                        nRecordsWoRecognizedAlleleOrigin += (
+                                        ('germline' not in clinvaRecordAlleleOrigins) and (
+                                        'somatic' not in clinvaRecordAlleleOrigins))
+                                        for alleleOriginCounter, alleleOrigin in enumerate(clinvaRecordAlleleOrigins):
+                                            if alleleOrigin == 'germline':
+                                                evidenceString, nMoreThanOneEfoTerm = getCTTVGeneticsEvidenceString(EFOList,
+                                                                                                                    clinicalSignificance,
+                                                                                                                    clinicalSignificance2Activity,
+                                                                                                                    clinvarRecord,
+                                                                                                                    consequenceType,
+                                                                                                                    ensemblGeneId,
+                                                                                                                    ensemblGeneIdUri,
+                                                                                                                    ensemblGeneIdUris,
+                                                                                                                    measureSetRefsList,
+                                                                                                                    nMoreThanOneEfoTerm,
+                                                                                                                    observedRefsList,
+                                                                                                                    rcvToGeneEvidenceCodes,
+                                                                                                                    record,
+                                                                                                                    rs,
+                                                                                                                    traitCounter,
+                                                                                                                    traitRefsList,
+                                                                                                                    traits,
+                                                                                                                    unrecognizedClinicalSignificances)
+                                                nEvidenceStringsPerRecord = addEvidenceString(clinvarRecord, evidenceString,
+                                                                                              evidenceStringList,
+                                                                                              nEvidenceStringsPerRecord)
+                                                evidenceList.append(
+                                                    [clinvarRecord.getAcc(), rs, ','.join(clinvarTraitList),
+                                                     ','.join(EFOList)])
+                                                nValidRsAndNsv += (clinvarRecord.getNsv() is not None)
+                                            elif alleleOrigin == 'somatic':
+                                                evidenceString, nMoreThanOneEfoTerm = getCTTVSomaticEvidenceString(EFOList,
+                                                                                                                   clinicalSignificance,
+                                                                                                                   clinicalSignificance2Activity,
+                                                                                                                   clinvarRecord,
+                                                                                                                   ensemblGeneId,
+                                                                                                                   ensemblGeneIdUri,
+                                                                                                                   ensemblGeneIdUris,
+                                                                                                                   measureSetRefsList,
+                                                                                                                   nMoreThanOneEfoTerm,
+                                                                                                                   observedRefsList,
+                                                                                                                   traitCounter,
+                                                                                                                   traitRefsList,
+                                                                                                                   traits,
+                                                                                                                   unrecognizedClinicalSignificances,
+                                                                                                                   consequenceType)
+                                                nEvidenceStringsPerRecord = addEvidenceString(clinvarRecord, evidenceString,
+                                                                                              evidenceStringList,
+                                                                                              nEvidenceStringsPerRecord)
+                                                evidenceList.append(
+                                                    [clinvarRecord.getAcc(), rs, ','.join(clinvarTraitList),
+                                                     ','.join(EFOList)])
+                                                nValidRsAndNsv += (clinvarRecord.getNsv() is not None)
+                                            elif alleleOrigin not in nUnrecognizedAlleleOrigin:
+                                                nUnrecognizedAlleleOrigin[alleleOrigin] = 1
+                                            else:
+                                                nUnrecognizedAlleleOrigin[alleleOrigin] += 1
                                     else:
-                                        unmappedTraits[traitList[0]] = 1
+                                        nMissedStringsUnmappedTraits += 1
+                                        if traitList[0] in unmappedTraits:
+                                            unmappedTraits[traitList[0]] += 1
+                                        else:
+                                            unmappedTraits[traitList[0]] = 1
 
-                            if nEvidenceStringsPerRecord > 0:
-                                nProcessedClinvarRecords += 1
-                                if nEvidenceStringsPerRecord > 1:
-                                    nMultipleEvidenceStrings += 1
+                                if nEvidenceStringsPerRecord > 0:
+                                    nProcessedClinvarRecords += 1
+                                    if nEvidenceStringsPerRecord > 1:
+                                        nMultipleEvidenceStrings += 1
                         else:
                             noVariantToENSGMapping += 1
                     else:

@@ -45,6 +45,14 @@ def _process_con_type_file_xls():
     return oneRsMultipleGenes, consequenceTypeDict
 
 
+def _process_gene(consequenceTypeDict, rs_id, ensembl_gene_id, so_term):
+    if rs_id in consequenceTypeDict:
+        consequenceTypeDict[rs_id].add_ensembl_gene_id(ensembl_gene_id)
+        consequenceTypeDict[rs_id].addSoTerm(so_term)
+    else:
+        consequenceTypeDict[rs_id] = ConsequenceType.ConsequenceType([ensembl_gene_id], [so_term])
+
+
 def _process_con_type_file_tsv():
     oneRsMultipleGenes = set()
     consequenceTypeDict = {}
@@ -56,21 +64,16 @@ def _process_con_type_file_tsv():
 
             rs_id = line_list[0]
             ensembl_gene_id = line_list[2]
-            if not ensembl_gene_id:
+            if not ensembl_gene_id or rs_id == "rs":
                 continue
-            gene_symbol = line_list[3]
             so_term = line_list[4]
 
-            if rs_id in consequenceTypeDict:
-                if ensembl_gene_id != consequenceTypeDict[rs_id].getEnsemblGeneId():
-                    print('WARNING (ClinvarRecord.py): different genes and annotations found for a given gene.')
-                    print('Variant id: ' + rs_id + ', ENSG: ' + ensembl_gene_id + ', ENSG: ' + consequenceTypeDict[rs_id].getEnsemblGeneId())
-                    print('Skipping')
-                    oneRsMultipleGenes.add(rs_id)
-                else:
-                    consequenceTypeDict[rs_id].addSoTerm(so_term)
+            if "," in ensembl_gene_id:
+                ensembl_gene_ids = ensembl_gene_id.split(",")
+                for ensembl_gene_id in ensembl_gene_ids:
+                    _process_gene(consequenceTypeDict, rs_id, ensembl_gene_id, so_term)
             else:
-                consequenceTypeDict[rs_id] = ConsequenceType.ConsequenceType(ensembl_gene_id, [so_term])
+                _process_gene(consequenceTypeDict, rs_id, ensembl_gene_id, so_term)
 
     return oneRsMultipleGenes, consequenceTypeDict
 
