@@ -8,8 +8,8 @@ __author__ = 'Javier Lopez: javild@gmail.com'
 
 
 utilities.check_for_local_schema()
-GEN_SCHEMA_FILE = utilities.get_resource_file(__package__, "resources/" + config.local_schema + "/src/genetics.json")
-SOM_SCHEMA_FILE = utilities.get_resource_file(__package__, "resources/" + config.local_schema + "/src/literature_curated.json")
+GEN_SCHEMA_FILE = utilities.get_resource_file(__package__, config.local_schema + "/src/genetics.json")
+SOM_SCHEMA_FILE = utilities.get_resource_file(__package__, config.local_schema + "/src/literature_curated.json")
 
 
 class CTTVEvidenceString(dict):
@@ -271,7 +271,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
     def validate(self):
         jsonschema.validate(self, CTTVSomaticEvidenceString.schema, format_checker=jsonschema.FormatChecker())
-        self.getDisease().isObsolete()
+        self.get_disease().isObsolete()
 
     def setDate(self, dateString):
         self['evidence']['date_asserted'] = dateString

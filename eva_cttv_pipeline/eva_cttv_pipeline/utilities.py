@@ -43,24 +43,33 @@ def copy_dir(src, dest):
 def change_json_refs(local_schema_dir):
 
     command = "find " + local_schema_dir + " -type f -exec sed -i -e \"s/https:\/\/raw.githubusercontent.com\/CTTV\/json_schema\/master/file:\/\/" + local_schema_dir.replace("/", "\/") + "/g\" {} \;"
+    print("Carrying out command:\n" + command)
     subprocess.check_output(command, shell=True)
 
-    evidence_base_json = os.path.join(local_schema_dir, "evidence/base.json")
-    evidence_base_json_temp = os.path.join(local_schema_dir, "evidence/base_temp.json")
+    evidence_base_json = os.path.join(local_schema_dir, "src/evidence/base.json")
+    evidence_base_json_temp = os.path.join(local_schema_dir, "src/evidence/base_temp.json")
     command = "grep -v '\"id\": \"base_evidence\"' " + evidence_base_json + " > " + evidence_base_json_temp + "; mv " + evidence_base_json_temp + " " + evidence_base_json
+    print("Carrying out command:\n" + command)
     subprocess.check_output(command, shell=True)
 
     command = "grep -v '\"id\": \"#single_lit_reference\"' " + evidence_base_json + " > " + evidence_base_json_temp + "; mv " + evidence_base_json_temp + " " + evidence_base_json
+    print("Carrying out command:\n" + command)
     subprocess.check_output(command, shell=True)
 
-    command = "sed -i -e \"s/evidence\/base.json#base_evidence\/definitions\/single_lit_reference/evidence\/base.json#definitions\/single_lit_reference/g\""
+    command = "find " + local_schema_dir + " -type f -exec sed -i -e \"s/evidence\/base.json#base_evidence\/definitions\/single_lit_reference/evidence\/base.json#definitions\/single_lit_reference/g\" {} \;"
+    # command = "sed -i -e \"s/evidence\/base.json#base_evidence\/definitions\/single_lit_reference/evidence\/base.json#definitions\/single_lit_reference/g\" " + evidence_base_json
+    print("Carrying out command:\n" + command)
     subprocess.check_output(command, shell=True)
 
 
 def create_local_schema():
     json_schema_dir = get_resource_file(__package__, "resources/json_schema")
     # local_schema_dir = str(os.path.join(str(Path(json_schema_dir).parent), "schema_copy"))
-    local_schema_dir = str(os.path.join(os.path.dirname(json_schema_dir), config.local_schema))
+    local_schema_dir = str(os.path.join(os.path.dirname(os.path.dirname(json_schema_dir)), config.local_schema))
+
+    ready_file = local_schema_dir + "/READY"
+    if os.path.exists(ready_file):
+        return
 
     os.makedirs(local_schema_dir, exist_ok=True)
     print("Copying json schema")
@@ -69,8 +78,10 @@ def create_local_schema():
 
     change_json_refs(local_schema_dir)
 
+    open(ready_file, 'a').close()
+
 
 def check_for_local_schema():
-    local_schema = get_resource_file(__package__, "resources/" + config.local_schema)
+    local_schema = get_resource_file(__package__, config.local_schema)
     if not os.path.exists(local_schema):
         create_local_schema()

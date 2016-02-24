@@ -115,17 +115,13 @@ def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTer
                         consequenceType = clinvarRecord.getMainConsequenceTypes()
                         # Mapping rs->Gene was found at Mick's file and therefore ensemblGeneId will never be None
                         if consequenceType is not None:
-                            rcvToGeneEvidenceCodes = [
-                                'http://identifiers.org/eco/cttv_mapping_pipeline']  # Evidence codes provided by Mick
+                            rcvToGeneEvidenceCodes = ['http://identifiers.org/eco/cttv_mapping_pipeline']  # Evidence codes provided by Mick
                             ensemblGeneIdUri = 'http://identifiers.org/ensembl/' + consequenceType.getEnsemblGeneId()
                             ensemblGeneId = consequenceType.getEnsemblGeneId()
 
-                            traitRefsList = [['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList] for
-                                             refList in clinvarRecord.getTraitPubmedrefs()]
-                            observedRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in
-                                                clinvarRecord.getObservedPubmedrefs()]
-                            measureSetRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in
-                                                  clinvarRecord.getMeasureSetPubmedrefs()]
+                            traitRefsList = [['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList] for refList in clinvarRecord.getTraitPubmedrefs()]
+                            observedRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.getObservedPubmedrefs()]
+                            measureSetRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.getMeasureSetPubmedrefs()]
                             for traitCounter, traitList in enumerate(clinvarRecord.getTraits()):
                                 clinvarTraitList, EFOList = mapEFO(trait2EFO, traitList)
                                 # Only ClinVar records associated to a trait with mapped EFO term will generate evidence_strings
@@ -297,8 +293,7 @@ def getCTTVGeneticsEvidenceString(EFOList, clinicalSignificance, clinicalSignifi
     except KeyError:
         unrecognizedClinicalSignificances.add(clinicalSignificance)
         evidenceString.setTarget(ensemblGeneIdUri, 'http://identifiers.org/cttv.activity/unknown')
-    evidenceString.setVariant('http://identifiers.org/dbsnp/' + rs,
-                              getCttvVariantType(record))
+    evidenceString.setVariant('http://identifiers.org/dbsnp/' + rs, getCttvVariantType(record))
     evidenceString.setDate(clinvarRecord.getDate())
     evidenceString.setDbxrefUrl('http://identifiers.org/clinvar.record/' + clinvarRecord.getAcc())
     evidenceString.setUrl('http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.getAcc())
