@@ -10,7 +10,7 @@ import urllib.parse
 import urllib.request
 import jsonschema
 import xlrd
-from eva_cttv_pipeline import EFOTerm, ClinvarRecord, evidence_strings, utilities
+from eva_cttv_pipeline import EFOTerm, clinvar_record, evidence_strings, utilities
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
@@ -24,7 +24,7 @@ __author__ = 'Javier Lopez: javild@gmail.com'
 BATCH_SIZE = 200
 # HOST = 'localhost:8080'
 HOST = 'www.ebi.ac.uk'
-EFOMAPPINGFILE = os.path.dirname(ClinvarRecord.__file__) + "/resources/ClinVar_Traits_EFO_090915.xls"
+EFOMAPPINGFILE = os.path.dirname(clinvar_record.__file__) + "/resources/ClinVar_Traits_EFO_090915.xls"
 EVIDENCESTRINGSFILENAME = 'evidence_strings.json'
 EVIDENCERECORDSFILENAME = 'evidence_records.tsv'
 UNMAPPEDTRAITSFILENAME = 'unmappedTraits.tsv'
@@ -104,15 +104,15 @@ def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTer
         nTotalClinvarRecords += len(currResultList)
         for record in currResultList:
             nEvidenceStringsPerRecord = 0
-            clinvarRecord = ClinvarRecord.ClinvarRecord(record['clinvarSet'])
-            clinicalSignificance = clinvarRecord.getClinicalSignificance().lower()
-            nNsvs += (clinvarRecord.getNsv() is not None)
+            clinvarRecord = clinvar_record.ClinvarRecord(record['clinvarSet'])
+            clinicalSignificance = clinvarRecord.get_clinical_significance().lower()
+            nNsvs += (clinvarRecord.get_nsv() is not None)
             if clinicalSignificance in allowedClinicalSignificance:
                 if record['reference'] != record['alternate']:
                     nsvList = appendNsv(nsvList, clinvarRecord)
-                    rs = clinvarRecord.getRs()
+                    rs = clinvarRecord.get_rs()
                     if rs is not None:
-                        consequenceType = clinvarRecord.getMainConsequenceTypes()
+                        consequenceType = clinvarRecord.get_main_consequence_types()
                         # Mapping rs->Gene was found at Mick's file and therefore ensemblGeneId will never be None
                         if consequenceType is not None:
 
@@ -120,14 +120,14 @@ def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTer
 
                                 rcvToGeneEvidenceCodes = ['http://identifiers.org/eco/cttv_mapping_pipeline']  # Evidence codes provided by Mick
                                 ensemblGeneIdUri = 'http://identifiers.org/ensembl/' + ensemblGeneId
-                                traitRefsList = [['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList] for refList in clinvarRecord.getTraitPubmedrefs()]
-                                observedRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.getObservedPubmedrefs()]
-                                measureSetRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.getMeasureSetPubmedrefs()]
-                                for traitCounter, traitList in enumerate(clinvarRecord.getTraits()):
+                                traitRefsList = [['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList] for refList in clinvarRecord.get_trait_pubmed_refs()]
+                                observedRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.get_observed_pubmed_refs()]
+                                measureSetRefsList = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.get_measure_set_pubmed_refs()]
+                                for traitCounter, traitList in enumerate(clinvarRecord.get_traits()):
                                     clinvarTraitList, EFOList = mapEFO(trait2EFO, traitList)
                                     # Only ClinVar records associated to a trait with mapped EFO term will generate evidence_strings
                                     if len(EFOList) > 0:
-                                        clinvaRecordAlleleOrigins = clinvarRecord.getAlleleOrigins()
+                                        clinvaRecordAlleleOrigins = clinvarRecord.get_allele_origins()
                                         nMultipleAlleleOrigin += (len(clinvaRecordAlleleOrigins) > 1)
                                         nGermlineSomatic += (('germline' in clinvaRecordAlleleOrigins) and (
                                         'somatic' in clinvaRecordAlleleOrigins))
@@ -158,9 +158,9 @@ def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTer
                                                                                               evidenceStringList,
                                                                                               nEvidenceStringsPerRecord)
                                                 evidenceList.append(
-                                                    [clinvarRecord.getAcc(), rs, ','.join(clinvarTraitList),
+                                                    [clinvarRecord.get_acc(), rs, ','.join(clinvarTraitList),
                                                      ','.join(EFOList)])
-                                                nValidRsAndNsv += (clinvarRecord.getNsv() is not None)
+                                                nValidRsAndNsv += (clinvarRecord.get_nsv() is not None)
                                             elif alleleOrigin == 'somatic':
                                                 evidenceString, nMoreThanOneEfoTerm = getCTTVSomaticEvidenceString(EFOList,
                                                                                                                    clinicalSignificance,
@@ -181,9 +181,9 @@ def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTer
                                                                                               evidenceStringList,
                                                                                               nEvidenceStringsPerRecord)
                                                 evidenceList.append(
-                                                    [clinvarRecord.getAcc(), rs, ','.join(clinvarTraitList),
+                                                    [clinvarRecord.get_acc(), rs, ','.join(clinvarTraitList),
                                                      ','.join(EFOList)])
-                                                nValidRsAndNsv += (clinvarRecord.getNsv() is not None)
+                                                nValidRsAndNsv += (clinvarRecord.get_nsv() is not None)
                                             elif alleleOrigin not in nUnrecognizedAlleleOrigin:
                                                 nUnrecognizedAlleleOrigin[alleleOrigin] = 1
                                             else:
@@ -206,10 +206,10 @@ def clinvarToEvidenceStrings(dirOut, allowedClinicalSignificance=None, ignoreTer
 
                 else:
                     nSameRefAlt += 1
-                    if clinvarRecord.getNsv() is not None:
+                    if clinvarRecord.get_nsv() is not None:
                         nNsvSkippedWrongRefAlt += 1
             else:
-                if clinvarRecord.getNsv() is not None:
+                if clinvarRecord.get_nsv() is not None:
                     nNsvSkippedClinicalSignificance += 1
 
             # pbar.update(recordCounter)
@@ -287,7 +287,7 @@ def getCTTVGeneticsEvidenceString(EFOList, clinicalSignificance, clinicalSignifi
                                   unrecognizedClinicalSignificances):
     evidenceString = evidence_strings.CTTVGeneticsEvidenceString()
     evidenceString.addUniqueAssociationField('gene', ensemblGeneId)
-    evidenceString.addUniqueAssociationField('clinvarAccession', clinvarRecord.getAcc())
+    evidenceString.addUniqueAssociationField('clinvarAccession', clinvarRecord.get_acc())
     evidenceString.addUniqueAssociationField('alleleOrigin', 'germline')
     try:
         evidenceString.setTarget(ensemblGeneIdUri, clinicalSignificance2Activity[clinicalSignificance])
@@ -295,9 +295,9 @@ def getCTTVGeneticsEvidenceString(EFOList, clinicalSignificance, clinicalSignifi
         unrecognizedClinicalSignificances.add(clinicalSignificance)
         evidenceString.setTarget(ensemblGeneIdUri, 'http://identifiers.org/cttv.activity/unknown')
     evidenceString.setVariant('http://identifiers.org/dbsnp/' + rs, getCttvVariantType(record))
-    evidenceString.setDate(clinvarRecord.getDate())
-    evidenceString.setDbxrefUrl('http://identifiers.org/clinvar.record/' + clinvarRecord.getAcc())
-    evidenceString.setUrl('http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.getAcc())
+    evidenceString.setDate(clinvarRecord.get_date())
+    evidenceString.setDbxrefUrl('http://identifiers.org/clinvar.record/' + clinvarRecord.get_acc())
+    evidenceString.setUrl('http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc())
     evidenceString.setAssociation(
         clinicalSignificance != 'non-pathogenic' and clinicalSignificance != 'probable-non-pathogenic'
         and clinicalSignificance != 'likely benign' and clinicalSignificance != 'benign')
@@ -332,7 +332,7 @@ def getCTTVSomaticEvidenceString(EFOList, clinicalSignificance, clinicalSignific
                                  unrecognizedClinicalSignificances, consequenceType):
     evidenceString = evidence_strings.CTTVSomaticEvidenceString()
     evidenceString.addUniqueAssociationField('gene', ensemblGeneId)
-    evidenceString.addUniqueAssociationField('clinvarAccession', clinvarRecord.getAcc())
+    evidenceString.addUniqueAssociationField('clinvarAccession', clinvarRecord.get_acc())
     evidenceString.addUniqueAssociationField('alleleOrigin', 'somatic')
     try:
         evidenceString.setTarget(ensemblGeneIdUri, clinicalSignificance2Activity[clinicalSignificance])
@@ -340,9 +340,9 @@ def getCTTVSomaticEvidenceString(EFOList, clinicalSignificance, clinicalSignific
         unrecognizedClinicalSignificances.add(clinicalSignificance)
         evidenceString.setTarget(ensemblGeneIdUri, 'http://identifiers.org/cttv.activity/unknown')
 
-    evidenceString.setDate(clinvarRecord.getDate())
-    evidenceString.setDbxrefUrl('http://identifiers.org/clinvar.record/' + clinvarRecord.getAcc())
-    evidenceString.setUrl('http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.getAcc())
+    evidenceString.setDate(clinvarRecord.get_date())
+    evidenceString.setDbxrefUrl('http://identifiers.org/clinvar.record/' + clinvarRecord.get_acc())
+    evidenceString.setUrl('http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc())
     evidenceString.setAssociation(
         clinicalSignificance != 'non-pathogenic' and clinicalSignificance != 'probable-non-pathogenic'
         and clinicalSignificance != 'likely benign' and clinicalSignificance != 'benign')
@@ -371,7 +371,7 @@ def addEvidenceString(clinvarRecord, evidenceString, evidenceStringList, nEviden
         nEvidenceStringsPerRecord += 1
     except jsonschema.exceptions.ValidationError as err:
         print('Error: evidence_string does not validate against schema.')
-        print('ClinVar accession: ' + clinvarRecord.getAcc())
+        print('ClinVar accession: ' + clinvarRecord.get_acc())
         print(err)
         print(json.dumps(evidenceString))
         sys.exit(1)
@@ -392,7 +392,7 @@ def writeStringListToFile(stringList, filename):
 
 
 def appendNsv(nsvList, clinvarRecord):
-    nsv = clinvarRecord.getNsv()
+    nsv = clinvarRecord.get_nsv()
     if nsv is not None:
         nsvList.append(nsv)
     return nsvList
