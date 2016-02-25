@@ -16,33 +16,33 @@ class CTTVEvidenceString(dict):
     def __init__(self, a_dictionary):
         dict.__init__(self, a_dictionary)
 
-    def addUniqueAssociationField(self, key, value):
+    def add_unique_association_field(self, key, value):
         self['unique_association_fields'][key] = value
 
-    def setUniqueAssociationField(self, key, value):
+    def set_unique_association_field(self, key, value):
         self['unique_association_fields'][key] = value
 
-    def setTarget(self, id, activity):
+    def set_target(self, id, activity):
         self['target']['id'].append(id)
         self['target']['activity'] = activity
 
-    def setPubmedrefs(self, pubmedList):
-        if pubmedList is not None and len(pubmedList)>0:
+    def set_pubmed_refs(self, pubmed_list):
+        if pubmed_list is not None and len(pubmed_list) > 0:
             if 'literature' in self['evidence']['provenance_type']:
-                self['evidence']['provenance_type']['literature']['pubmed_refs'] = pubmedList
+                self['evidence']['provenance_type']['literature']['pubmed_refs'] = pubmed_list
             else:
-                self['evidence']['provenance_type']['literature'] = {'pubmed_refs' : pubmedList}
+                self['evidence']['provenance_type']['literature'] = {'pubmed_refs': pubmed_list}
 
-    def setDisease(self, id):
+    def set_disease(self, id):
         self['disease']['id'].append(id)
 
     def get_disease(self):
         return efo_term.EFOTerm(self['disease']['id'][0])
 
-    def setEvidenceCodes(self, evidenceCodeList):
-        self['evidence']['evidence_codes'] = evidenceCodeList
+    def set_evidence_codes(self, ev_code_list):
+        self['evidence']['evidence_codes'] = ev_code_list
 
-    def getEvidenceCodes(self):
+    def get_evidence_codes(self):
         return self['evidence']['evidence_codes']
 
     def set_top_level_literature(self, reference_list):
@@ -56,6 +56,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
     schema = json.loads(open(GEN_SCHEMA_FILE, 'r').read())
 
     def __init__(self):
+
         CTTVEvidenceString.__init__(self,
                                     {'sourceID': 'eva',
                                      'validated_against_schema_version': '1.2.2',
@@ -145,32 +146,32 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                                      }
                                     )
 
-    def setDbxrefUrl(self, url):
+    def set_db_xref_url(self, url):
         self['evidence']['gene2variant']['provenance_type']['database']['dbxref']['url'] = url
         self['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url'] = url
 
-    def setUrl(self, url):
+    def set_url(self, url):
         self['evidence']['gene2variant']['urls'][0]['url'] = url
         self['evidence']['variant2disease']['urls'][0]['url'] = url
 
-    def setGene2VariantEvidenceCodes(self, gene2VariantEvidenceCodes):
-        self['evidence']['gene2variant']['evidence_codes'] = gene2VariantEvidenceCodes
+    def set_gene_2_var_ev_codes(self, gene_2_var_ev_codes):
+        self['evidence']['gene2variant']['evidence_codes'] = gene_2_var_ev_codes
 
-    def setGene2VariantFunctionalConsequence(self, SOTerm):
-        self['evidence']['gene2variant']['functional_consequence'] = SOTerm
+    def set_gene_2_var_func_consequence(self, so_term):
+        self['evidence']['gene2variant']['functional_consequence'] = so_term
 
-    def setVariant2DiseaseLiterature(self, referenceList):
+    def set_var_2_disease_literature(self, ref_list):
         if 'literature' not in self['evidence']['variant2disease']['provenance_type']:
             self['evidence']['variant2disease']['provenance_type']['literature'] = {
-                'references': [{'lit_id': reference} for reference in referenceList]}
+                'references': [{'lit_id': reference} for reference in ref_list]}
         else:
             self['evidence']['variant2disease']['provenance_type']['literature']['references'] = [{'lit_id': reference}
                                                                                                   for reference in
-                                                                                                  referenceList]
+                                                                                                  ref_list]
 
-    def setAssociation(self, isAssociated):
-        self['evidence']['gene2variant']['is_associated'] = isAssociated
-        self['evidence']['variant2disease']['is_associated'] = isAssociated
+    def set_association(self, is_associated):
+        self['evidence']['gene2variant']['is_associated'] = is_associated
+        self['evidence']['variant2disease']['is_associated'] = is_associated
 
     def validate(self):
         # try:
@@ -182,16 +183,16 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         #     sys.exit()
         self.get_disease().is_obsolete()
 
-    def setVariant(self, id, type):
+    def set_variant(self, id, type):
         self['variant']['id'].append(id)
         self['variant']['type'] = type
 
-    def setUniqueReference(self, reference):
+    def set_unique_reference(self, reference):
         self['evidence']['variant2disease']['unique_experiment_reference'] = reference
 
-    def setDate(self, dateString):
-        self['evidence']['gene2variant']['date_asserted'] = dateString
-        self['evidence']['variant2disease']['date_asserted'] = dateString
+    def set_date(self, date_string):
+        self['evidence']['gene2variant']['date_asserted'] = date_string
+        self['evidence']['variant2disease']['date_asserted'] = date_string
 
 
 class CTTVSomaticEvidenceString(CTTVEvidenceString):
@@ -199,7 +200,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
     def __init__(self):
 
-         CTTVEvidenceString.__init__(self,
+        CTTVEvidenceString.__init__(self,
                                     {'sourceID': 'eva_somatic',
                                      'validated_against_schema_version': '1.2.2',
                                      'type': 'somatic_mutation',
@@ -252,29 +253,29 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                                      }
                                     )
 
-    def setDbxrefUrl(self, url):
+    def set_db_xref_url(self, url):
         self['evidence']['provenance_type']['database']['dbxref']['url'] = url
 
-    def setUrl(self, url):
+    def set_url(self, url):
         self['evidence']['urls'][0]['url'] = url
 
-    def set_evidence_literature(self, referenceList):
+    def set_evidence_literature(self, ref_list):
         if 'literature' not in self['evidence']['provenance_type']:
             self['evidence']['provenance_type']['literature'] = {
-                'references': [{'lit_id': reference} for reference in referenceList]}
+                'references': [{'lit_id': reference} for reference in ref_list]}
         else:
             self['evidence']['provenance_type']['literature']['references'] = [{'lit_id': reference} for reference in
-                                                                               referenceList]
+                                                                               ref_list]
 
-    def setAssociation(self, isAssociated):
-        self['evidence']['is_associated'] = isAssociated
+    def set_association(self, is_associated):
+        self['evidence']['is_associated'] = is_associated
 
     def validate(self):
         jsonschema.validate(self, CTTVSomaticEvidenceString.schema, format_checker=jsonschema.FormatChecker())
         self.get_disease().is_obsolete()
 
-    def setDate(self, dateString):
-        self['evidence']['date_asserted'] = dateString
+    def set_date(self, date_string):
+        self['evidence']['date_asserted'] = date_string
 
     def add_known_mutation(self, new_functional_consequence):
         new_known_mutation = {'functional_consequence': new_functional_consequence}
