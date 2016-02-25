@@ -10,7 +10,7 @@ import urllib.parse
 import urllib.request
 import jsonschema
 import xlrd
-from eva_cttv_pipeline import EFOTerm, clinvar_record, evidence_strings, utilities
+from eva_cttv_pipeline import efo_term, clinvar_record, evidence_strings, utilities
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
@@ -303,12 +303,12 @@ def getCTTVGeneticsEvidenceString(EFOList, clinicalSignificance, clinicalSignifi
         and clinicalSignificance != 'likely benign' and clinicalSignificance != 'benign')
     evidenceString.setGene2VariantEvidenceCodes(rcvToGeneEvidenceCodes)
     mostSevereSoTerm = consequenceType.getMostSevereSo()
-    if mostSevereSoTerm.getAccession() is None:
+    if mostSevereSoTerm.get_accession() is None:
         evidenceString.setGene2VariantFunctionalConsequence(
-            'http://targetvalidation.org/sequence/' + mostSevereSoTerm.getName())
+            'http://targetvalidation.org/sequence/' + mostSevereSoTerm.get_name())
     else:
         evidenceString.setGene2VariantFunctionalConsequence(
-            'http://purl.obolibrary.org/obo/' + mostSevereSoTerm.getAccession().replace(':', '_'))
+            'http://purl.obolibrary.org/obo/' + mostSevereSoTerm.get_accession().replace(':', '_'))
 
     referenceList = list(set(traitRefsList[traitCounter] + observedRefsList + measureSetRefsList))
     if len(referenceList) > 0:
@@ -375,9 +375,9 @@ def addEvidenceString(clinvarRecord, evidenceString, evidenceStringList, nEviden
         print(err)
         print(json.dumps(evidenceString))
         sys.exit(1)
-    except EFOTerm.EFOTerm.IsObsoleteException as err:
+    except efo_term.EFOTerm.IsObsoleteException as err:
         print('Error: obsolete EFO term.')
-        print('Term: ' + evidenceString.get_disease().getId())
+        print('Term: ' + evidenceString.get_disease().get_id())
         print(err)
         print(json.dumps(evidenceString))
         sys.exit(1)

@@ -1,4 +1,4 @@
-from eva_cttv_pipeline import EFOTerm
+from eva_cttv_pipeline import efo_term
 import json
 import eva_cttv_pipeline.utilities as utilities
 import jsonschema
@@ -37,7 +37,7 @@ class CTTVEvidenceString(dict):
         self['disease']['id'].append(id)
 
     def get_disease(self):
-        return EFOTerm.EFOTerm(self['disease']['id'][0])
+        return efo_term.EFOTerm(self['disease']['id'][0])
 
     def setEvidenceCodes(self, evidenceCodeList):
         self['evidence']['evidence_codes'] = evidenceCodeList
@@ -180,7 +180,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         #     print(e)
         #     traceback.print_stack()
         #     sys.exit()
-        self.get_disease().isObsolete()
+        self.get_disease().is_obsolete()
 
     def setVariant(self, id, type):
         self['variant']['id'].append(id)
@@ -271,7 +271,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
     def validate(self):
         jsonschema.validate(self, CTTVSomaticEvidenceString.schema, format_checker=jsonschema.FormatChecker())
-        self.get_disease().isObsolete()
+        self.get_disease().is_obsolete()
 
     def setDate(self, dateString):
         self['evidence']['date_asserted'] = dateString
@@ -282,8 +282,8 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
     def set_known_mutations(self, consequence_type):
         for so_term in consequence_type.get_so_terms():
-            if so_term.getAccession():
-                new_functional_consequence = "http://purl.obolibrary.org/obo/" + so_term.getAccession().replace(':', '_')
+            if so_term.get_accession():
+                new_functional_consequence = "http://purl.obolibrary.org/obo/" + so_term.get_accession().replace(':', '_')
             else:
-                new_functional_consequence = 'http://targetvalidation.org/sequence/' + so_term.getName()
+                new_functional_consequence = 'http://targetvalidation.org/sequence/' + so_term.get_name()
             self.add_known_mutation(new_functional_consequence)

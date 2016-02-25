@@ -1,9 +1,9 @@
-__author__ = 'Javier Lopez: javild@gmail.com'
-
 import os
 
+__author__ = 'Javier Lopez: javild@gmail.com'
 
-def getAvailableTerms(sparqlep, user, password):
+
+def get_available_terms(sparqlep, user, password):
     query = """SELECT DISTINCT ?uri sample(?label) AS ?label
     FROM <http://www.targetvalidation.org/>
     FROM <http://www.ebi.ac.uk/efo/>
@@ -12,10 +12,10 @@ def getAvailableTerms(sparqlep, user, password):
         ?uri rdfs:label ?label .
     }"""
 
-    return executeQuery(sparqlep, user, password, query)
+    return execute_query(sparqlep, user, password, query)
 
 
-def getObsoleteTerms(sparqlep, user, password):
+def get_obsolete_terms(sparqlep, user, password):
     # What EFO classes are now obsolete and what is the reason for obsoletion?
     query = """SELECT * FROM <http://www.ebi.ac.uk/efo/>
      WHERE
@@ -24,10 +24,10 @@ def getObsoleteTerms(sparqlep, user, password):
               ?uri <http://www.ebi.ac.uk/efo/reason_for_obsolescence> ?reason
      }"""
 
-    return executeQuery(sparqlep, user, password, query)
+    return execute_query(sparqlep, user, password, query)
 
 
-def executeQuery(sparqlep, user, password, query):
+def execute_query(sparqlep, user, password, query):
     cmd = """curl --post301 -L --data-urlencode "query=""" + query + """" -u """ + user + ":" + password + """ -H "Accept: text/tab-separated-values" """ + sparqlep
     fd = os.popen(cmd)
     print('Loading obsolete terms...')
@@ -42,31 +42,31 @@ def executeQuery(sparqlep, user, password, query):
     return terms
 
 
-class EFOTerm():
+class EFOTerm:
     print('Querying EFO  web services for valid terms...')
     # CONNECTION PARAMETERS
     sparqlep = ""
     user = ""
     password = ""
 
-    obsoleteTerms = getObsoleteTerms(sparqlep, user, password)
-    cttvAvailableTerms = getAvailableTerms(sparqlep, user, password)
+    obsolete_terms = get_obsolete_terms(sparqlep, user, password)
+    cttv_available_terms = get_available_terms(sparqlep, user, password)
 
     def __init__(self, _id=None):
         self.id = _id
 
-    def getId(self):
+    def get_id(self):
         return self.id
 
-    def isObsolete(self):
-        if self.id is not None and self.id in EFOTerm.obsoleteTerms:
+    def is_obsolete(self):
+        if self.id is not None and self.id in EFOTerm.obsolete_terms:
             raise EFOTerm.IsObsoleteException(
-                "Term " + self.id + " is obsolete. Cause/Description/Action: " + EFOTerm.obsoleteTerms[self.id])
+                "Term " + self.id + " is obsolete. Cause/Description/Action: " + EFOTerm.obsolete_terms[self.id])
         else:
             return False
 
-    def isCttvAvailable(self):
-        if self.id is not None and self.id in EFOTerm.cttvAvailableTerms:
+    def is_cttv_available(self):
+        if self.id is not None and self.id in EFOTerm.cttv_available_terms:
             return True
         else:
             raise EFOTerm.NotCttvAvailableException("Term " + self.id + " is not currently available at EFO.")
