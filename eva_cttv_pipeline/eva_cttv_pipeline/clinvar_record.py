@@ -9,7 +9,7 @@ from datetime import datetime
 import xlrd
 import eva_cttv_pipeline.utilities as utilities
 import eva_cttv_pipeline.config as config
-from eva_cttv_pipeline import ConsequenceType
+from eva_cttv_pipeline import consequence_type
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
@@ -38,9 +38,9 @@ def _process_con_type_file_xls():
                     print('Skipping')
                     one_rs_multiple_genes.add(rs_id)
                 else:
-                    consequence_type_dict[rs_id].addSoTerm(so_term)
+                    consequence_type_dict[rs_id].add_so_term(so_term)
             else:
-                consequence_type_dict[rs_id] = ConsequenceType.ConsequenceType(ensembl_gene_id, [so_term])
+                consequence_type_dict[rs_id] = consequence_type.ConsequenceType(ensembl_gene_id, [so_term])
 
     return one_rs_multiple_genes, consequence_type_dict
 
@@ -48,9 +48,9 @@ def _process_con_type_file_xls():
 def _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term):
     if rs_id in consequence_type_dict:
         consequence_type_dict[rs_id].add_ensembl_gene_id(ensembl_gene_id)
-        consequence_type_dict[rs_id].addSoTerm(so_term)
+        consequence_type_dict[rs_id].add_so_term(so_term)
     else:
-        consequence_type_dict[rs_id] = ConsequenceType.ConsequenceType([ensembl_gene_id], [so_term])
+        consequence_type_dict[rs_id] = consequence_type.ConsequenceType([ensembl_gene_id], [so_term])
 
 
 def _process_con_type_file_tsv():
