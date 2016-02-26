@@ -61,6 +61,11 @@ def change_json_refs(local_schema_dir):
     print("Carrying out command:\n" + command)
     subprocess.check_output(command, shell=True)
 
+    command = "rm -rf " + local_schema_dir + ".git .gitignore"
+    # command = "sed -i -e \"s/evidence\/base.json#base_evidence\/definitions\/single_lit_reference/evidence\/base.json#definitions\/single_lit_reference/g\" " + evidence_base_json
+    print("Carrying out command:\n" + command)
+    subprocess.check_output(command, shell=True)
+
 
 def create_local_schema():
     json_schema_dir = get_resource_file(__package__, "resources/json_schema")
