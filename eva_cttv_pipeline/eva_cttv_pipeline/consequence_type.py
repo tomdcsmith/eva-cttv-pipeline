@@ -51,6 +51,7 @@ class ConsequenceType(object):
         so_accession_name_dict['CpG_island'] = 307
         so_accession_name_dict['DNAseI_hypersensitive_site'] = 685
         so_accession_name_dict['polypeptide_variation_site'] = 336
+        so_accession_name_dict['start_lost'] = 2012
 
         ranked_so_names_list = ['transcript_ablation', 'splice_acceptor_variant', 'splice_donor_variant', 'stop_gained',
                              'frameshift_variant', 'stop_lost', 'initiator_codon_variant', 'transcript_amplification',
