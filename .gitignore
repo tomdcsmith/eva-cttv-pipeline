@@ -1,3 +1,6 @@
+/eva_cttv_pipeline/resources/ignore_file.txt
+/resources/rs_ids_2015_05.txt
+/resources/bad_snp2gene
 /.python-version
 /resources/clnsg_keep.txt
 /resources/uniq_clnsg_rs.txt
