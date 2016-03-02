@@ -35,8 +35,11 @@ NSVLISTFILE = 'nsvlist.txt'
 TMPDIR = '/tmp/'
 
 
-def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ignore_terms_file=None, adapt_terms_file=None):
+def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ignore_terms_file=None, adapt_terms_file=None, efo_mapping_file=None, snp_2_gene_file=None, variant_summary_file=None):
+
     trait_2_efo, unavailable_efo_dict = load_efo_mapping(ignore_terms_file, adapt_terms_file)
+    clinvar_record.process_con_type_file(snp_2_gene_file)
+    clinvar_record.get_rcv_to_rsnsv_mapping(variant_summary_file)
 
     clin_sig_2_activity = {'unknown': 'http://identifiers.org/cttv.activity/unknown',
                                      'untested': 'http://identifiers.org/cttv.activity/unknown',
@@ -504,46 +507,20 @@ def get_terms_from_file(terms_file):
     return terms_list
 
 
-class ArgParser(object):
-    """
-    For parsing command line arguments
-    """
-    def __init__(self, argv):
-        usage = """
-        ************************************************************************************************************************************************************
-        Task: generate CTTV evidence strings from ClinVar mongo
-        ************************************************************************************************************************************************************
-
-
-
-        usage: %prog --clinSig <clinicalSignificanceList> --out <fileout>"""
-        parser = argparse.ArgumentParser(usage)
-
-        parser.add_argument("--clinSig", dest="clinSig", help="""Optional. String containing a comma-sparated list with the clinical significances that will be allowed to generate evidence-strings. By default all clinical significances will be considered. Possible tags: 'unknown','untested','non-pathogenic','probable-non-pathogenic','probable-pathogenic','pathogenic','drug-response','drug response','histocompatibility','other','benign','protective','not provided','likely benign','confers sensitivity','uncertain significance','likely pathogenic','conflicting data from submitters','risk factor','association' """, default="pathogenic,likely pathogenic")
-        parser.add_argument("--ignore", dest="ignoreTermsFile", help="""Optional. String containing full path to a txt file containing a list of term urls which will be ignored during batch processing """, default=None)
-        parser.add_argument("--adapt", dest="adaptTermsFile", help="""Optional. String containing full path to a txt file containing a list of invalid EFO urls which will be adapted to a general valid url during batch processing """, default=None)
-        parser.add_argument("--out", dest="out", help="""String containing the name of the file were results will be stored.""", required=True)
-
-        args = parser.parse_args(args=argv[1:])
-
-        self.clinSig = args.clinSig
-        self.ignoreTermsFile = args.ignoreTermsFile
-        self.adaptTermsFile = args.adaptTermsFile
-        self.out = args.out
-
-
 def main():
-    parser = ArgParser(sys.argv)
+    parser = utilities.ArgParser(sys.argv)
 
     utilities.check_for_local_schema()
 
     # call core function
     if parser.clinSig is None:
         clinvar_to_evidence_strings(parser.out, ignore_terms_file=parser.ignoreTermsFile,
-                                    adapt_terms_file=parser.adaptTermsFile)
+                                    adapt_terms_file=parser.adaptTermsFile, efo_mapping_file=None, snp_2_gene_file=None,
+                                    variant_summary_file=None)
     else:
         clinvar_to_evidence_strings(parser.out, allowed_clinical_significance=parser.clinSig.split(','),
-                                    ignore_terms_file=parser.ignoreTermsFile, adapt_terms_file=parser.adaptTermsFile)
+                                    ignore_terms_file=parser.ignoreTermsFile, adapt_terms_file=parser.adaptTermsFile,
+                                    efo_mapping_file=None, snp_2_gene_file=None, variant_summary_file=None)
 
     print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
 
