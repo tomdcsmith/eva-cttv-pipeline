@@ -537,6 +537,8 @@ def main():
 
     utilities.check_for_local_schema()
 
+    utilities.check_dir_exists_create(parser.out)
+
     # call core function
     if parser.clinSig is None:
         clinvar_to_evidence_strings(parser.out, ignore_terms_file=parser.ignoreTermsFile,
