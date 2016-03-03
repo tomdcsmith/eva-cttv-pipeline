@@ -34,9 +34,9 @@ def _process_con_type_file_xls():
             so_term = ct_mapping_read_sheet.cell_value(rowx=i, colx=1)
 
             if rs_id in consequence_type_dict:
-                if ensembl_gene_id != consequence_type_dict[rs_id].getEnsemblGeneId():
+                if ensembl_gene_id not in consequence_type_dict[rs_id].get_ensembl_gene_ids():
                     print('WARNING (clinvar_record.py): different genes and annotations found for a given gene.')
-                    print(' Variant id: ' + rs_id + ', ENSG: ' + so_term + ', ENSG: ' + consequence_type_dict[rs_id].getEnsemblGeneId())
+                    print(' Variant id: ' + rs_id + ', ENSG: ' + so_term + ', ENSG: ' + str(consequence_type_dict[rs_id].get_ensembl_gene_ids()))
                     print('Skipping')
                     one_rs_multiple_genes.add(rs_id)
                 else:

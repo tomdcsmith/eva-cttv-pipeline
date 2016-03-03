@@ -91,3 +91,8 @@ def check_for_local_schema():
     local_schema = get_resource_file(__package__, config.local_schema)
     if not os.path.exists(local_schema):
         create_local_schema()
+
+
+def check_dir_exists_create(dir):
+    if not os.path.exists(dir):
+        os.makedirs(dir)
