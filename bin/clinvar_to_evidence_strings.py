@@ -12,7 +12,7 @@ import codecs
 import jsonschema
 import xlrd
 
-from eva_cttv_pipeline import efo_term, clinvar_record, evidence_strings, utilities
+from eva_cttv_pipeline import efo_term, clinvar_record, evidence_strings, utilities, consequence_type
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
@@ -38,8 +38,9 @@ TMPDIR = '/tmp/'
 def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ignore_terms_file=None, adapt_terms_file=None, efo_mapping_file=None, snp_2_gene_file=None, variant_summary_file=None):
 
     trait_2_efo, unavailable_efo_dict = load_efo_mapping(ignore_terms_file, adapt_terms_file)
-    clinvar_record.process_con_type_file(snp_2_gene_file)
-    clinvar_record.get_rcv_to_rsnsv_mapping(variant_summary_file)
+
+    consequence_type_dict = consequence_type.process_con_type_file(snp_2_gene_file)
+    rcv_to_rs, rcv_to_nsv = clinvar_record.get_rcv_to_rsnsv_mapping(variant_summary_file)
 
     clin_sig_2_activity = {'unknown': 'http://identifiers.org/cttv.activity/unknown',
                                      'untested': 'http://identifiers.org/cttv.activity/unknown',
@@ -111,17 +112,17 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
             n_ev_strings_per_record = 0
             clinvarRecord = clinvar_record.ClinvarRecord(record['clinvarSet'])
             clin_sig = clinvarRecord.get_clinical_significance().lower()
-            n_nsvs += (clinvarRecord.get_nsv() is not None)
+            n_nsvs += (clinvarRecord.get_nsv(rcv_to_nsv) is not None)
             if clin_sig in allowed_clinical_significance:
                 if record['reference'] != record['alternate']:
-                    nsv_list = append_nsv(nsv_list, clinvarRecord)
-                    rs = clinvarRecord.get_rs()
+                    nsv_list = append_nsv(nsv_list, clinvarRecord, rcv_to_nsv)
+                    rs = clinvarRecord.get_rs(rcv_to_rs)
                     if rs is not None:
-                        consequence_type = clinvarRecord.get_main_consequence_types()
+                        consequenceType = clinvarRecord.get_main_consequence_types(consequence_type_dict)
                         # Mapping rs->Gene was found at Mick's file and therefore ensembl_gene_id will never be None
-                        if consequence_type is not None:
+                        if consequenceType is not None:
 
-                            for ensembl_gene_id in consequence_type.get_ensembl_gene_ids():
+                            for ensembl_gene_id in consequenceType.get_ensembl_gene_ids():
 
                                 rcv_to_gene_evidence_codes = ['http://identifiers.org/eco/cttv_mapping_pipeline']  # Evidence codes provided by Mick
                                 ensembl_gene_id_uri = 'http://identifiers.org/ensembl/' + ensembl_gene_id
@@ -165,7 +166,7 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
                                                 evidence_list.append(
                                                     [clinvarRecord.get_acc(), rs, ','.join(clinvar_trait_list),
                                                      ','.join(efo_list)])
-                                                n_valid_rs_and_nsv += (clinvarRecord.get_nsv() is not None)
+                                                n_valid_rs_and_nsv += (clinvarRecord.get_nsv(rcv_to_nsv) is not None)
                                             elif alleleOrigin == 'somatic':
                                                 evidence_string, n_more_than_one_efo_term = get_cttv_somatic_evidence_string(efo_list,
                                                                                                                              clin_sig,
@@ -188,7 +189,7 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
                                                 evidence_list.append(
                                                     [clinvarRecord.get_acc(), rs, ','.join(clinvar_trait_list),
                                                      ','.join(efo_list)])
-                                                n_valid_rs_and_nsv += (clinvarRecord.get_nsv() is not None)
+                                                n_valid_rs_and_nsv += (clinvarRecord.get_nsv(rcv_to_nsv) is not None)
                                             elif alleleOrigin not in n_unrecognised_allele_origin:
                                                 n_unrecognised_allele_origin[alleleOrigin] = 1
                                             else:
@@ -211,10 +212,10 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
 
                 else:
                     n_same_ref_alt += 1
-                    if clinvarRecord.get_nsv() is not None:
+                    if clinvarRecord.get_nsv(rcv_to_nsv) is not None:
                         n_nsv_skipped_wrong_ref_alt += 1
             else:
-                if clinvarRecord.get_nsv() is not None:
+                if clinvarRecord.get_nsv(rcv_to_nsv) is not None:
                     n_nsv_skipped_clin_sig += 1
 
             # pbar.update(record_counter)
@@ -286,7 +287,7 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
 
 
 def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, clinvarRecord,
-                                      consequence_type, ensembl_gene_id, ensembl_gene_id_uri, ensembl_gene_id_uris,
+                                      consequenceType, ensembl_gene_id, ensembl_gene_id_uri, ensembl_gene_id_uris,
                                       measure_set_refs_list, n_more_than_one_efo_term, observed_refs_list, rcv_to_gene_evidence_codes,
                                       record, rs, trait_counter, traits_ref_list, traits,
                                       unrecognised_clin_sigs):
@@ -307,7 +308,7 @@ def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, c
         clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic'
         and clin_sig != 'likely benign' and clin_sig != 'benign')
     ev_string.set_gene_2_var_ev_codes(rcv_to_gene_evidence_codes)
-    most_severe_so_term = consequence_type.getMostSevereSo()
+    most_severe_so_term = consequenceType.getMostSevereSo()
     if most_severe_so_term.get_accession() is None:
         ev_string.set_gene_2_var_func_consequence(
             'http://targetvalidation.org/sequence/' + most_severe_so_term.get_name())
@@ -334,7 +335,7 @@ def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, c
 def get_cttv_somatic_evidence_string(efo_list, clin_sig, clin_sig_2_activity, clinvarRecord,
                                      ensembl_gene_id, ensembl_gene_id_uri, ensembl_gene_id_uris, measure_set_refs_list,
                                      n_more_than_one_efo_term, observed_refs_list, trait_counter, trait_refs_list, traits,
-                                     unrecognised_clin_sigs, consequence_type):
+                                     unrecognised_clin_sigs, consequenceType):
     ev_string = evidence_strings.CTTVSomaticEvidenceString()
     ev_string.add_unique_association_field('gene', ensembl_gene_id)
     ev_string.add_unique_association_field('clinvarAccession', clinvarRecord.get_acc())
@@ -352,7 +353,7 @@ def get_cttv_somatic_evidence_string(efo_list, clin_sig, clin_sig_2_activity, cl
         clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic'
         and clin_sig != 'likely benign' and clin_sig != 'benign')
 
-    ev_string.set_known_mutations(consequence_type)
+    ev_string.set_known_mutations(consequenceType)
 
     ref_list = list(set(trait_refs_list[trait_counter] + observed_refs_list + measure_set_refs_list))
     if len(ref_list) > 0:
@@ -396,8 +397,8 @@ def write_string_list_to_file(string_list, filename):
     fd.close()
 
 
-def append_nsv(nsv_list, clinvarRecord):
-    nsv = clinvarRecord.get_nsv()
+def append_nsv(nsv_list, clinvarRecord, rcv_to_nsv):
+    nsv = clinvarRecord.get_nsv(rcv_to_nsv)
     if nsv is not None:
         nsv_list.append(nsv)
     return nsv_list
@@ -520,7 +521,7 @@ def main():
     else:
         clinvar_to_evidence_strings(parser.out, allowed_clinical_significance=parser.clinSig.split(','),
                                     ignore_terms_file=parser.ignoreTermsFile, adapt_terms_file=parser.adaptTermsFile,
-                                    efo_mapping_file=None, snp_2_gene_file=None, variant_summary_file=None)
+                                    efo_mapping_file=None, snp_2_gene_file=parser.snp_2_gene_file, variant_summary_file=None)
 
     print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
 
