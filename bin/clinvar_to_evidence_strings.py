@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-import os
-import argparse
 import json
 import sys
 import urllib.error
@@ -16,17 +14,9 @@ from eva_cttv_pipeline import efo_term, clinvar_record, evidence_strings, utilit
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
-# sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/lib")
-# print(os.path.dirname(os.path.dirname(__file__)) + "/lib")
-# print(os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/lib")
-
-# sys.path.append(os.path.dirname(os.path.dirname(__file__)) + "/lib")  # Adds eva_cttv_pipeline root dir to the
-#  PYTHONPATH
-
 BATCH_SIZE = 200
 # HOST = 'localhost:8080'
 HOST = 'www.ebi.ac.uk'
-EFOMAPPINGFILE = os.path.dirname(clinvar_record.__file__) + "/resources/ClinVar_Traits_EFO_090915.xls"
 EVIDENCESTRINGSFILENAME = 'evidence_strings.json'
 EVIDENCERECORDSFILENAME = 'evidence_records.tsv'
 UNMAPPEDTRAITSFILENAME = 'unmappedTraits.tsv'
@@ -35,9 +25,11 @@ NSVLISTFILE = 'nsvlist.txt'
 TMPDIR = '/tmp/'
 
 
-def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ignore_terms_file=None, adapt_terms_file=None, efo_mapping_file=None, snp_2_gene_file=None, variant_summary_file=None):
+def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ignore_terms_file=None,
+                                adapt_terms_file=None, efo_mapping_file=None, snp_2_gene_file=None,
+                                variant_summary_file=None):
 
-    trait_2_efo, unavailable_efo_dict = load_efo_mapping(ignore_terms_file, adapt_terms_file)
+    trait_2_efo, unavailable_efo_dict = load_efo_mapping(efo_mapping_file, ignore_terms_file, adapt_terms_file)
 
     consequence_type_dict = consequence_type.process_con_type_file(snp_2_gene_file)
     rcv_to_rs, rcv_to_nsv = clinvar_record.get_rcv_to_rsnsv_mapping(variant_summary_file)
@@ -437,12 +429,12 @@ def map_efo(trait_2_efo, trait_list):
     return trait_list_to_return, efo_list
 
 
-def load_efo_mapping(ignore_terms_file=None, adapt_terms_file=None):
+def load_efo_mapping(efo_mapping_file, ignore_terms_file=None, adapt_terms_file=None):
     ignore_terms = get_terms_from_file(ignore_terms_file)
     adapt_terms = get_terms_from_file(adapt_terms_file)
 
     print('Loading phenotypes to EFO mapping...')
-    efo_mapping_read_book = xlrd.open_workbook(EFOMAPPINGFILE, formatting_info=True)
+    efo_mapping_read_book = xlrd.open_workbook(efo_mapping_file, formatting_info=True)
     efo_mapping_read_sheet = efo_mapping_read_book.sheet_by_index(0)
     trait_2_efo = {}
     unavailable_efo = {}
@@ -516,12 +508,14 @@ def main():
     # call core function
     if parser.clinSig is None:
         clinvar_to_evidence_strings(parser.out, ignore_terms_file=parser.ignoreTermsFile,
-                                    adapt_terms_file=parser.adaptTermsFile, efo_mapping_file=None, snp_2_gene_file=None,
-                                    variant_summary_file=None)
+                                    adapt_terms_file=parser.adaptTermsFile, efo_mapping_file=parser.efo_mapping_file,
+                                    snp_2_gene_file=parser.snp_2_gene_file,
+                                    variant_summary_file=parser.variant_summary_file)
     else:
         clinvar_to_evidence_strings(parser.out, allowed_clinical_significance=parser.clinSig.split(','),
                                     ignore_terms_file=parser.ignoreTermsFile, adapt_terms_file=parser.adaptTermsFile,
-                                    efo_mapping_file=None, snp_2_gene_file=parser.snp_2_gene_file, variant_summary_file=None)
+                                    efo_mapping_file=parser.efo_mapping_file, snp_2_gene_file=parser.snp_2_gene_file,
+                                    variant_summary_file=parser.variant_summary_file)
 
     print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
 

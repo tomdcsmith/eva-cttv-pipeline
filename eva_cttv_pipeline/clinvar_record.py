@@ -6,13 +6,6 @@ import urllib.parse
 import urllib.request
 from datetime import datetime
 import http.client
-import collections
-
-import xlrd
-
-import eva_cttv_pipeline.config as config
-import eva_cttv_pipeline.utilities as utilities
-from eva_cttv_pipeline import consequence_type
 
 
 __author__ = 'Javier Lopez: javild@gmail.com'
