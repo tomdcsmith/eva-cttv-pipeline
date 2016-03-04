@@ -25,9 +25,11 @@ NSVLISTFILE = 'nsvlist.txt'
 TMPDIR = '/tmp/'
 
 
-def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ignore_terms_file=None,
+def clinvar_to_evidence_strings(dir_out, clinSig=None, ignore_terms_file=None,
                                 adapt_terms_file=None, efo_mapping_file=None, snp_2_gene_file=None,
                                 variant_summary_file=None):
+
+    allowed_clinical_significance = clinSig.split(',') if clinSig else None
 
     trait_2_efo, unavailable_efo_dict = load_efo_mapping(efo_mapping_file, ignore_terms_file, adapt_terms_file)
 
@@ -505,17 +507,10 @@ def main():
 
     utilities.check_for_local_schema()
 
-    # call core function
-    if parser.clinSig is None:
-        clinvar_to_evidence_strings(parser.out, ignore_terms_file=parser.ignoreTermsFile,
-                                    adapt_terms_file=parser.adaptTermsFile, efo_mapping_file=parser.efo_mapping_file,
-                                    snp_2_gene_file=parser.snp_2_gene_file,
-                                    variant_summary_file=parser.variant_summary_file)
-    else:
-        clinvar_to_evidence_strings(parser.out, allowed_clinical_significance=parser.clinSig.split(','),
-                                    ignore_terms_file=parser.ignoreTermsFile, adapt_terms_file=parser.adaptTermsFile,
-                                    efo_mapping_file=parser.efo_mapping_file, snp_2_gene_file=parser.snp_2_gene_file,
-                                    variant_summary_file=parser.variant_summary_file)
+    clinvar_to_evidence_strings(parser.out, allowed_clinical_significance=parser.clinSig,
+                                ignore_terms_file=parser.ignoreTermsFile, adapt_terms_file=parser.adaptTermsFile,
+                                efo_mapping_file=parser.efo_mapping_file, snp_2_gene_file=parser.snp_2_gene_file,
+                                variant_summary_file=parser.variant_summary_file)
 
     print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
 
