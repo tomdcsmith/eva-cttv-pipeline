@@ -5,7 +5,7 @@ import consequence_type
 __author__ = 'Javier Lopez: javild@gmail.com'
 
 
-def _process_con_type_file_xls(snp_2_gene_file):
+def _process_consequence_type_file_xls(snp_2_gene_file):
 
     consequence_type_dict = {}
     one_rs_multiple_genes = set()
@@ -41,40 +41,36 @@ def _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term):
         consequence_type_dict[rs_id] = consequence_type.ConsequenceType([ensembl_gene_id], [so_term])
 
 
-def _process_con_type_file_tsv(snp_2_gene_file):
+def _process_consequence_type_file_tsv(snp_2_gene_file):
 
     consequence_type_dict = {}
     one_rs_multiple_genes = set()
 
-    with open(snp_2_gene_file, "rt") as f:
-        for line in f:
-            line = line.rstrip()
-            line_list = line.split("\t")
+    for line in open(snp_2_gene_file, "rt"):
+        line = line.rstrip()
+        line_list = line.split("\t")
 
-            rs_id = line_list[0]
-            ensembl_gene_id = line_list[2]
-            if not ensembl_gene_id or rs_id == "rs":
-                continue
-            so_term = line_list[4]
+        rs_id = line_list[0]
+        ensembl_gene_id = line_list[2]
+        if not ensembl_gene_id or rs_id == "rs":
+            continue
+        so_term = line_list[4]
 
-            if "," in ensembl_gene_id:
-                ensembl_gene_ids = ensembl_gene_id.split(",")
-                for ensembl_gene_id in ensembl_gene_ids:
-                    _process_gene(rs_id, ensembl_gene_id, so_term)
-            else:
-                _process_gene(rs_id, ensembl_gene_id, so_term)
+        ensembl_gene_ids = ensembl_gene_id.split(",")
+        for ensembl_gene_id in ensembl_gene_ids:
+            _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term)
 
     return consequence_type_dict, one_rs_multiple_genes
 
 
-def process_con_type_file(snp_2_gene_file):
+def process_consequence_type_file(snp_2_gene_file):
 
-    print('Loading mappintg rs->ENSG/SOterms')
+    print('Loading mapping rs->ENSG/SOterms')
 
     if snp_2_gene_file.endswith(".xls"):
-        consequence_type_dict, one_rs_multiple_genes = _process_con_type_file_xls(snp_2_gene_file)
+        consequence_type_dict, one_rs_multiple_genes = _process_consequence_type_file_xls(snp_2_gene_file)
     else:
-        consequence_type_dict, one_rs_multiple_genes = _process_con_type_file_tsv(snp_2_gene_file)
+        consequence_type_dict, one_rs_multiple_genes = _process_consequence_type_file_tsv(snp_2_gene_file)
 
     print(str(len(consequence_type_dict)) + ' rs->ENSG/SOterms mappings loaded')
     print(str(len(one_rs_multiple_genes)) + ' rsIds with multiple gene associations')

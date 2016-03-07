@@ -107,9 +107,9 @@ class ArgParser:
         usage: %prog --clinSig <clinicalSignificanceList> --out <fileout>"""
         parser = argparse.ArgumentParser(usage)
 
-        parser.add_argument("--clinSig", dest="clinSig", help="""Optional. String containing a comma-sparated list with the clinical significances that will be allowed to generate evidence-strings. By default all clinical significances will be considered. Possible tags: 'unknown','untested','non-pathogenic','probable-non-pathogenic','probable-pathogenic','pathogenic','drug-response','drug response','histocompatibility','other','benign','protective','not provided','likely benign','confers sensitivity','uncertain significance','likely pathogenic','conflicting data from submitters','risk factor','association' """, default="pathogenic,likely pathogenic")
-        parser.add_argument("--ignore", dest="ignoreTermsFile", help="""Optional. String containing full path to a txt file containing a list of term urls which will be ignored during batch processing """, default=None)
-        parser.add_argument("--adapt", dest="adaptTermsFile", help="""Optional. String containing full path to a txt file containing a list of invalid EFO urls which will be adapted to a general valid url during batch processing """, default=None)
+        parser.add_argument("--clinSig", dest="clinical_significance", help="""Optional. String containing a comma-sparated list with the clinical significances that will be allowed to generate evidence-strings. By default all clinical significances will be considered. Possible tags: 'unknown','untested','non-pathogenic','probable-non-pathogenic','probable-pathogenic','pathogenic','drug-response','drug response','histocompatibility','other','benign','protective','not provided','likely benign','confers sensitivity','uncertain significance','likely pathogenic','conflicting data from submitters','risk factor','association' """, default="pathogenic,likely pathogenic")
+        parser.add_argument("--ignore", dest="ignore_terms_file", help="""Optional. String containing full path to a txt file containing a list of term urls which will be ignored during batch processing """, default=None)
+        parser.add_argument("--adapt", dest="adapt_terms_file", help="""Optional. String containing full path to a txt file containing a list of invalid EFO urls which will be adapted to a general valid url during batch processing """, default=None)
         parser.add_argument("--out", dest="out", help="""String containing the name of the file were results will be stored.""", required=True)
 
         parser.add_argument("-e", "--efoMapFile", dest="efo_mapping_file", help="Path to file with trait name to url mappings", required=True)
@@ -118,9 +118,9 @@ class ArgParser:
 
         args = parser.parse_args(args=argv[1:])
 
-        self.clinSig = args.clinSig
-        self.ignoreTermsFile = args.ignoreTermsFile
-        self.adaptTermsFile = args.adaptTermsFile
+        self.clinical_significance = args.clinical_significance
+        self.ignore_terms_file = args.ignore_terms_file
+        self.adapt_terms_file = args.adapt_terms_file
         self.out = args.out
         self.efo_mapping_file = args.efo_mapping_file
         self.snp_2_gene_file = args.snp_2_gene_file

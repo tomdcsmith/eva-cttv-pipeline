@@ -209,9 +209,9 @@ class ClinvarRecord(dict):
         except KeyError:
             return None
 
-    def get_main_consequence_types(self, consequence_type_dict):
+    def get_main_consequence_types(self, consequence_type_dict, rcv_to_rs):
 
-        new_rs_id = self.get_rs()
+        new_rs_id = self.get_rs(rcv_to_rs)
         if new_rs_id is not None and (new_rs_id in consequence_type_dict):
             return consequence_type_dict[new_rs_id]
         else:
