@@ -7,104 +7,17 @@ import urllib.request
 from datetime import datetime
 import http.client
 
-import xlrd
-
-import eva_cttv_pipeline.config as config
-import eva_cttv_pipeline.utilities as utilities
-from eva_cttv_pipeline import consequence_type
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
-CTMAPPINGFILE = utilities.get_resource_file(__package__, config.con_type_file)
-RCVTORSFILE = utilities.get_resource_file(__package__, config.variant_summary)
 
+def get_rcv_to_rsnsv_mapping(variant_summary_file):
 
-def _process_con_type_file_xls():
-
-    one_rs_multiple_genes = set()
-    consequence_type_dict = {}
-
-    ct_mapping_read_book = xlrd.open_workbook(CTMAPPINGFILE, formatting_info=True)
-    ct_mapping_read_sheet = ct_mapping_read_book.sheet_by_index(0)
-    for i in range(1, ct_mapping_read_sheet.nrows):
-        if ct_mapping_read_sheet.cell_value(rowx=i, colx=2) != 'Not found':
-
-            rs_id = ct_mapping_read_sheet.cell_value(rowx=i, colx=0)
-            ensembl_gene_id = ct_mapping_read_sheet.cell_value(rowx=i, colx=2)
-            so_term = ct_mapping_read_sheet.cell_value(rowx=i, colx=1)
-
-            if rs_id in consequence_type_dict:
-                if ensembl_gene_id not in consequence_type_dict[rs_id].get_ensembl_gene_ids():
-                    print('WARNING (clinvar_record.py): different genes and annotations found for a given gene.')
-                    print(' Variant id: ' + rs_id + ', ENSG: ' + so_term + ', ENSG: ' + str(consequence_type_dict[rs_id].get_ensembl_gene_ids()))
-                    print('Skipping')
-                    one_rs_multiple_genes.add(rs_id)
-                else:
-                    consequence_type_dict[rs_id].add_so_term(so_term)
-            else:
-                consequence_type_dict[rs_id] = consequence_type.ConsequenceType(ensembl_gene_id, [so_term])
-
-    return one_rs_multiple_genes, consequence_type_dict
-
-
-def _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term):
-    if rs_id in consequence_type_dict:
-        consequence_type_dict[rs_id].add_ensembl_gene_id(ensembl_gene_id)
-        consequence_type_dict[rs_id].add_so_term(so_term)
-    else:
-        consequence_type_dict[rs_id] = consequence_type.ConsequenceType([ensembl_gene_id], [so_term])
-
-
-def _process_con_type_file_tsv():
-    one_rs_multiple_genes = set()
-    consequence_type_dict = {}
-
-    with open(CTMAPPINGFILE, "rt") as f:
-        for line in f:
-            line = line.rstrip()
-            line_list = line.split("\t")
-
-            rs_id = line_list[0]
-            ensembl_gene_id = line_list[2]
-            if not ensembl_gene_id or rs_id == "rs":
-                continue
-            so_term = line_list[4]
-
-            if "," in ensembl_gene_id:
-                ensembl_gene_ids = ensembl_gene_id.split(",")
-                for ensembl_gene_id in ensembl_gene_ids:
-                    _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term)
-            else:
-                _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term)
-
-    return one_rs_multiple_genes, consequence_type_dict
-
-
-def _process_con_type_file():
-
-    print('Loading mappintg rs->ENSG/SOterms')
-
-    if config.con_type_file.endswith(".xls"):
-        one_rs_multiple_genes, consequence_type_dict = _process_con_type_file_xls()
-    else:
-        one_rs_multiple_genes, consequence_type_dict = _process_con_type_file_tsv()
-
-    print(str(len(consequence_type_dict)) + ' rs->ENSG/SOterms mappings loaded')
-    print(str(len(one_rs_multiple_genes)) + ' rsIds with multiple gene associations')
-    print('Done.')
-
-    return consequence_type_dict
-
-
-class ClinvarRecord(dict):
-    cached_symbol_2_ensembl = {}
-
-    consequence_type_dict = _process_con_type_file()
-
-    print('Loading mapping RCV->rs/nsv')
     rcv_to_rs = {}
     rcv_to_nsv = {}
-    fdr = open(RCVTORSFILE, "r")
+
+    print('Loading mapping RCV->rs/nsv')
+    fdr = open(variant_summary_file, "r")
     fdr.readline()
     for line in fdr:
         parts = line.split('\t')
@@ -117,6 +30,13 @@ class ClinvarRecord(dict):
                 rcv_to_nsv[rcv_id] = parts[7]
     fdr.close()
     print(' Done.')
+
+    return rcv_to_rs, rcv_to_nsv
+
+
+class ClinvarRecord(dict):
+
+    cached_symbol_2_ensembl = {}
 
     def __init__(self, a_dictionary=None):
         if a_dictionary is None:
@@ -277,22 +197,23 @@ class ClinvarRecord(dict):
     def get_clinical_significance(self):
         return self['referenceClinVarAssertion']['clinicalSignificance']['description']
 
-    def get_rs(self):
+    def get_rs(self, rcv_to_rs):
         try:
-            return ClinvarRecord.rcv_to_rs[self.get_acc()]
+            return rcv_to_rs[self.get_acc()]
         except KeyError:
             return None
 
-    def get_nsv(self):
+    def get_nsv(self, rcv_to_nsv):
         try:
-            return ClinvarRecord.rcv_to_nsv[self.get_acc()]
+            return rcv_to_nsv[self.get_acc()]
         except KeyError:
             return None
 
-    def get_main_consequence_types(self):
-        new_rs_id = self.get_rs()
-        if new_rs_id is not None and (new_rs_id in ClinvarRecord.consequence_type_dict):
-            return ClinvarRecord.consequence_type_dict[new_rs_id]
+    def get_main_consequence_types(self, consequence_type_dict, rcv_to_rs):
+
+        new_rs_id = self.get_rs(rcv_to_rs)
+        if new_rs_id is not None and (new_rs_id in consequence_type_dict):
+            return consequence_type_dict[new_rs_id]
         else:
             return None
 
