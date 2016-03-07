@@ -17,3 +17,12 @@ For a Python virtual environment to work with the pipeline:
 2. "virtualenv -p python3.5 venv"
 3. "source venv/bin/activate" ("venv/bin/deactivate" to deactivate virtualenv)
 4. pip install -r /path/to/requirements.txt
+
+Usage
+-------
+
+python3 clinvar_to_evidence_strings.py --out <OUTPUT_FILE> -e <EFO_MAPPING_FILE> -g <SNP_2_GENE_MAPPING_FILE> -v <VARIANT_SUMMARY_FILE> [--clinSig <CLINICAL_SIGNIFICANCE_LIST>] [--ignore <TERM_URL_IGNORE_FILE>]
+
+OUTPUT_FILE: path to output directory
+EFO_MAPPING_FILE: file with mappings of Clinvar trait names to URLS
+SNP_2_GENE_MAPPING_FILE: file from CTTV with mappings from rs IDs to Ensembl gene IDs, and to functional consequence
