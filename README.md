@@ -12,6 +12,7 @@ Building
 Setting up virtual environment
 -------
 For a Python virtual environment to work with the pipeline:
+
 1. "cd eva-cttv-pipeline"
 2. "virtualenv -p python3.5 venv"
 3. "source venv/bin/activate" ("venv/bin/deactivate" to deactivate virtualenv)
