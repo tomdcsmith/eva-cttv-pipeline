@@ -24,5 +24,13 @@ Usage
 python3 clinvar_to_evidence_strings.py --out <OUTPUT_FILE> -e <EFO_MAPPING_FILE> -g <SNP_2_GENE_MAPPING_FILE> -v <VARIANT_SUMMARY_FILE> [--clinSig <CLINICAL_SIGNIFICANCE_LIST>] [--ignore <TERM_URL_IGNORE_FILE>]
 
 OUTPUT_FILE: path to output directory
+
 EFO_MAPPING_FILE: file with mappings of Clinvar trait names to URLS
-SNP_2_GENE_MAPPING_FILE: file from CTTV with mappings from rs IDs to Ensembl gene IDs, and to functional consequence
+
+SNP_2_GENE_MAPPING_FILE: file from CTTV with mappings from rs IDs to Ensembl gene IDs, and to functional consequences
+
+VARIANT_SUMMARY_FILE: variant_summary file from Clinvar
+
+CLINICAL_SIGNIFICANCE_LIST: comma separated (no spaces) list of clinical significances allowed to generate evidence strings (defaults to "pathogenic,likely pathogenic")
+
+TERM_URL_IGNORE_FILE: path to file containing list of invalid EFO URLs which will be used to filter out evidence strings with matching URLs; file should contain list of URLs, one on each line
