@@ -25,15 +25,15 @@ NSVLISTFILE = 'nsvlist.txt'
 TMPDIR = '/tmp/'
 
 
-def clinvar_to_evidence_strings(dir_out, clinSig=None, ignore_terms_file=None,
+def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ignore_terms_file=None,
                                 adapt_terms_file=None, efo_mapping_file=None, snp_2_gene_file=None,
                                 variant_summary_file=None):
 
-    allowed_clinical_significance = clinSig.split(',') if clinSig else None
+    allowed_clinical_significance = allowed_clinical_significance.split(',') if allowed_clinical_significance else None
 
     trait_2_efo, unavailable_efo_dict = load_efo_mapping(efo_mapping_file, ignore_terms_file, adapt_terms_file)
 
-    consequence_type_dict = consequence_type.process_con_type_file(snp_2_gene_file)
+    consequence_type_dict = consequence_type.process_consequence_type_file(snp_2_gene_file)
     rcv_to_rs, rcv_to_nsv = clinvar_record.get_rcv_to_rsnsv_mapping(variant_summary_file)
 
     clin_sig_2_activity = {'unknown': 'http://identifiers.org/cttv.activity/unknown',
@@ -112,7 +112,7 @@ def clinvar_to_evidence_strings(dir_out, clinSig=None, ignore_terms_file=None,
                     nsv_list = append_nsv(nsv_list, clinvarRecord, rcv_to_nsv)
                     rs = clinvarRecord.get_rs(rcv_to_rs)
                     if rs is not None:
-                        consequenceType = clinvarRecord.get_main_consequence_types(consequence_type_dict)
+                        consequenceType = clinvarRecord.get_main_consequence_types(consequence_type_dict, rcv_to_rs)
                         # Mapping rs->Gene was found at Mick's file and therefore ensembl_gene_id will never be None
                         if consequenceType is not None:
 
@@ -140,7 +140,7 @@ def clinvar_to_evidence_strings(dir_out, clinSig=None, ignore_terms_file=None,
                                                                                                                               clin_sig,
                                                                                                                               clin_sig_2_activity,
                                                                                                                               clinvarRecord,
-                                                                                                                              consequence_type,
+                                                                                                                              consequenceType,
                                                                                                                               ensembl_gene_id,
                                                                                                                               ensembl_gene_id_uri,
                                                                                                                               ensembl_gene_id_uris,
@@ -176,7 +176,7 @@ def clinvar_to_evidence_strings(dir_out, clinSig=None, ignore_terms_file=None,
                                                                                                                              trait_refs_list,
                                                                                                                              traits,
                                                                                                                              unrecognised_clin_sigs,
-                                                                                                                             consequence_type)
+                                                                                                                             consequenceType)
                                                 n_ev_strings_per_record = add_evidence_string(clinvarRecord, evidence_string,
                                                                                               evidence_string_list,
                                                                                               n_ev_strings_per_record)
@@ -507,8 +507,8 @@ def main():
 
     utilities.check_for_local_schema()
 
-    clinvar_to_evidence_strings(parser.out, allowed_clinical_significance=parser.clinSig,
-                                ignore_terms_file=parser.ignoreTermsFile, adapt_terms_file=parser.adaptTermsFile,
+    clinvar_to_evidence_strings(parser.out, allowed_clinical_significance=parser.clinical_significance,
+                                ignore_terms_file=parser.ignore_terms_file, adapt_terms_file=parser.adapt_terms_file,
                                 efo_mapping_file=parser.efo_mapping_file, snp_2_gene_file=parser.snp_2_gene_file,
                                 variant_summary_file=parser.variant_summary_file)
 
