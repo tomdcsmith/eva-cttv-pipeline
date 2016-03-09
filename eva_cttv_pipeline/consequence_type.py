@@ -46,19 +46,20 @@ def _process_consequence_type_file_tsv(snp_2_gene_file):
     consequence_type_dict = {}
     one_rs_multiple_genes = set()
 
-    for line in open(snp_2_gene_file, "rt"):
-        line = line.rstrip()
-        line_list = line.split("\t")
+    with open(snp_2_gene_file, "rt") as f:
+        for line in f:
+            line = line.rstrip()
+            line_list = line.split("\t")
 
-        rs_id = line_list[0]
-        ensembl_gene_id = line_list[2]
-        if not ensembl_gene_id or rs_id == "rs":
-            continue
-        so_term = line_list[4]
+            rs_id = line_list[0]
+            ensembl_gene_id = line_list[2]
+            if not ensembl_gene_id or rs_id == "rs":
+                continue
+            so_term = line_list[4]
 
-        ensembl_gene_ids = ensembl_gene_id.split(",")
-        for ensembl_gene_id in ensembl_gene_ids:
-            _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term)
+            ensembl_gene_ids = ensembl_gene_id.split(",")
+            for ensembl_gene_id in ensembl_gene_ids:
+                _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term)
 
     return consequence_type_dict, one_rs_multiple_genes
 
