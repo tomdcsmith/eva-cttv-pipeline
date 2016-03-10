@@ -5,24 +5,19 @@ Minimum Python version needed: 3.2
 (the dependency xlrd requires at least 3.2)
 
 
-Setting up virtual environment
+Building and (optional) Setting up virtual environment
 -------
-For a Python virtual environment to work with the pipeline:
 
-1. "cd eva-cttv-pipeline"
-2. "virtualenv -p python3.4 venv"
-3. "source venv/bin/activate" ("venv/bin/deactivate" to deactivate virtualenv)
-4. pip install -r requirements.txt
-
-
-Building
--------
-1. "git clone git@github.com:EBIvariation/eva-cttv-pipeline.git"
+1. "git clone --recursive git@github.com:EBIvariation/eva-cttv-pipeline.git"
 2. "cd eva-cttv-pipeline"
-3. and then:
-	4. to install: "python3 setup.py install"
-	5. to install to develop: "python3 setup.py develop"
-	6. to build a source distribution: "python3 setup.py sdist"
+3. [OPTIONAL] "virtualenv -p python3.4 venv"
+4. [OPTIONAL] "source venv/bin/activate" ("venv/bin/deactivate" to deactivate virtualenv)
+5. [OPTIONAL] pip install -r requirements.txt
+6. and then:
+	7. to install: "python3 setup.py install"
+	8. to install to develop: "python3 setup.py develop"
+	9. to build a source distribution: "python3 setup.py sdist"
+
 
 Usage
 -------
