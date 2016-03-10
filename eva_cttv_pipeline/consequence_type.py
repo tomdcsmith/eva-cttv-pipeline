@@ -1,7 +1,5 @@
 import xlrd
 
-import consequence_type
-
 __author__ = 'Javier Lopez: javild@gmail.com'
 
 
@@ -28,7 +26,7 @@ def _process_consequence_type_file_xls(snp_2_gene_file):
                 else:
                     consequence_type_dict[rs_id].add_so_term(so_term)
             else:
-                consequence_type_dict[rs_id] = consequence_type.ConsequenceType(ensembl_gene_id, [so_term])
+                consequence_type_dict[rs_id] = ConsequenceType(ensembl_gene_id, [so_term])
 
     return consequence_type_dict, one_rs_multiple_genes
 
@@ -38,7 +36,7 @@ def _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term):
         consequence_type_dict[rs_id].add_ensembl_gene_id(ensembl_gene_id)
         consequence_type_dict[rs_id].add_so_term(so_term)
     else:
-        consequence_type_dict[rs_id] = consequence_type.ConsequenceType([ensembl_gene_id], [so_term])
+        consequence_type_dict[rs_id] = ConsequenceType([ensembl_gene_id], [so_term])
 
 
 def _process_consequence_type_file_tsv(snp_2_gene_file):
