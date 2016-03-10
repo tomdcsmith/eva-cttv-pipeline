@@ -27,7 +27,7 @@ Building
 Usage
 -------
 
-python3 clinvar_to_evidence_strings.py --out \<OUTPUT_FILE\> -e \<EFO_MAPPING_FILE\> -g \<SNP_2_GENE_MAPPING_FILE\> -v \<VARIANT_SUMMARY_FILE\> [--clinSig \<CLINICAL_SIGNIFICANCE_LIST\>] [--ignore \<TERM_URL_IGNORE_FILE\>]
+python3 bin/clinvar_to_evidence_strings.py --out \<OUTPUT_FILE\> -e \<EFO_MAPPING_FILE\> -g \<SNP_2_GENE_MAPPING_FILE\> -v \<VARIANT_SUMMARY_FILE\> [--clinSig \<CLINICAL_SIGNIFICANCE_LIST\>] [--ignore \<TERM_URL_IGNORE_FILE\>]
 
 OUTPUT_FILE: path to output directory
 
