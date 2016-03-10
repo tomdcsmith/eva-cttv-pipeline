@@ -31,11 +31,11 @@ python3 clinvar_to_evidence_strings.py --out \<OUTPUT_FILE\> -e \<EFO_MAPPING_FI
 
 OUTPUT_FILE: path to output directory
 
-EFO_MAPPING_FILE: file with mappings of Clinvar trait names to URLS
+EFO_MAPPING_FILE: file with mappings of Clinvar trait names to URLS (e.g. resources/ClinVar_Traits_EFO_090915.xls)
 
-SNP_2_GENE_MAPPING_FILE: file from CTTV with mappings from rs IDs to Ensembl gene IDs, and to functional consequences
+SNP_2_GENE_MAPPING_FILE: file from CTTV with mappings from rs IDs to Ensembl gene IDs, and to functional consequences (e.g. resources/cttv012_snp2gene_20160222.tsv)
 
-VARIANT_SUMMARY_FILE: variant_summary file from Clinvar
+VARIANT_SUMMARY_FILE: variant_summary file from Clinvar (e.g. resources/variant_summary_2015-05.txt)
 
 CLINICAL_SIGNIFICANCE_LIST: comma separated (no spaces) list of clinical significances allowed to generate evidence strings (defaults to "pathogenic,likely pathogenic")
 
