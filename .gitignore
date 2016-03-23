@@ -28,6 +28,7 @@
 /resources/rs_ids_2015_05.txt
 /eva_cttv_pipeline/resources/schema_local
 /resources/bad_snp2gene
+.cache/
 
 
 # General
