@@ -8,10 +8,7 @@ import codecs
 import jsonschema
 import xlrd
 
-import eva_cttv_pipeline.efo_term as efo_term
-import eva_cttv_pipeline.clinvar_record as clinvar_record
-import eva_cttv_pipeline.evidence_strings as evidence_strings
-import eva_cttv_pipeline.consequence_type as consequence_type
+from eva_cttv_pipeline import efo_term, clinvar_record, evidence_strings, consequence_type
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
