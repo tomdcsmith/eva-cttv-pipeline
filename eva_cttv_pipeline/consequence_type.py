@@ -80,55 +80,53 @@ def process_consequence_type_file(snp_2_gene_file):
 
 class SoTerm(object):
 
-    so_accession_name_dict = {}
-    so_accession_name_dict['transcript_ablation'] = 1893
-    so_accession_name_dict['splice_donor_variant'] = 1575
-    so_accession_name_dict['splice_acceptor_variant'] = 1574
-    so_accession_name_dict['stop_gained'] = 1587
-    so_accession_name_dict['frameshift_variant'] = 1589
-    so_accession_name_dict['stop_lost'] = 1578
-    so_accession_name_dict['initiator_codon_variant'] = 1582
-    so_accession_name_dict['inframe_insertion'] = 1821
-    so_accession_name_dict['inframe_deletion'] = 1822
-    so_accession_name_dict['missense_variant'] = 1583
-    so_accession_name_dict['transcript_amplification'] = 1889
-    so_accession_name_dict['splice_region_variant'] = 1630
-    so_accession_name_dict['incomplete_terminal_codon_variant'] = 1626
-    so_accession_name_dict['synonymous_variant'] = 1819
-    so_accession_name_dict['stop_retained_variant'] = 1567
-    so_accession_name_dict['coding_sequence_variant'] = 1580
-    so_accession_name_dict['miRNA'] = 276
-    so_accession_name_dict['miRNA_target_site'] = 934
-    so_accession_name_dict['mature_miRNA_variant'] = 1620
-    so_accession_name_dict['5_prime_UTR_variant'] = 1623
-    so_accession_name_dict['3_prime_UTR_variant'] = 1624
-    so_accession_name_dict['exon_variant'] = 1791
-    so_accession_name_dict['non_coding_transcript_exon_variant'] = 1792
-    so_accession_name_dict['non_coding_transcript_variant'] = 1619
-    so_accession_name_dict['intron_variant'] = 1627
-    so_accession_name_dict['NMD_transcript_variant'] = 1621
-    so_accession_name_dict['TFBS_ablation'] = 1895
-    so_accession_name_dict['TFBS_amplification'] = 1892
-    so_accession_name_dict['TF_binding_site_variant'] = 1782
-    so_accession_name_dict['regulatory_region_variant'] = 1566
-    so_accession_name_dict['regulatory_region_ablation'] = 1894
-    so_accession_name_dict['regulatory_region_amplification'] = 1891
-    so_accession_name_dict['feature_elongation'] = 1907
-    so_accession_name_dict['feature_truncation'] = 1906
-    so_accession_name_dict['intergenic_variant'] = 1628
-    so_accession_name_dict['lincRNA'] = 1463
-    so_accession_name_dict['downstream_gene_variant'] = 1632
-    so_accession_name_dict['2KB_downstream_gene_variant'] = 1632
-    so_accession_name_dict['upstream_gene_variant'] = 1631
-    so_accession_name_dict['2KB_upstream_gene_variant'] = 1631
-    so_accession_name_dict['SNV'] = 1483
-    so_accession_name_dict['SNP'] = 694
-    so_accession_name_dict['RNA_polymerase_promoter'] = 1203
-    so_accession_name_dict['CpG_island'] = 307
-    so_accession_name_dict['DNAseI_hypersensitive_site'] = 685
-    so_accession_name_dict['polypeptide_variation_site'] = 336
-    so_accession_name_dict['start_lost'] = 2012
-    so_accession_name_dict['protein_altering_variant'] = 1818
+    so_accession_name_dict = {'transcript_ablation': 1893,
+                              'splice_donor_variant': 1575,
+                              'splice_acceptor_variant': 1574,
+                              'stop_gained': 1587,
+                              'frameshift_variant': 1589,
+                              'stop_lost': 1578,
+                              'initiator_codon_variant': 1582,
+                              'inframe_insertion': 1821,
+                              'inframe_deletion': 1822,
+                              'missense_variant': 1583,
+                              'transcript_amplification': 1889,
+                              'splice_region_variant': 1630,
+                              'incomplete_terminal_codon_variant': 1626,
+                              'synonymous_variant': 1819,
+                              'stop_retained_variant': 1567,
+                              'coding_sequence_variant': 1580,
+                              'miRNA': 276, 'miRNA_target_site': 934,
+                              'mature_miRNA_variant': 1620,
+                              '5_prime_UTR_variant': 1623,
+                              '3_prime_UTR_variant': 1624,
+                              'exon_variant': 1791,
+                              'non_coding_transcript_exon_variant': 1792,
+                              'non_coding_transcript_variant': 1619,
+                              'intron_variant': 1627,
+                              'NMD_transcript_variant': 1621,
+                              'TFBS_ablation': 1895,
+                              'TFBS_amplification': 1892,
+                              'TF_binding_site_variant': 1782,
+                              'regulatory_region_variant': 1566,
+                              'regulatory_region_ablation': 1894,
+                              'regulatory_region_amplification': 1891,
+                              'feature_elongation': 1907,
+                              'feature_truncation': 1906,
+                              'intergenic_variant': 1628,
+                              'lincRNA': 1463,
+                              'downstream_gene_variant': 1632,
+                              '2KB_downstream_gene_variant': 1632,
+                              'upstream_gene_variant': 1631,
+                              '2KB_upstream_gene_variant': 1631,
+                              'SNV': 1483,
+                              'SNP': 694,
+                              'RNA_polymerase_promoter': 1203,
+                              'CpG_island': 307,
+                              'DNAseI_hypersensitive_site': 685,
+                              'polypeptide_variation_site': 336,
+                              'start_lost': 2012,
+                              'protein_altering_variant': 1818}
 
     ranked_so_names_list = ['transcript_ablation', 'splice_acceptor_variant', 'splice_donor_variant', 'stop_gained',
                          'frameshift_variant', 'stop_lost', 'initiator_codon_variant', 'transcript_amplification',
