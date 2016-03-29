@@ -9,6 +9,6 @@ install:
   - python setup.py install
 # command to run tests
 script:
-  - bash run_tests.sh
+  - coverage run --source=eva_cttv_pipeline setup.py test
 after_success:
   - coveralls

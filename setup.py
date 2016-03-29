@@ -27,5 +27,7 @@ setup(name='eva_cttv_pipeline',
       install_requires=get_requires(),
       package_data={
           'eva_cttv_pipeline': get_package_data()
-      }
+      },
+      tests_require=get_requires(),
+      setup_requires=get_requires()
       )
