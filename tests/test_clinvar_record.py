@@ -25,6 +25,39 @@ class TestClinvarRecord(unittest.TestCase):
     def test_get_acc(self):
         self.assertEqual(self.clinvar_record.get_acc(), "RCV000055062")
 
+    def test_get_traits(self):
+        self.assertEqual(self.clinvar_record.get_traits(), [['Tuberous sclerosis syndrome']])
+
+    def test_get_trait_pubmed_refs(self):
+        self.assertEqual(self.clinvar_record.get_trait_pubmed_refs(), [[20301399]])
+
+    def test_get_observed_pubmed_refs(self):
+        self.assertEqual(self.clinvar_record.get_observed_pubmed_refs(), [])
+
+    def test_get_measure_set_pubmed_refs(self):
+        self.assertEqual(self.clinvar_record.get_measure_set_pubmed_refs(), [])
+
+    def test_get_hgvs(self):
+        self.assertEqual(self.clinvar_record.get_hgvs(), ['NM_000548.3:c.*154dup', 'NM_001009944.2:c.*963dupC', 'NG_005895.1:g.44459dupG', 'NC_000016.10:g.2088764dupG', 'NC_000016.9:g.2138765dupG', 'p.(=)'])
+    #
+    # def test_get_acc(self):
+    #     self.assertEqual(self.clinvar_record.get_acc(), "RCV000055062")
+    #
+    # def test_get_traits(self):
+    #     self.assertEqual(self.clinvar_record.get_traits(), [['Tuberous sclerosis syndrome']])
+    #
+    # def test_get_trait_pubmed_refs(self):
+    #     self.assertEqual(self.clinvar_record.get_trait_pubmed_refs(), [[20301399]])
+    #
+    # def test_get_acc(self):
+    #     self.assertEqual(self.clinvar_record.get_acc(), "RCV000055062")
+    #
+    # def test_get_traits(self):
+    #     self.assertEqual(self.clinvar_record.get_traits(), [['Tuberous sclerosis syndrome']])
+    #
+    # def test_get_trait_pubmed_refs(self):
+    #     self.assertEqual(self.clinvar_record.get_trait_pubmed_refs(), [[20301399]])
+
 
 def get_test_record():
     test_record = clinvar_record.ClinvarRecord(
@@ -238,4 +271,4 @@ def get_test_record():
     return test_record
 
 
-print(get_test_record().get_acc())
+print(get_test_record().get_hgvs())
