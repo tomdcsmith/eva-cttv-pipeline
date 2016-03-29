@@ -3,6 +3,7 @@ import json
 import unittest
 
 from eva_cttv_pipeline import clinvar_record
+from eva_cttv_pipeline import utilities
 
 
 class TestClinvarRecord(unittest.TestCase):
@@ -39,24 +40,42 @@ class TestClinvarRecord(unittest.TestCase):
 
     def test_get_hgvs(self):
         self.assertEqual(self.clinvar_record.get_hgvs(), ['NM_000548.3:c.*154dup', 'NM_001009944.2:c.*963dupC', 'NG_005895.1:g.44459dupG', 'NC_000016.10:g.2088764dupG', 'NC_000016.9:g.2138765dupG', 'p.(=)'])
-    #
-    # def test_get_acc(self):
-    #     self.assertEqual(self.clinvar_record.get_acc(), "RCV000055062")
-    #
-    # def test_get_traits(self):
-    #     self.assertEqual(self.clinvar_record.get_traits(), [['Tuberous sclerosis syndrome']])
-    #
-    # def test_get_trait_pubmed_refs(self):
-    #     self.assertEqual(self.clinvar_record.get_trait_pubmed_refs(), [[20301399]])
-    #
-    # def test_get_acc(self):
-    #     self.assertEqual(self.clinvar_record.get_acc(), "RCV000055062")
-    #
-    # def test_get_traits(self):
-    #     self.assertEqual(self.clinvar_record.get_traits(), [['Tuberous sclerosis syndrome']])
-    #
-    # def test_get_trait_pubmed_refs(self):
-    #     self.assertEqual(self.clinvar_record.get_trait_pubmed_refs(), [[20301399]])
+
+    def test_get_clinical_significance(self):
+        self.assertEqual(self.clinvar_record.get_clinical_significance(), "not provided")
+
+    #TODO needs rcv_to_rs dict
+    def test_get_rs(self):
+        pass
+
+    #TODO needs rcv_to_nsv dict
+    def test_get_nsv(self):
+        pass
+
+    #TODO needs consequence_type_dict and rsv_to_rs dicts
+    def test_get_main_consequence_types(self):
+        pass
+
+    def test_get_variant_type(self):
+        self.assertEqual(self.clinvar_record.get_variant_type(), "Duplication")
+
+    def test_get_allele_origins(self):
+        self.assertEqual(self.clinvar_record.get_allele_origins(), ['germline'])
+
+
+class TestGetRcvToRSNSVMapping(unittest.TestCase):
+    variant_summary_file_path = utilities.get_resource_file("eva_cttv_pipeline", "resources/variant_summary_2015-05_testing.txt")
+    rcv_to_rs, rcv_to_nsv = clinvar_record.get_rcv_to_rsnsv_mapping(variant_summary_file_path)
+
+    def test_rcv_to_rs(self):
+        self.assertEqual(self.rcv_to_rs["RCV000000012"], "rs397704705")
+        self.assertEqual(self.rcv_to_rs["RCV000000381"], "rs137854556")
+        self.assertEqual(self.rcv_to_rs["RCV000000204"], "rs121965059")
+
+    def test_rcv_to_nsv(self):
+        self.assertEqual(self.rcv_to_nsv["RCV000004182"], "nsv1067860")
+        self.assertEqual(self.rcv_to_nsv["RCV000004183"], "nsv1067861")
+        self.assertEqual(self.rcv_to_nsv["RCV000004554"], "nsv1067916")
 
 
 def get_test_record():
@@ -271,4 +290,4 @@ def get_test_record():
     return test_record
 
 
-print(get_test_record().get_hgvs())
+print(get_test_record().get_allele_origins())
