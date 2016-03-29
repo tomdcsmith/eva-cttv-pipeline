@@ -33,3 +33,11 @@ class ArgParserTest(unittest.TestCase):
 
     def test_variant_summary_file(self):
         self.assertEquals(self.argparser.variant_summary_file, self.variant_summary_file)
+
+
+class GetResourceFileTest(unittest.TestCase):
+    def test_get_resource_file_existant(self):
+        pass
+
+    def test_get_resource_file_nonexistant(self):
+        self.assertEqual(util.get_resource_file("not_a_real_package_39146", "not_a_real_file"), None)
