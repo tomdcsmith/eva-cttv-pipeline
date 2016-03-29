@@ -29,7 +29,7 @@
 /eva_cttv_pipeline/resources/schema_local
 /resources/bad_snp2gene
 .cache/
-
+*.coverage
 
 # General
 *.jar
