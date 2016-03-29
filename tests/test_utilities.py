@@ -49,3 +49,4 @@ class CheckDirExistsCreateTest(unittest.TestCase):
         directory = "./test_tmp"
         util.check_dir_exists_create(directory)
         self.assertTrue(os.path.exists(directory))
+        os.removedirs(directory)
