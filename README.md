@@ -1,8 +1,6 @@
 ## README ##
 
-Minimum Python version needed: 3.2
-
-(the dependency xlrd requires at least 3.2)
+Minimum Python version needed: 3.4
 
 
 Building and (optional) Setting up virtual environment
