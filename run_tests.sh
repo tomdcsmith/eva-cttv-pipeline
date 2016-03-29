@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-py.test --cov-report term-missing --cov=eva_cttv_pipeline tests/
+py.test --cov-report= --cov=eva_cttv_pipeline tests/
