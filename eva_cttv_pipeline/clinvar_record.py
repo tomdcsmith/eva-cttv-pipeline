@@ -38,19 +38,19 @@ class ClinvarRecord(dict):
 
     cached_symbol_2_ensembl = {}
 
+    score_map = {
+        "CLASSIFIED_BY_SINGLE_SUBMITTER": 1,
+        "NOT_CLASSIFIED_BY_SUBMITTER": None,
+        "CLASSIFIED_BY_MULTIPLE_SUBMITTERS": 2,
+        "REVIEWED_BY_EXPERT_PANEL": 3,
+        "REVIEWED_BY_PROFESSIONAL_SOCIETY": 4
+    }
+
     def __init__(self, a_dictionary=None):
         if a_dictionary is None:
             dict.__init__(self)
         else:
             dict.__init__(self, a_dictionary)
-
-        self.score_map = {
-            "CLASSIFIED_BY_SINGLE_SUBMITTER": 1,
-            "NOT_CLASSIFIED_BY_SUBMITTER": None,
-            "CLASSIFIED_BY_MULTIPLE_SUBMITTERS": 2,
-            "REVIEWED_BY_EXPERT_PANEL": 3,
-            "REVIEWED_BY_PROFESSIONAL_SOCIETY": 4
-        }
 
     def get_gene_id(self):
         j = 0
@@ -88,10 +88,9 @@ class ClinvarRecord(dict):
                                 not_solved = True
                                 while not_solved:
                                     try:
-                                        ensembl_json = json.loads(urllib.request.urlopen(
-                                            'http://rest.ensembl.org/lookup/symbol/homo_sapiens/' +
-                                            symbol[i]['elementValue'][
-                                                'value'] + '?content-type=application/json').read())
+                                        url = 'http://rest.ensembl.org/lookup/symbol/homo_sapiens/' + symbol[i]['elementValue']['value'] + '?content-type=application/json'
+                                        rawreply = urllib.request.urlopen(url).read()
+                                        ensembl_json = json.loads(rawreply.decode())
                                         not_solved = False
                                     except urllib.error.HTTPError as e:
                                         if e.code == 400:
@@ -110,7 +109,7 @@ class ClinvarRecord(dict):
                                         time.sleep(3)
 
                                 if len(ensembl_json) > 0:
-                                    if (len(ensembl_json) == 14) and (ensembl_json['object_type'] == 'Gene'):
+                                    if (len(ensembl_json) in [14, 15]) and (ensembl_json['object_type'] == 'Gene'):
                                         ClinvarRecord.cached_symbol_2_ensembl[symbol[i]['elementValue']['value']] = \
                                             ensembl_json['id']
                                         return ensembl_json['id']
