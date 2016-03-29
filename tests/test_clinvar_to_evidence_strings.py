@@ -5,8 +5,9 @@ from eva_cttv_pipeline import utilities
 
 
 class GetTermsFromFileTest(unittest.TestCase):
+    #TODO do the same for adapt terms file?
     def setUp(self):
-        ignore_file = utilities.get_resource_file("eva_cttv_pipeline", "resources/testing/ignore_file_testing.txt")
+        ignore_file = utilities.get_resource_file("eva_cttv_pipeline", "resources/testing/ignore_file.txt")
         self.ignore_terms = clinvar_to_evidence_strings.get_terms_from_file(ignore_file)
 
     def test_length(self):
@@ -61,3 +62,31 @@ class GetCttvVariantTypeTest(unittest.TestCase):
     def test_get_cttv_variant_type_structurals(self):
         for record in self.test_records_structurals:
             self.assertEqual(clinvar_to_evidence_strings.get_cttv_variant_type(record[0]), record[1])
+
+
+class LoadEfoMappingTest(unittest.TestCase):
+    def setUp(self):
+        ignore_file = utilities.get_resource_file("eva_cttv_pipeline", "resources/testing/ignore_file.txt")
+        efo_file = utilities.get_resource_file("eva_cttv_pipeline", "resources/testing/ClinVar_Traits_EFO_090915.xls")
+
+        self.trait_2_efo, self.unavailable_efo = clinvar_to_evidence_strings.load_efo_mapping(efo_file)
+        self.trait_2_efo_w_ignore, self.unavailable_efo_w_ignore = clinvar_to_evidence_strings.load_efo_mapping(efo_file, ignore_terms_file=ignore_file)
+
+    def test_just_mapping_trait_2_efo(self):
+        self.assertEqual(len(self.trait_2_efo), 3819)
+
+    def test_w_ignore_trait_2_efo(self):
+        self.assertEqual(len(self.trait_2_efo_w_ignore), 3528)
+
+
+# def temp():
+#     ignore_file = utilities.get_resource_file("eva_cttv_pipeline", "resources/testing/ignore_file.txt")
+#     efo_file = utilities.get_resource_file("eva_cttv_pipeline", "resources/testing/ClinVar_Traits_EFO_090915.xls")
+#
+#     trait_2_efo, unavailable_efo = clinvar_to_evidence_strings.load_efo_mapping(efo_file)
+#
+#     print([])
+#     print(len(unavailable_efo))
+#
+#
+# temp()
