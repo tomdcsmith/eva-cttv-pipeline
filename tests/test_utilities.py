@@ -1,3 +1,4 @@
+import os
 import unittest
 
 import eva_cttv_pipeline.utilities as util
@@ -36,8 +37,15 @@ class ArgParserTest(unittest.TestCase):
 
 
 class GetResourceFileTest(unittest.TestCase):
-    def test_get_resource_file_existant(self):
-        pass
+    def test_get_resource_file_existent(self):
+        self.assertTrue(util.get_resource_file("eva_cttv_pipeline", "resources/json_schema"))
 
-    def test_get_resource_file_nonexistant(self):
+    def test_get_resource_file_nonexistent(self):
         self.assertEqual(util.get_resource_file("not_a_real_package_39146", "not_a_real_file"), None)
+
+
+class CheckDirExistsCreateTest(unittest.TestCase):
+    def test_create(self):
+        directory = "./test_tmp"
+        util.check_dir_exists_create(directory)
+        self.assertTrue(os.path.exists(directory))
