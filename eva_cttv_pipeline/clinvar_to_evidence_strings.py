@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import json
 import sys
 import urllib.error
@@ -10,7 +8,7 @@ import codecs
 import jsonschema
 import xlrd
 
-from eva_cttv_pipeline import efo_term, clinvar_record, evidence_strings, utilities, consequence_type
+from eva_cttv_pipeline import efo_term, clinvar_record, evidence_strings, consequence_type
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
@@ -500,22 +498,3 @@ def get_terms_from_file(terms_file):
         terms_list = []
 
     return terms_list
-
-
-def main():
-    parser = utilities.ArgParser(sys.argv)
-
-    utilities.check_for_local_schema()
-
-    utilities.check_dir_exists_create(parser.out)
-
-    clinvar_to_evidence_strings(parser.out, allowed_clinical_significance=parser.clinical_significance,
-                                ignore_terms_file=parser.ignore_terms_file, adapt_terms_file=parser.adapt_terms_file,
-                                efo_mapping_file=parser.efo_mapping_file, snp_2_gene_file=parser.snp_2_gene_file,
-                                variant_summary_file=parser.variant_summary_file)
-
-    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
-
-
-if __name__ == '__main__':
-    main()
