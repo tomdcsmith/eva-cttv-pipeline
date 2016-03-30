@@ -52,7 +52,7 @@ def get_args_GetCttvGeneticsEvidenceStringTest():
 
     return test_args_1
 
-
+# TODO look into why these failed with travis
 # class GetCttvGeneticsEvidenceStringTest(unittest.TestCase):
 #     def setUp(self):
 #         test_args = get_args_GetCttvGeneticsEvidenceStringTest()
@@ -98,22 +98,23 @@ def get_args_GetCttvSomaticEvidenceStringTest():
 
 
 class GetCttvVariantTypeTest(unittest.TestCase):
-    def setUp(self):
-        self.record_single_a = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "C"}, "snp single")
-        self.record_single_b = ({"reference": "A", "alternate": "C"}, "snp single")
-        self.record_single_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG"}, "snp single")
+    @classmethod
+    def setUpClass(cls):
+        record_single_a = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "C"}, "snp single")
+        record_single_b = ({"reference": "A", "alternate": "C"}, "snp single")
+        record_single_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG"}, "snp single")
 
-        self.test_records_singles = [self.record_single_a, self.record_single_b, self.record_single_c]
+        cls.test_records_singles = [record_single_a, record_single_b, record_single_c]
 
-        self.record_structurals_a = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT", "alternate": "C"},
+        record_structurals_a = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT", "alternate": "C"},
                                 "structural variant")
-        self.record_structurals_b = ({"reference": "A", "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
+        record_structurals_b = ({"reference": "A", "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
                                 "structural variant")
-        self.record_structurals_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT",
+        record_structurals_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT",
                                  "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
                                 "structural variant")
 
-        self.test_records_structurals = [self.record_structurals_a, self.record_structurals_b, self.record_structurals_c]
+        cls.test_records_structurals = [record_structurals_a, record_structurals_b, record_structurals_c]
 
     def test_get_cttv_variant_type_singles(self):
         for record in self.test_records_singles:
@@ -125,12 +126,14 @@ class GetCttvVariantTypeTest(unittest.TestCase):
 
 
 class LoadEfoMappingTest(unittest.TestCase):
-    def setUp(self):
+    # TODO Make smaller files for testing, extracts from larger file. Ensure to create a smaller ignore file too, that matches a subset of the efo mapping file.
+    @classmethod
+    def setUpClass(cls):
         ignore_file = utilities.get_resource_file("eva_cttv_pipeline", "resources/testing/ignore_file.txt")
         efo_file = utilities.get_resource_file("eva_cttv_pipeline", "resources/testing/ClinVar_Traits_EFO_090915.xls")
 
-        self.trait_2_efo, self.unavailable_efo = clinvar_to_evidence_strings.load_efo_mapping(efo_file)
-        self.trait_2_efo_w_ignore, self.unavailable_efo_w_ignore = clinvar_to_evidence_strings.load_efo_mapping(efo_file, ignore_terms_file=ignore_file)
+        cls.trait_2_efo, cls.unavailable_efo = clinvar_to_evidence_strings.load_efo_mapping(efo_file)
+        cls.trait_2_efo_w_ignore, cls.unavailable_efo_w_ignore = clinvar_to_evidence_strings.load_efo_mapping(efo_file, ignore_terms_file=ignore_file)
 
     def test_just_mapping_trait_2_efo(self):
         self.assertEqual(len(self.trait_2_efo), 3819)
@@ -155,31 +158,16 @@ class GetUnmappedUrlTest(unittest.TestCase):
 
 class GetTermsFromFileTest(unittest.TestCase):
     #TODO do the same for adapt terms file?
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         ignore_file = utilities.get_resource_file("eva_cttv_pipeline", "resources/testing/ignore_file.txt")
-        self.ignore_terms = clinvar_to_evidence_strings.get_terms_from_file(ignore_file)
+        cls.ignore_terms = clinvar_to_evidence_strings.get_terms_from_file(ignore_file)
 
-    def test_length(self):
+    def test_with_file(self):
         self.assertEqual(len(self.ignore_terms), 218)
-
-    def test_head(self):
         self.assertEqual(self.ignore_terms[0], "http://purl.obolibrary.org/obo/HP_0011677")
-
-    def test_tail(self):
         self.assertEqual(self.ignore_terms[-1], "http://www.orpha.net/ORDO/Orphanet_120795")
 
     def test_no_file(self):
         self.assertEqual(clinvar_to_evidence_strings.get_terms_from_file(None), [])
 
-
-# def temp():
-#     ignore_file = utilities.get_resource_file("eva_cttv_pipeline", "resources/testing/ignore_file.txt")
-#     efo_file = utilities.get_resource_file("eva_cttv_pipeline", "resources/testing/ClinVar_Traits_EFO_090915.xls")
-#
-#     trait_2_efo, unavailable_efo = clinvar_to_evidence_strings.load_efo_mapping(efo_file)
-#
-#     print([])
-#     print(len(unavailable_efo))
-#
-#
-# temp()

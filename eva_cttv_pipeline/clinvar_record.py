@@ -109,7 +109,7 @@ class ClinvarRecord(dict):
                                         time.sleep(3)
 
                                 if len(ensembl_json) > 0:
-                                    if (len(ensembl_json) in [14, 15]) and (ensembl_json['object_type'] == 'Gene'):
+                                    if ensembl_json['id'] and (ensembl_json['object_type'] == 'Gene'):
                                         ClinvarRecord.cached_symbol_2_ensembl[symbol[i]['elementValue']['value']] = \
                                             ensembl_json['id']
                                         return ensembl_json['id']

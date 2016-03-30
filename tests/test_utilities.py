@@ -12,10 +12,11 @@ class ArgParserTest(unittest.TestCase):
     snp_2_gene_file = '/path/to/snp/to/gene/file'
     variant_summary_file = '/path/to/variant/summary/file'
 
-    def setUp(self):
-        argv = ['clinvar_to_evidence_strings.py', '--clinSig', self.clin_sig, '--ignore', self.ignore,
-                '--out', self.out, '-e', self.efo_map_file, '-g', self.snp_2_gene_file, '-v', self.variant_summary_file]
-        self.argparser = util.ArgParser(argv)
+    @classmethod
+    def setUpClass(cls):
+        argv = ['clinvar_to_evidence_strings.py', '--clinSig', cls.clin_sig, '--ignore', cls.ignore,
+                '--out', cls.out, '-e', cls.efo_map_file, '-g', cls.snp_2_gene_file, '-v', cls.variant_summary_file]
+        cls.argparser = util.ArgParser(argv)
 
     def test_clin_sig(self):
         self.assertEquals(self.argparser.clinical_significance, self.clin_sig)
@@ -50,3 +51,5 @@ class CheckDirExistsCreateTest(unittest.TestCase):
         util.check_dir_exists_create(directory)
         self.assertTrue(os.path.exists(directory))
         os.removedirs(directory)
+
+# TODO test other filesystem-related functions
