@@ -7,42 +7,43 @@ from eva_cttv_pipeline import utilities
 
 
 class TestClinvarRecord(unittest.TestCase):
-    def setUp(self):
-        self.clinvar_record = get_test_record()
+    @classmethod
+    def setUpClass(cls):
+        # TODO initialise rcv_to_nsv, rcv_to_rs and consequence_type_dict dictionaries
+        cls.test_clinvar_record = get_test_record()
 
-    #TODO get second clinvar record to test other return point of get_gene_id
     def test_get_gene_id(self):
-        self.assertEqual(self.clinvar_record.get_gene_id(), "NM_000548")
+        self.assertEqual(self.test_clinvar_record.get_gene_id(), "NM_000548")
 
     def test_get_ensembl_id(self):
-        self.assertEqual(self.clinvar_record.get_ensembl_id(), "ENSG00000008710")
+        self.assertEqual(self.test_clinvar_record.get_ensembl_id(), "ENSG00000008710")
 
     def test_get_date(self):
-        self.assertEqual(self.clinvar_record.get_date(), datetime.fromtimestamp(1412982000000/1000).isoformat())
+        self.assertEqual(self.test_clinvar_record.get_date(), datetime.fromtimestamp(1412982000000/1000).isoformat())
 
     def test_get_score(self):
-        self.assertEqual(self.clinvar_record.get_score(), None)
+        self.assertEqual(self.test_clinvar_record.get_score(), None)
 
     def test_get_acc(self):
-        self.assertEqual(self.clinvar_record.get_acc(), "RCV000055062")
+        self.assertEqual(self.test_clinvar_record.get_acc(), "RCV000055062")
 
     def test_get_traits(self):
-        self.assertEqual(self.clinvar_record.get_traits(), [['Tuberous sclerosis syndrome']])
+        self.assertEqual(self.test_clinvar_record.get_traits(), [['Tuberous sclerosis syndrome']])
 
     def test_get_trait_pubmed_refs(self):
-        self.assertEqual(self.clinvar_record.get_trait_pubmed_refs(), [[20301399]])
+        self.assertEqual(self.test_clinvar_record.get_trait_pubmed_refs(), [[20301399]])
 
     def test_get_observed_pubmed_refs(self):
-        self.assertEqual(self.clinvar_record.get_observed_pubmed_refs(), [])
+        self.assertEqual(self.test_clinvar_record.get_observed_pubmed_refs(), [])
 
     def test_get_measure_set_pubmed_refs(self):
-        self.assertEqual(self.clinvar_record.get_measure_set_pubmed_refs(), [])
+        self.assertEqual(self.test_clinvar_record.get_measure_set_pubmed_refs(), [])
 
     def test_get_hgvs(self):
-        self.assertEqual(self.clinvar_record.get_hgvs(), ['NM_000548.3:c.*154dup', 'NM_001009944.2:c.*963dupC', 'NG_005895.1:g.44459dupG', 'NC_000016.10:g.2088764dupG', 'NC_000016.9:g.2138765dupG', 'p.(=)'])
+        self.assertEqual(self.test_clinvar_record.get_hgvs(), ['NM_000548.3:c.*154dup', 'NM_001009944.2:c.*963dupC', 'NG_005895.1:g.44459dupG', 'NC_000016.10:g.2088764dupG', 'NC_000016.9:g.2138765dupG', 'p.(=)'])
 
     def test_get_clinical_significance(self):
-        self.assertEqual(self.clinvar_record.get_clinical_significance(), "not provided")
+        self.assertEqual(self.test_clinvar_record.get_clinical_significance(), "not provided")
 
     #TODO needs rcv_to_rs dict
     def test_get_rs(self):
@@ -57,10 +58,10 @@ class TestClinvarRecord(unittest.TestCase):
         pass
 
     def test_get_variant_type(self):
-        self.assertEqual(self.clinvar_record.get_variant_type(), "Duplication")
+        self.assertEqual(self.test_clinvar_record.get_variant_type(), "Duplication")
 
     def test_get_allele_origins(self):
-        self.assertEqual(self.clinvar_record.get_allele_origins(), ['germline'])
+        self.assertEqual(self.test_clinvar_record.get_allele_origins(), ['germline'])
 
 
 class TestGetRcvToRSNSVMapping(unittest.TestCase):
@@ -288,6 +289,3 @@ def get_test_record():
          "id": 3756609})
     # record_string = json.load(test_record)
     return test_record
-
-
-print(get_test_record().get_allele_origins())

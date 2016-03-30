@@ -10,7 +10,7 @@ Building and (optional) Setting up virtual environment
 2. "cd eva-cttv-pipeline"
 3. [OPTIONAL] "virtualenv -p python3.4 venv"
 4. [OPTIONAL] "source venv/bin/activate" ("venv/bin/deactivate" to deactivate virtualenv)
-5. [OPTIONAL] pip install -r requirements.txt
+5. pip install -r requirements.txt
 6. and then:
 	7. to install: "python3 setup.py install"
 	8. to install to develop: "python3 setup.py develop"
