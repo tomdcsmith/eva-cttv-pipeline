@@ -1,9 +1,8 @@
 from datetime import datetime
-import json
+import os
 import unittest
 
 from eva_cttv_pipeline import clinvar_record
-from eva_cttv_pipeline import utilities
 
 
 class TestClinvarRecord(unittest.TestCase):
@@ -65,7 +64,7 @@ class TestClinvarRecord(unittest.TestCase):
 
 
 class TestGetRcvToRSNSVMapping(unittest.TestCase):
-    variant_summary_file_path = "resources/variant_summary_2015-05.txt"
+    variant_summary_file_path = os.path.join(os.path.dirname(__file__), 'resources', 'variant_summary_2015-05.txt')
     rcv_to_rs, rcv_to_nsv = clinvar_record.get_rcv_to_rsnsv_mapping(variant_summary_file_path)
 
     def test_rcv_to_rs(self):

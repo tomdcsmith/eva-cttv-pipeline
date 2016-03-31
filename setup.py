@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 
 def get_package_data():
-    package_data = ['resources/*.txt', 'resources/testing/*']
+    package_data = []
     for root, dirnames, filenames in os.walk('./eva_cttv_pipeline/resources/json_schema'):
         root = root.replace("./eva_cttv_pipeline/", "")
         for filename in filenames:
@@ -29,5 +29,6 @@ setup(name='eva_cttv_pipeline',
           'eva_cttv_pipeline': get_package_data()
       },
       tests_require=get_requires(),
-      setup_requires=get_requires()
+      setup_requires=get_requires(),
+      test_suite='tests'
       )
