@@ -65,7 +65,7 @@ class TestClinvarRecord(unittest.TestCase):
 
 
 class TestGetRcvToRSNSVMapping(unittest.TestCase):
-    variant_summary_file_path = utilities.get_resource_file("eva_cttv_pipeline", "resources/variant_summary_2015-05_testing.txt")
+    variant_summary_file_path = "resources/variant_summary_2015-05.txt"
     rcv_to_rs, rcv_to_nsv = clinvar_record.get_rcv_to_rsnsv_mapping(variant_summary_file_path)
 
     def test_rcv_to_rs(self):
