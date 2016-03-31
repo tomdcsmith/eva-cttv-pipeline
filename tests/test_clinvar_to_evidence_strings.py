@@ -1,4 +1,5 @@
 import json
+import os
 import unittest
 
 from eva_cttv_pipeline import clinvar_to_evidence_strings
@@ -129,8 +130,8 @@ class LoadEfoMappingTest(unittest.TestCase):
     # TODO Make smaller files for testing, extracts from larger file. Ensure to create a smaller ignore file too, that matches a subset of the efo mapping file.
     @classmethod
     def setUpClass(cls):
-        ignore_file = "resources/ignore_file.txt"
-        efo_file = "resources/ClinVar_Traits_EFO_090915.xls"
+        ignore_file = os.path.join(os.path.dirname(__file__), 'resources', 'ignore_file.txt')
+        efo_file = os.path.join(os.path.dirname(__file__), 'resources', 'ClinVar_Traits_EFO_090915.xls')
 
         cls.trait_2_efo, cls.unavailable_efo = clinvar_to_evidence_strings.load_efo_mapping(efo_file)
         cls.trait_2_efo_w_ignore, cls.unavailable_efo_w_ignore = clinvar_to_evidence_strings.load_efo_mapping(efo_file, ignore_terms_file=ignore_file)
@@ -160,7 +161,7 @@ class GetTermsFromFileTest(unittest.TestCase):
     #TODO do the same for adapt terms file?
     @classmethod
     def setUpClass(cls):
-        ignore_file = "resources/ignore_file.txt"
+        ignore_file = os.path.join(os.path.dirname(__file__), 'resources', 'ignore_file.txt')
         cls.ignore_terms = clinvar_to_evidence_strings.get_terms_from_file(ignore_file)
 
     def test_with_file(self):
