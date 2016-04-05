@@ -163,10 +163,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         self['evidence']['gene2variant']['functional_consequence'] = so_term
 
     def set_var_2_disease_literature(self, ref_list):
-        if 'literature' not in self['evidence']['variant2disease']['provenance_type']:
-            self['evidence']['variant2disease']['provenance_type']['literature'] = {'references': [{'lit_id': reference} for reference in ref_list]}
-        else:
-            self['evidence']['variant2disease']['provenance_type']['literature']['references'] = [{'lit_id': reference} for reference in ref_list]
+        self['evidence']['variant2disease']['provenance_type']['literature'] = {'references': [{'lit_id': reference} for reference in ref_list]}
 
     def set_association(self, is_associated):
         self['evidence']['gene2variant']['is_associated'] = is_associated
