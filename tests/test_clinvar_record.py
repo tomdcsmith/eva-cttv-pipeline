@@ -2,7 +2,8 @@ from datetime import datetime
 import os
 import unittest
 
-from eva_cttv_pipeline import clinvar_record
+from eva_cttv_pipeline import clinvar_record as CR
+from eva_cttv_pipeline import consequence_type as CT
 
 
 class TestClinvarRecord(unittest.TestCase):
@@ -10,6 +11,8 @@ class TestClinvarRecord(unittest.TestCase):
     def setUpClass(cls):
         # TODO initialise rcv_to_nsv, rcv_to_rs and consequence_type_dict dictionaries
         cls.test_clinvar_record = get_test_record()
+        cls.rcv_to_rs, cls.rcv_to_nsv = CR.get_rcv_to_rsnsv_mapping("resources/variant_summary_2015-05.txt")
+        cls.consequence_type_dict = CT.process_consequence_type_file("resources/cttv012_snp2gene_20160222.tsv")
 
     def test_get_gene_id(self):
         self.assertEqual(self.test_clinvar_record.get_gene_id(), "NM_000548")
@@ -44,17 +47,19 @@ class TestClinvarRecord(unittest.TestCase):
     def test_get_clinical_significance(self):
         self.assertEqual(self.test_clinvar_record.get_clinical_significance(), "not provided")
 
-    #TODO needs rcv_to_rs dict
     def test_get_rs(self):
-        pass
+        self.assertEqual(self.test_clinvar_record.get_rs(self.rcv_to_rs), "rs397514891")
+        self.assertEqual(self.test_clinvar_record.get_rs({}), None)
 
-    #TODO needs rcv_to_nsv dict
     def test_get_nsv(self):
-        pass
+        self.assertEqual(self.test_clinvar_record.get_nsv(self.rcv_to_nsv), None)
+        self.assertEqual(self.test_clinvar_record.get_nsv({"RCV000055062": "nsv123test"}), "nsv123test")
 
-    #TODO needs consequence_type_dict and rsv_to_rs dicts
     def test_get_main_consequence_types(self):
-        pass
+        test_consequence_type = CT.ConsequenceType(ensembl_gene_ids=["ENSG00000008710"], so_names=["3_prime_UTR_variant"])
+
+        self.assertEqual(self.test_clinvar_record.get_main_consequence_types(self.consequence_type_dict, self.rcv_to_rs), test_consequence_type)
+        self.assertEqual(self.test_clinvar_record.get_main_consequence_types({}, {}), None)
 
     def test_get_variant_type(self):
         self.assertEqual(self.test_clinvar_record.get_variant_type(), "Duplication")
@@ -65,7 +70,7 @@ class TestClinvarRecord(unittest.TestCase):
 
 class TestGetRcvToRSNSVMapping(unittest.TestCase):
     variant_summary_file_path = os.path.join(os.path.dirname(__file__), 'resources', 'variant_summary_2015-05.txt')
-    rcv_to_rs, rcv_to_nsv = clinvar_record.get_rcv_to_rsnsv_mapping(variant_summary_file_path)
+    rcv_to_rs, rcv_to_nsv = CR.get_rcv_to_rsnsv_mapping(variant_summary_file_path)
 
     def test_rcv_to_rs(self):
         self.assertEqual(self.rcv_to_rs["RCV000000012"], "rs397704705")
@@ -79,7 +84,7 @@ class TestGetRcvToRSNSVMapping(unittest.TestCase):
 
 
 def get_test_record():
-    test_record = clinvar_record.ClinvarRecord(
+    test_record = CR.ClinvarRecord(
         {"recordStatus": "current", "title": "NM_000548.3(TSC2):c.*154dup AND Tuberous sclerosis syndrome",
          "referenceClinVarAssertion": {
              "clinVarAccession": {"acc": "RCV000055062", "version": 1, "type": "RCV", "dateUpdated": 1412982000000},
@@ -288,3 +293,4 @@ def get_test_record():
          "id": 3756609})
     # record_string = json.load(test_record)
     return test_record
+
