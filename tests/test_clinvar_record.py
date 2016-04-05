@@ -5,13 +5,15 @@ import unittest
 from eva_cttv_pipeline import clinvar_record as CR
 from eva_cttv_pipeline import consequence_type as CT
 
+import tests.test_config as test_config
+
 
 class TestClinvarRecord(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.test_clinvar_record = get_test_record()
-        cls.rcv_to_rs, cls.rcv_to_nsv = CR.get_rcv_to_rsnsv_mapping("resources/variant_summary_2015-05_test_extract.txt")
-        cls.consequence_type_dict = CT.process_consequence_type_file("resources/cttv012_snp2gene_20160222_test_extract.tsv")
+        cls.rcv_to_rs, cls.rcv_to_nsv = CR.get_rcv_to_rsnsv_mapping(test_config.variant_summary_file)
+        cls.consequence_type_dict = CT.process_consequence_type_file(test_config.snp_2_gene_file)
 
     def test_get_gene_id(self):
         self.assertEqual(self.test_clinvar_record.get_gene_id(), "NM_000548")
