@@ -461,6 +461,10 @@ def load_efo_mapping(efo_mapping_file, ignore_terms_file=None, adapt_terms_file=
     return trait_2_efo, unavailable_efo
 
 
+class UnhandledUrlTypeException(Exception):
+    pass
+
+
 def get_unmapped_url(url):
     parts = url.split('/')
     if parts[-1].startswith("Orphanet_"):
@@ -468,8 +472,7 @@ def get_unmapped_url(url):
     elif parts[-1].startswith("HP_"):
         new_url = "http://purl.bioontology.org/obo/" + parts[-1]
     else:
-        print("Error. Unhandled url type: " + url)
-        sys.exit(1)
+        raise UnhandledUrlTypeException("Error. Unhandled url type: " + url)
 
     return new_url
 
