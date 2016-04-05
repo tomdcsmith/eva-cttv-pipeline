@@ -9,10 +9,9 @@ from eva_cttv_pipeline import consequence_type as CT
 class TestClinvarRecord(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # TODO initialise rcv_to_nsv, rcv_to_rs and consequence_type_dict dictionaries
         cls.test_clinvar_record = get_test_record()
-        cls.rcv_to_rs, cls.rcv_to_nsv = CR.get_rcv_to_rsnsv_mapping("resources/variant_summary_2015-05.txt")
-        cls.consequence_type_dict = CT.process_consequence_type_file("resources/cttv012_snp2gene_20160222.tsv")
+        cls.rcv_to_rs, cls.rcv_to_nsv = CR.get_rcv_to_rsnsv_mapping("resources/variant_summary_2015-05_test_extract.txt")
+        cls.consequence_type_dict = CT.process_consequence_type_file("resources/cttv012_snp2gene_20160222_test_extract.tsv")
 
     def test_get_gene_id(self):
         self.assertEqual(self.test_clinvar_record.get_gene_id(), "NM_000548")
@@ -69,7 +68,7 @@ class TestClinvarRecord(unittest.TestCase):
 
 
 class TestGetRcvToRSNSVMapping(unittest.TestCase):
-    variant_summary_file_path = os.path.join(os.path.dirname(__file__), 'resources', 'variant_summary_2015-05.txt')
+    variant_summary_file_path = os.path.join(os.path.dirname(__file__), 'resources', 'variant_summary_2015-05_test_extract.txt')
     rcv_to_rs, rcv_to_nsv = CR.get_rcv_to_rsnsv_mapping(variant_summary_file_path)
 
     def test_rcv_to_rs(self):
