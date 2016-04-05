@@ -119,11 +119,11 @@ class GetCttvVariantTypeTest(unittest.TestCase):
 
     def test_get_cttv_variant_type_singles(self):
         for record in self.test_records_singles:
-            self.assertEqual(clinvar_to_evidence_strings.get_cttv_variant_type(record[0]), record[1])
+            self.assertEqual(clinvar_to_evidence_strings.get_cttv_variant_type(record[0]["reference"], record[0]["alternate"]), record[1])
 
     def test_get_cttv_variant_type_structurals(self):
         for record in self.test_records_structurals:
-            self.assertEqual(clinvar_to_evidence_strings.get_cttv_variant_type(record[0]), record[1])
+            self.assertEqual(clinvar_to_evidence_strings.get_cttv_variant_type(record[0]["reference"], record[0]["alternate"]), record[1])
 
 
 class LoadEfoMappingTest(unittest.TestCase):
