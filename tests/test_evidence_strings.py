@@ -79,9 +79,9 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
 
     def test_unique_reference(self):
         unique_reference = "http://europepmc.org/abstract/MED/0"
-        self.test_ges = unique_reference
+        self.test_ges.unique_reference = unique_reference
         self.assertEqual(self.test_ges['evidence']['variant2disease']['unique_experiment_reference'], unique_reference)
-        self.assertEqual(self.test_ges, unique_reference)
+        self.assertEqual(self.test_ges.unique_reference, unique_reference)
 
     def test_date(self):
         date_string = datetime.fromtimestamp(1412982000000 / 1000).isoformat()
