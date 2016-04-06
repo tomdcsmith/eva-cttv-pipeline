@@ -152,7 +152,16 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                                      }
                                     )
 
-    def set_db_xref_url(self, url):
+    @property
+    def db_xref_url(self):
+        if self['evidence']['gene2variant']['provenance_type']['database']['dbxref']['url'] \
+                == self['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url']:
+            return self['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url']
+        else:
+            pass
+
+    @db_xref_url.setter
+    def db_xref_url(self, url):
         self['evidence']['gene2variant']['provenance_type']['database']['dbxref']['url'] = url
         self['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url'] = url
 
