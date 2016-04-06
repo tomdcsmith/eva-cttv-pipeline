@@ -293,7 +293,7 @@ def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, c
         unrecognised_clin_sigs.add(clin_sig)
         ev_string.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
     ev_string.set_variant('http://identifiers.org/dbsnp/' + rs, get_cttv_variant_type(record['reference'], record['alternate']))
-    ev_string.set_date(clinvarRecord.get_date())
+    ev_string.date = clinvarRecord.get_date()
     ev_string.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.get_acc()
     ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc()
     ev_string.association = clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign'
