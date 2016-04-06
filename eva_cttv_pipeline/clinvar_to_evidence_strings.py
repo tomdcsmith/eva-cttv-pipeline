@@ -299,24 +299,22 @@ def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, c
     ev_string.set_association(
         clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic'
         and clin_sig != 'likely benign' and clin_sig != 'benign')
-    ev_string.set_gene_2_var_ev_codes(rcv_to_gene_evidence_codes)
+    ev_string.gene_2_var_ev_codes = rcv_to_gene_evidence_codes
     most_severe_so_term = consequenceType.getMostSevereSo()
     if most_severe_so_term.get_accession() is None:
-        ev_string.set_gene_2_var_func_consequence(
-            'http://targetvalidation.org/sequence/' + most_severe_so_term.get_name())
+        ev_string.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + most_severe_so_term.get_name()
     else:
-        ev_string.set_gene_2_var_func_consequence(
-            'http://purl.obolibrary.org/obo/' + most_severe_so_term.get_accession().replace(':', '_'))
+        ev_string.gene_2_var_func_consequence = 'http://purl.obolibrary.org/obo/' + most_severe_so_term.get_accession().replace(':', '_')
 
     ref_list = list(set(traits_ref_list[trait_counter] + observed_refs_list + measure_set_refs_list))
     if len(ref_list) > 0:
         ev_string.set_var_2_disease_literature(ref_list)
         # Arbitrarily select only one reference among all
-        ev_string.set_unique_reference(ref_list[0])
+        ev_string.unique_reference = ref_list[0]
         ev_string.set_top_level_literature(ref_list)
     efo_list.sort()
     # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
-    ev_string.set_disease(efo_list[0])
+    ev_string.disease = efo_list[0]
     ev_string.add_unique_association_field('phenotype', efo_list[0])
     n_more_than_one_efo_term += (len(efo_list) > 1)
     traits.update(set(efo_list))
@@ -339,9 +337,9 @@ def get_cttv_somatic_evidence_string(efo_list, clin_sig, clin_sig_2_activity, cl
         ev_string.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
 
     ev_string.set_date(clinvarRecord.get_date())
-    ev_string.set_db_xref_url('http://identifiers.org/clinvar.record/' + clinvarRecord.get_acc())
-    ev_string.set_url('http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc())
-    ev_string.set_association(
+    ev_string.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.get_acc()
+    ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc()
+    ev_string.association(
         clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic'
         and clin_sig != 'likely benign' and clin_sig != 'benign')
 
@@ -354,7 +352,7 @@ def get_cttv_somatic_evidence_string(efo_list, clin_sig, clin_sig_2_activity, cl
 
     efo_list.sort()
     # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
-    ev_string.set_disease(efo_list[0])
+    ev_string.disease = efo_list[0]
     ev_string.add_unique_association_field('phenotype', efo_list[0])
     n_more_than_one_efo_term += (len(efo_list) > 1)
     traits.update(set(efo_list))
