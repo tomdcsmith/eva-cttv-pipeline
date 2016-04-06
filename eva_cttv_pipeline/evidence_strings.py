@@ -158,14 +158,23 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                 == self['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url']:
             return self['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url']
         else:
-            pass
+            raise Exception("db_xref_url attributes different")
 
     @db_xref_url.setter
     def db_xref_url(self, url):
         self['evidence']['gene2variant']['provenance_type']['database']['dbxref']['url'] = url
         self['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url'] = url
 
-    def set_url(self, url):
+    @property
+    def url(self):
+        if self['evidence']['gene2variant']['urls'][0]['url'] \
+                == self['evidence']['variant2disease']['urls'][0]['url']:
+            return self['evidence']['gene2variant']['urls'][0]['url']
+        else:
+            raise Exception("url attributes different")
+
+    @url.setter
+    def url(self, url):
         self['evidence']['gene2variant']['urls'][0]['url'] = url
         self['evidence']['variant2disease']['urls'][0]['url'] = url
 
@@ -188,7 +197,16 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
     def set_var_2_disease_literature(self, ref_list):
         self['evidence']['variant2disease']['provenance_type']['literature'] = {'references': [{'lit_id': reference} for reference in ref_list]}
 
-    def set_association(self, is_associated):
+    @property
+    def association(self):
+        if self['evidence']['gene2variant']['is_associated'] \
+                == self['evidence']['variant2disease']['is_associated']:
+            return self['evidence']['gene2variant']['is_associated']
+        else:
+            raise Exception("association attributes different")
+
+    @association.setter
+    def association(self, is_associated):
         self['evidence']['gene2variant']['is_associated'] = is_associated
         self['evidence']['variant2disease']['is_associated'] = is_associated
 
@@ -214,7 +232,16 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
     def unique_reference(self, reference):
         self['evidence']['variant2disease']['unique_experiment_reference'] = reference
 
-    def set_date(self, date_string):
+    @property
+    def date(self):
+        if self['evidence']['gene2variant']['date_asserted'] \
+                == self['evidence']['variant2disease']['date_asserted']:
+            return self['evidence']['gene2variant']['date_asserted']
+        else:
+            raise Exception("date attributes have different values")
+
+    @date.setter
+    def date(self, date_string):
         self['evidence']['gene2variant']['date_asserted'] = date_string
         self['evidence']['variant2disease']['date_asserted'] = date_string
 
