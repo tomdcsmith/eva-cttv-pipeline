@@ -49,7 +49,7 @@ class CTTVEvidenceString(dict):
 
     @evidence_codes.setter
     def evidence_codes(self, ev_code_list):
-        self.evidence_codes = ev_code_list
+        self['evidence']['evidence_codes'] = ev_code_list
 
     def set_top_level_literature(self, reference_list):
         if 'literature' not in self:
@@ -209,7 +209,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 
     @unique_reference.setter
     def unique_reference(self, reference):
-        self.unique_reference = reference
+        self['evidence']['variant2disease']['unique_experiment_reference'] = reference
 
     def set_date(self, date_string):
         self['evidence']['gene2variant']['date_asserted'] = date_string
@@ -280,7 +280,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
     @db_xref_url.setter
     def db_xref_url(self, url):
-        self.db_xref_url = url
+        self['evidence']['provenance_type']['database']['dbxref']['url'] = url
 
     @property
     def url(self):
@@ -288,7 +288,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
     @url.setter
     def url(self, url):
-        self.url = url
+        self['evidence']['urls'][0]['url'] = url
 
     def set_evidence_literature(self, ref_list):
         if 'literature' not in self['evidence']['provenance_type']:
@@ -304,7 +304,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
     @association.setter
     def association(self, is_associated):
-        self.association = is_associated
+        self['evidence']['is_associated'] = is_associated
 
     def validate(self):
         jsonschema.validate(self, CTTVSomaticEvidenceString.schema, format_checker=jsonschema.FormatChecker())
@@ -316,7 +316,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
     @date.setter
     def date(self, date_string):
-        self.date = date_string
+        self['evidence']['date_asserted'] = date_string
 
     def add_known_mutation(self, new_functional_consequence, so_name):
         new_known_mutation = {'functional_consequence': new_functional_consequence, 'preferred_name': so_name}
