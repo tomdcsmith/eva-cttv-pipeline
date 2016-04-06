@@ -16,11 +16,12 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
         self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url'], url)
         self.assertEqual(self.test_ges.db_xref_url, url)
 
-    def test_set_url(self):
+    def test_url(self):
         url = "http://www.ncbi.nlm.nih.gov/clinvar/RCV000128628"
-        self.test_ges.set_url(url)
+        self.test_ges.url = url
         self.assertEqual(self.test_ges['evidence']['gene2variant']['urls'][0]['url'], url)
         self.assertEqual(self.test_ges['evidence']['variant2disease']['urls'][0]['url'], url)
+        self.assertEqual(self.test_ges.url, url)
 
     def test_gene_2_var_ev_codes(self):
         ev_codes = ['http://identifiers.org/eco/cttv_mapping_pipeline']
@@ -58,14 +59,16 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
         self.test_ges.set_var_2_disease_literature(literature_list)
         self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'], [{"lit_id": literature_id} for literature_id in literature_list])
 
-    def test_set_association(self):
-        self.test_ges.set_association(True)
+    def test_association(self):
+        self.test_ges.association = True
         self.assertTrue(self.test_ges['evidence']['gene2variant']['is_associated'])
         self.assertTrue(self.test_ges['evidence']['variant2disease']['is_associated'])
+        self.assertTrue(self.test_ges.association)
 
-        self.test_ges.set_association(False)
+        self.test_ges.association = False
         self.assertFalse(self.test_ges['evidence']['gene2variant']['is_associated'])
         self.assertFalse(self.test_ges['evidence']['variant2disease']['is_associated'])
+        self.assertFalse(self.test_ges.association)
 
     def test_set_variant(self):
         test_id = "http://identifiers.org/dbsnp/rs193922494"
@@ -74,11 +77,18 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
         self.assertEqual(self.test_ges['variant']['id'], [test_id])
         self.assertEqual(self.test_ges['variant']['type'], test_type)
 
-    def test_set_unique_reference(self):
+    def test_unique_reference(self):
+        unique_reference = "http://europepmc.org/abstract/MED/0"
+        self.test_ges = unique_reference
+        self.assertEqual(self.test_ges['evidence']['variant2disease']['unique_experiment_reference'], unique_reference)
+        self.assertEqual(self.test_ges, unique_reference)
+
+    def test_date(self):
         date_string = datetime.fromtimestamp(1412982000000 / 1000).isoformat()
-        self.test_ges.set_date(date_string)
+        self.test_ges.date = date_string
         self.assertEqual(self.test_ges['evidence']['gene2variant']['date_asserted'], date_string)
         self.assertEqual(self.test_ges['evidence']['variant2disease']['date_asserted'], date_string)
+        self.assertEqual(self.test_ges.date, date_string)
 
 
 

@@ -294,11 +294,9 @@ def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, c
         ev_string.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
     ev_string.set_variant('http://identifiers.org/dbsnp/' + rs, get_cttv_variant_type(record['reference'], record['alternate']))
     ev_string.set_date(clinvarRecord.get_date())
-    ev_string.set_db_xref_url('http://identifiers.org/clinvar.record/' + clinvarRecord.get_acc())
-    ev_string.set_url('http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc())
-    ev_string.set_association(
-        clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic'
-        and clin_sig != 'likely benign' and clin_sig != 'benign')
+    ev_string.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.get_acc()
+    ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc()
+    ev_string.association = clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign'
     ev_string.gene_2_var_ev_codes = rcv_to_gene_evidence_codes
     most_severe_so_term = consequenceType.getMostSevereSo()
     if most_severe_so_term.get_accession() is None:
@@ -336,7 +334,7 @@ def get_cttv_somatic_evidence_string(efo_list, clin_sig, clin_sig_2_activity, cl
         unrecognised_clin_sigs.add(clin_sig)
         ev_string.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
 
-    ev_string.set_date(clinvarRecord.get_date())
+    ev_string.date = clinvarRecord.get_date()
     ev_string.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.get_acc()
     ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc()
     ev_string.association(
