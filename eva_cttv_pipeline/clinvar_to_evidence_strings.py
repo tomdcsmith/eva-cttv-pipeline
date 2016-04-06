@@ -292,7 +292,7 @@ def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, c
     except KeyError:
         unrecognised_clin_sigs.add(clin_sig)
         ev_string.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
-    ev_string.set_variant('http://identifiers.org/dbsnp/' + rs, get_cttv_variant_type(record))
+    ev_string.set_variant('http://identifiers.org/dbsnp/' + rs, get_cttv_variant_type(record['reference'], record['alternate']))
     ev_string.set_date(clinvarRecord.get_date())
     ev_string.set_db_xref_url('http://identifiers.org/clinvar.record/' + clinvarRecord.get_acc())
     ev_string.set_url('http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc())
@@ -396,10 +396,10 @@ def append_nsv(nsv_list, clinvarRecord, rcv_to_nsv):
     return nsv_list
 
 
-def get_cttv_variant_type(record):
-    if len(record['reference']) < 2 and len(record['alternate']) < 2:
+def get_cttv_variant_type(ref, alt):
+    if len(ref) < 2 and len(alt) < 2:
         cttv_variant_type = 'snp single'
-    elif len(record['reference']) > 50 or len(record['alternate']) > 50:
+    elif len(ref) > 50 or len(alt) > 50:
         cttv_variant_type = 'structural variant'
     else:
         cttv_variant_type = 'snp single'  # Sam asked for this in his email 21/05/2015
@@ -461,6 +461,10 @@ def load_efo_mapping(efo_mapping_file, ignore_terms_file=None, adapt_terms_file=
     return trait_2_efo, unavailable_efo
 
 
+class UnhandledUrlTypeException(Exception):
+    pass
+
+
 def get_unmapped_url(url):
     parts = url.split('/')
     if parts[-1].startswith("Orphanet_"):
@@ -468,8 +472,7 @@ def get_unmapped_url(url):
     elif parts[-1].startswith("HP_"):
         new_url = "http://purl.bioontology.org/obo/" + parts[-1]
     else:
-        print("Error. Unhandled url type: " + url)
-        sys.exit(1)
+        raise UnhandledUrlTypeException("Error. Unhandled url type: " + url)
 
     return new_url
 
