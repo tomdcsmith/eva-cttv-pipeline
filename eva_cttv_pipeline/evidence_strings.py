@@ -175,7 +175,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 
     @gene_2_var_ev_codes.setter
     def gene_2_var_ev_codes(self, gene_2_var_ev_codes):
-        self.gene_2_var_ev_codes = gene_2_var_ev_codes
+        self['evidence']['gene2variant']['evidence_codes'] = gene_2_var_ev_codes
 
     @property
     def gene_2_var_func_consequence(self):
@@ -183,7 +183,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 
     @gene_2_var_func_consequence.setter
     def gene_2_var_func_consequence(self, so_term):
-        self.gene_2_var_func_consequence = so_term
+        self['evidence']['gene2variant']['functional_consequence'] = so_term
 
     def set_var_2_disease_literature(self, ref_list):
         self['evidence']['variant2disease']['provenance_type']['literature'] = {'references': [{'lit_id': reference} for reference in ref_list]}

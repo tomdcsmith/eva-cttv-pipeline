@@ -9,11 +9,12 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
     def setUpClass(cls):
         cls.test_ges = ES.CTTVGeneticsEvidenceString()
 
-    def test_set_db_xref_url(self):
+    def test_db_xref_url(self):
         url = "http://identifiers.org/clinvar.record/RCV000128628"
-        self.test_ges.set_db_xref_url(url)
+        self.test_ges.db_xref_url = url
         self.assertEqual(self.test_ges['evidence']['gene2variant']['provenance_type']['database']['dbxref']['url'], url)
         self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url'], url)
+        self.assertEqual(self.test_ges.db_xref_url, url)
 
     def test_set_url(self):
         url = "http://www.ncbi.nlm.nih.gov/clinvar/RCV000128628"
@@ -21,15 +22,17 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
         self.assertEqual(self.test_ges['evidence']['gene2variant']['urls'][0]['url'], url)
         self.assertEqual(self.test_ges['evidence']['variant2disease']['urls'][0]['url'], url)
 
-    def test_set_gene_2_var_ev_codes(self):
+    def test_gene_2_var_ev_codes(self):
         ev_codes = ['http://identifiers.org/eco/cttv_mapping_pipeline']
-        self.test_ges.set_gene_2_var_ev_codes(ev_codes)
+        self.test_ges.gene_2_var_ev_codes = ev_codes
         self.assertEqual(self.test_ges['evidence']['gene2variant']['evidence_codes'], ev_codes)
+        self.assertEqual(self.test_ges.gene_2_var_ev_codes, ev_codes)
 
-    def test_set_gene_2_var_func_consequence(self):
+    def test_gene_2_var_func_consequence(self):
         functional_consequence = 'http://purl.obolibrary.org/obo/SO_0001583'
-        self.test_ges.set_gene_2_var_func_consequence(functional_consequence)
+        self.test_ges.gene_2_var_func_consequence = functional_consequence
         self.assertEqual(self.test_ges['evidence']['gene2variant']['functional_consequence'], functional_consequence)
+        self.assertEqual(self.test_ges.gene_2_var_func_consequence, functional_consequence)
 
     def test_set_var_2_disease_literature_a(self):
         self.test_ges['evidence']['variant2disease']['provenance_type']['literature'] = {}
