@@ -135,7 +135,6 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
         self.assertEqual(self.test_ges.date, date_string)
 
 
-
 class CTTVSomaticEvidenceStringTest(unittest.TestCase):
     def setUp(self):
         self.test_ses = ES.CTTVSomaticEvidenceString()
