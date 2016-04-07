@@ -52,7 +52,8 @@ class ClinvarRecord(dict):
         else:
             dict.__init__(self, a_dictionary)
 
-    def get_gene_id(self):
+    @property
+    def gene_id(self):
         j = 0
         measure = self['referenceClinVarAssertion']['measureSet']['measure']
         found = False
@@ -69,7 +70,8 @@ class ClinvarRecord(dict):
         else:
             return self['referenceClinVarAssertion']['measureSet']['measure'][0]['name'][0]['elementValue']['value']
 
-    def get_ensembl_id(self):
+    @property
+    def ensembl_id(self):
         global ensembl_json
         j = 0
         measure = self['referenceClinVarAssertion']['measureSet']['measure']
@@ -128,10 +130,12 @@ class ClinvarRecord(dict):
 
         return None
 
-    def get_date(self):
+    @property
+    def date(self):
         return datetime.fromtimestamp(self['referenceClinVarAssertion']['dateLastUpdated'] / 1000).isoformat()
 
-    def get_score(self):
+    @property
+    def score(self):
         return self.score_map[self['referenceClinVarAssertion']['clinicalSignificance']['reviewStatus']]
 
     def get_acc(self):
