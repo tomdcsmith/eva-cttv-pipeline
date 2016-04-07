@@ -51,11 +51,13 @@ class CTTVEvidenceString(dict):
     def evidence_codes(self, ev_code_list):
         self['evidence']['evidence_codes'] = ev_code_list
 
-    def set_top_level_literature(self, reference_list):
-        if 'literature' not in self:
-            self['literature'] = {'references': [{'lit_id': reference} for reference in reference_list]}
-        else:
-            self['literature']['references'] = [{'lit_id': reference} for reference in reference_list]
+    @property
+    def top_level_literature(self):
+        return self['literature']
+
+    @top_level_literature.setter
+    def top_level_literature(self, reference_list):
+        self['literature'] = {'references': [{'lit_id': reference} for reference in reference_list]}
 
 
 class CTTVGeneticsEvidenceString(CTTVEvidenceString):
@@ -320,13 +322,13 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
     def url(self, url):
         self['evidence']['urls'][0]['url'] = url
 
-    def set_evidence_literature(self, ref_list):
-        if 'literature' not in self['evidence']['provenance_type']:
-            self['evidence']['provenance_type']['literature'] = {
-                'references': [{'lit_id': reference} for reference in ref_list]}
-        else:
-            self['evidence']['provenance_type']['literature']['references'] = [{'lit_id': reference} for reference in
-                                                                               ref_list]
+    @property
+    def evidence_literature(self):
+        return self['evidence']['provenance_type']['literature']['references']
+
+    @evidence_literature.setter
+    def evidence_literature(self, ref_list):
+        self['evidence']['provenance_type']['literature'] = {'references': [{'lit_id': reference} for reference in ref_list]}
 
     @property
     def association(self):
