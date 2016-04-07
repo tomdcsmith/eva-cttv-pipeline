@@ -15,17 +15,17 @@ class TestClinvarRecord(unittest.TestCase):
         cls.rcv_to_rs, cls.rcv_to_nsv = CR.get_rcv_to_rsnsv_mapping(test_config.variant_summary_file)
         cls.consequence_type_dict = CT.process_consequence_type_file(test_config.snp_2_gene_file)
 
-    def test_get_gene_id(self):
-        self.assertEqual(self.test_clinvar_record.get_gene_id(), "NM_000548")
+    def test_gene_id(self):
+        self.assertEqual(self.test_clinvar_record.gene_id, "NM_000548")
 
-    def test_get_ensembl_id(self):
-        self.assertEqual(self.test_clinvar_record.get_ensembl_id(), "ENSG00000008710")
+    def test_ensembl_id(self):
+        self.assertEqual(self.test_clinvar_record.ensembl_id, "ENSG00000008710")
 
-    def test_get_date(self):
-        self.assertEqual(self.test_clinvar_record.get_date(), datetime.fromtimestamp(1412982000000/1000).isoformat())
+    def test_date(self):
+        self.assertEqual(self.test_clinvar_record.date, datetime.fromtimestamp(1412982000000/1000).isoformat())
 
-    def test_get_score(self):
-        self.assertEqual(self.test_clinvar_record.get_score(), None)
+    def test_score(self):
+        self.assertEqual(self.test_clinvar_record.score, None)
 
     def test_get_acc(self):
         self.assertEqual(self.test_clinvar_record.get_acc(), "RCV000055062")
