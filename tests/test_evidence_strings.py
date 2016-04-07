@@ -2,11 +2,50 @@ from datetime import datetime
 import unittest
 
 import eva_cttv_pipeline.evidence_strings as ES
+import eva_cttv_pipeline.efo_term as EFOT
 
 
 class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
     def setUp(self):
         self.test_ges = ES.CTTVGeneticsEvidenceString()
+
+    # CTTVEvidenceString tests
+
+    def test_unique_association_field(self):
+        uaf_1 = ("gene", "test_gene")
+        uaf_2 = ("clinvarAccession", "test_clinvar")
+        uaf_3 = ("alleleOrigin", "germline")
+        uaf_4 = ("phenotype", "test_phenotype")
+
+        self.test_ges.add_unique_association_field(*uaf_1)
+        self.assertEqual(self.test_ges['unique_association_fields'][uaf_1[0]], uaf_1[1])
+        self.test_ges.add_unique_association_field(*uaf_2)
+        self.assertEqual(self.test_ges['unique_association_fields'][uaf_2[0]], uaf_2[1])
+
+        self.test_ges.set_unique_association_field(*uaf_3)
+        self.assertEqual(self.test_ges['unique_association_fields'][uaf_3[0]], uaf_3[1])
+        self.test_ges.set_unique_association_field(*uaf_4)
+        self.assertEqual(self.test_ges['unique_association_fields'][uaf_4[0]], uaf_4[1])
+
+    def test_disease(self):
+        disease_id = "Ciliary dyskinesia, primary, 26"
+
+        self.test_ges.disease = disease_id
+        self.assertEqual(self.test_ges.disease, EFOT.EFOTerm(disease_id))
+
+    def test_evidence_codes(self):
+        evidence_codes = ["http://purl.obolibrary.org/obo/ECO_0000205"]
+        self.test_ges.evidence_codes = evidence_codes
+        self.assertEqual(self.test_ges['evidence']['evidence_codes'], evidence_codes)
+        self.assertEqual(self.test_ges.evidence_codes, evidence_codes)
+
+    def test_top_level_literature(self):
+        literature = ["http://europepmc.org/abstract/MED/20301537"]
+        self.test_ges.top_level_literature = literature
+        self.assertEqual(self.test_ges['literature']['references'], [{"lit_id": literature_id} for literature_id in literature])
+        self.assertEqual(self.test_ges.top_level_literature, [{"lit_id": literature_id} for literature_id in literature])
+
+    ###
 
     def test_db_xref_url(self):
         url = "http://identifiers.org/clinvar.record/RCV000128628"
