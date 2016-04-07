@@ -27,6 +27,12 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
         self.test_ges.add_unique_association_field(*uaf_4)
         self.assertEqual(self.test_ges['unique_association_fields'][uaf_4[0]], uaf_4[1])
 
+    def test_set_target(self):
+        target = ("http://identifiers.org/ensembl/ENSG00000135486", "http://identifiers.org/cttv.activity/predicted_damaging")
+        self.test_ges.set_target(*target)
+        self.assertEqual(self.test_ges['target']['id'], [target[0]])
+        self.assertEqual(self.test_ges['target']['activity'], target[1])
+
     def test_disease(self):
         disease_id = "Ciliary dyskinesia, primary, 26"
 
