@@ -21,19 +21,9 @@ class CTTVEvidenceString(dict):
     def add_unique_association_field(self, key, value):
         self['unique_association_fields'][key] = value
 
-    def set_unique_association_field(self, key, value):
-        self['unique_association_fields'][key] = value
-
     def set_target(self, id, activity):
         self['target']['id'].append(id)
         self['target']['activity'] = activity
-
-    def set_pubmed_refs(self, pubmed_list):
-        if pubmed_list is not None and len(pubmed_list) > 0:
-            if 'literature' in self['evidence']['provenance_type']:
-                self['evidence']['provenance_type']['literature']['pubmed_refs'] = pubmed_list
-            else:
-                self['evidence']['provenance_type']['literature'] = {'pubmed_refs': pubmed_list}
 
     @property
     def disease(self):

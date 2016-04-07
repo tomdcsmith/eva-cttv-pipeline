@@ -22,9 +22,9 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
         self.test_ges.add_unique_association_field(*uaf_2)
         self.assertEqual(self.test_ges['unique_association_fields'][uaf_2[0]], uaf_2[1])
 
-        self.test_ges.set_unique_association_field(*uaf_3)
+        self.test_ges.add_unique_association_field(*uaf_3)
         self.assertEqual(self.test_ges['unique_association_fields'][uaf_3[0]], uaf_3[1])
-        self.test_ges.set_unique_association_field(*uaf_4)
+        self.test_ges.add_unique_association_field(*uaf_4)
         self.assertEqual(self.test_ges['unique_association_fields'][uaf_4[0]], uaf_4[1])
 
     def test_disease(self):
