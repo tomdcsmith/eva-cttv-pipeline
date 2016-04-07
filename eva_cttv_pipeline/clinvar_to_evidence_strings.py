@@ -309,7 +309,7 @@ def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, c
         ev_string.set_var_2_disease_literature(ref_list)
         # Arbitrarily select only one reference among all
         ev_string.unique_reference = ref_list[0]
-        ev_string.set_top_level_literature(ref_list)
+        ev_string.top_level_literature = ref_list
     efo_list.sort()
     # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
     ev_string.disease = efo_list[0]
@@ -345,8 +345,8 @@ def get_cttv_somatic_evidence_string(efo_list, clin_sig, clin_sig_2_activity, cl
 
     ref_list = list(set(trait_refs_list[trait_counter] + observed_refs_list + measure_set_refs_list))
     if len(ref_list) > 0:
-        ev_string.set_evidence_literature(ref_list)
-        ev_string.set_top_level_literature(ref_list)
+        ev_string.evidence_literature = ref_list
+        ev_string.top_level_literature = ref_list
 
     efo_list.sort()
     # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints

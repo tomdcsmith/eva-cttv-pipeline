@@ -55,6 +55,12 @@ class EFOTerm:
     def __init__(self, _id=None):
         self.id = _id
 
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.get_id() == other.get_id()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def get_id(self):
         return self.id
 
