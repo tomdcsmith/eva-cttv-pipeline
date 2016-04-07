@@ -53,7 +53,7 @@ class CTTVEvidenceString(dict):
 
     @property
     def top_level_literature(self):
-        return self['literature']
+        return self['literature']['references']
 
     @top_level_literature.setter
     def top_level_literature(self, reference_list):
