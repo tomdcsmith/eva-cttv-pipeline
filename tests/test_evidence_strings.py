@@ -186,10 +186,15 @@ class CTTVSomaticEvidenceStringTest(unittest.TestCase):
         self.assertEqual(self.test_ses['evidence']['date_asserted'], date_string)
         self.assertEqual(self.test_ses.date, date_string)
 
-    def test_set_known_mutations(self):
-        test_consequence_type = CT.ConsequenceType(ensembl_gene_ids=["ENSG00000008710"], so_names=["3_prime_UTR_variant"])
-        self.test_ses.set_known_mutations(test_consequence_type)
-        self.assertEqual(self.test_ses['evidence']['known_mutations'], [{'functional_consequence': 'http://purl.obolibrary.org/obo/SO_0001624', 'preferred_name': '3_prime_UTR_variant'}])
+    def test_add_known_mutations(self):
+        functional_consequence = "http://purl.obolibrary.org/obo/SO_0001791"
+        preferred_name = "exon_variant"
+        self.test_ses.add_known_mutation(functional_consequence, preferred_name)
+        self.assertEqual(self.test_ses['evidence']['known_mutations'], [{'functional_consequence': functional_consequence, 'preferred_name': preferred_name}])
 
+    def test_set_known_mutations(self):
+        test_consequence_type = CT.ConsequenceType(ensembl_gene_ids=["ENSG00000008710"], so_names=["3_prime_UTR_variant", "not_in_dict"])
+        self.test_ses.set_known_mutations(test_consequence_type)
+        self.assertEqual(self.test_ses['evidence']['known_mutations'], [{'functional_consequence': 'http://purl.obolibrary.org/obo/SO_0001624', 'preferred_name': '3_prime_UTR_variant'}, {'functional_consequence': 'http://targetvalidation.org/sequence/not_in_dict', 'preferred_name': 'not_in_dict'}])
 
 
