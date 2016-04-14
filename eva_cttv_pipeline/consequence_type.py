@@ -120,21 +120,15 @@ class SoTerm(object):
             self._so_accession = None
 
     @property
-    def so_name(self):
-        return self.__so_name
-
-    @so_name.setter
-    def so_name(self, value):
-        self.__so_name = value
-
-    def get_accession(self):
+    def accession(self):
         if self._so_accession is not None:
             accession_number_str = str(self._so_accession)
             return 'SO:' + accession_number_str.rjust(7, '0')
         else:
             return None
 
-    def get_rank(self):
+    @property
+    def rank(self):
         # If So name not in Ensembl's ranked list, return the least severe rank
         if self.so_name not in SoTerm.ranked_so_names_list:
             return len(SoTerm.ranked_so_names_list)
@@ -146,7 +140,7 @@ class SoTerm(object):
         return SoTerm.ranked_so_names_list
 
     def __eq__(self, other):
-        return self.get_accession() == other.get_accession()
+        return self.accession == other.accession
 
     def __hash__(self):
         return hash(self._so_accession)
@@ -185,10 +179,10 @@ class ConsequenceType(object):
             self._so_terms.add(SoTerm(soName))
 
     def get_so_accessions(self):
-        return [soTerm.get_accession() for soTerm in self._so_terms]
+        return [soTerm.accession for soTerm in self._so_terms]
 
     def getMostSevereSo(self):
-        return min(list(self._so_terms), key=lambda x: x.get_rank())
+        return min(list(self._so_terms), key=lambda x: x.rank)
 
     def get_so_terms(self):
         return self._so_terms
