@@ -3,34 +3,6 @@ import xlrd
 __author__ = 'Javier Lopez: javild@gmail.com'
 
 
-def _process_consequence_type_file_xls(snp_2_gene_file):
-
-    consequence_type_dict = {}
-    one_rs_multiple_genes = set()
-
-    ct_mapping_read_book = xlrd.open_workbook(snp_2_gene_file, formatting_info=True)
-    ct_mapping_read_sheet = ct_mapping_read_book.sheet_by_index(0)
-    for i in range(1, ct_mapping_read_sheet.nrows):
-        if ct_mapping_read_sheet.cell_value(rowx=i, colx=2) != 'Not found':
-
-            rs_id = ct_mapping_read_sheet.cell_value(rowx=i, colx=0)
-            ensembl_gene_id = ct_mapping_read_sheet.cell_value(rowx=i, colx=2)
-            so_term = ct_mapping_read_sheet.cell_value(rowx=i, colx=1)
-
-            if rs_id in consequence_type_dict:
-                if ensembl_gene_id != consequence_type_dict[rs_id].getEnsemblGeneId():
-                    print('WARNING (clinvar_record.py): different genes and annotations found for a given gene.')
-                    print(' Variant id: ' + rs_id + ', ENSG: ' + so_term + ', ENSG: ' + consequence_type_dict[rs_id].getEnsemblGeneId())
-                    print('Skipping')
-                    one_rs_multiple_genes.add(rs_id)
-                else:
-                    consequence_type_dict[rs_id].add_so_term(so_term)
-            else:
-                consequence_type_dict[rs_id] = ConsequenceType(ensembl_gene_id, [so_term])
-
-    return consequence_type_dict, one_rs_multiple_genes
-
-
 def _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term):
     if rs_id in consequence_type_dict:
         consequence_type_dict[rs_id].add_ensembl_gene_id(ensembl_gene_id)
@@ -66,10 +38,10 @@ def process_consequence_type_file(snp_2_gene_file):
 
     print('Loading mapping rs->ENSG/SOterms')
 
-    if snp_2_gene_file.endswith(".xls"):
-        consequence_type_dict, one_rs_multiple_genes = _process_consequence_type_file_xls(snp_2_gene_file)
-    else:
-        consequence_type_dict, one_rs_multiple_genes = _process_consequence_type_file_tsv(snp_2_gene_file)
+    # if snp_2_gene_file.endswith(".xls"):
+    #     consequence_type_dict, one_rs_multiple_genes = _process_consequence_type_file_xls(snp_2_gene_file)
+    # else:
+    consequence_type_dict, one_rs_multiple_genes = _process_consequence_type_file_tsv(snp_2_gene_file)
 
     print(str(len(consequence_type_dict)) + ' rs->ENSG/SOterms mappings loaded')
     print(str(len(one_rs_multiple_genes)) + ' rsIds with multiple gene associations')
@@ -141,14 +113,19 @@ class SoTerm(object):
                             'feature_truncation', 'intergenic_variant']
 
     def __init__(self, so_name):
-        self._so_name = so_name
+        self.so_name = so_name
         if so_name in SoTerm.so_accession_name_dict:
             self._so_accession = SoTerm.so_accession_name_dict[so_name]
         else:
             self._so_accession = None
 
-    def get_name(self):
-        return self._so_name
+    @property
+    def so_name(self):
+        return self.__so_name
+
+    @so_name.setter
+    def so_name(self, value):
+        self.__so_name = value
 
     def get_accession(self):
         if self._so_accession is not None:
@@ -159,10 +136,10 @@ class SoTerm(object):
 
     def get_rank(self):
         # If So name not in Ensembl's ranked list, return the least severe rank
-        if self.get_name() not in SoTerm.ranked_so_names_list:
+        if self.so_name not in SoTerm.ranked_so_names_list:
             return len(SoTerm.ranked_so_names_list)
         else:
-            return SoTerm.ranked_so_names_list.index(self.get_name())
+            return SoTerm.ranked_so_names_list.index(self.so_name)
 
     @staticmethod
     def get_ranked_so_names():
@@ -195,8 +172,8 @@ class ConsequenceType(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    # def getEnsemblGeneId(self):
-    #     return self._ensemblGeneId
+    def getEnsemblGeneId(self):
+        return self._ensemblGeneId
 
     def get_ensembl_gene_ids(self):
         return self._ensembl_gene_ids
