@@ -347,8 +347,8 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
     def set_known_mutations(self, consequenceType):
         for so_term in consequenceType.get_so_terms():
             so_name = so_term.so_name
-            if so_term.get_accession():
-                new_functional_consequence = "http://purl.obolibrary.org/obo/" + so_term.get_accession().replace(':', '_')
+            if so_term.accession:
+                new_functional_consequence = "http://purl.obolibrary.org/obo/" + so_term.accession.replace(':', '_')
             else:
                 new_functional_consequence = 'http://targetvalidation.org/sequence/' + so_term.so_name
             self.add_known_mutation(new_functional_consequence, so_name)
