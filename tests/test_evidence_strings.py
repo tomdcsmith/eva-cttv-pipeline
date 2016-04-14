@@ -3,6 +3,9 @@ import unittest
 
 import eva_cttv_pipeline.evidence_strings as ES
 import eva_cttv_pipeline.efo_term as EFOT
+from eva_cttv_pipeline import consequence_type as CT
+
+import tests.test_config as test_config
 
 
 class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
@@ -136,6 +139,10 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
 
 
 class CTTVSomaticEvidenceStringTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.consequence_type_dict = CT.process_consequence_type_file(test_config.snp_2_gene_file)
+
     def setUp(self):
         self.test_ses = ES.CTTVSomaticEvidenceString()
 
@@ -178,5 +185,11 @@ class CTTVSomaticEvidenceStringTest(unittest.TestCase):
         self.test_ses.date = date_string
         self.assertEqual(self.test_ses['evidence']['date_asserted'], date_string)
         self.assertEqual(self.test_ses.date, date_string)
+
+    def test_set_known_mutations(self):
+        test_consequence_type = CT.ConsequenceType(ensembl_gene_ids=["ENSG00000008710"], so_names=["3_prime_UTR_variant"])
+        self.test_ses.set_known_mutations(test_consequence_type)
+        self.assertEqual(self.test_ses['evidence']['known_mutations'], [{'functional_consequence': 'http://purl.obolibrary.org/obo/SO_0001624', 'preferred_name': '3_prime_UTR_variant'}])
+
 
 
