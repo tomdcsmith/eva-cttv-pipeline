@@ -5,7 +5,7 @@ __author__ = 'Javier Lopez: javild@gmail.com'
 
 def _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term):
     if rs_id in consequence_type_dict:
-        consequence_type_dict[rs_id].add_ensembl_gene_id(ensembl_gene_id)
+        consequence_type_dict[rs_id].ensembl_gene_ids.add(ensembl_gene_id)
         consequence_type_dict[rs_id].add_so_term(so_term)
     else:
         consequence_type_dict[rs_id] = ConsequenceType([ensembl_gene_id], [so_term])
@@ -150,9 +150,9 @@ class ConsequenceType(object):
 
     def __init__(self, ensembl_gene_ids=None, so_names=None):
         if ensembl_gene_ids:
-            self._ensembl_gene_ids = set(ensembl_gene_ids)
+            self.ensembl_gene_ids = set(ensembl_gene_ids)
         else:
-            self._ensembl_gene_ids = set()
+            self.ensembl_gene_ids = set()
         self._ensemblTranscriptId = None
 
         if so_names is not None:
@@ -166,11 +166,16 @@ class ConsequenceType(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def getEnsemblGeneId(self):
-        return self._ensemblGeneId
+    @property
+    def ensembl_gene_ids(self):
+        return self.__ensembl_gene_ids
 
-    def get_ensembl_gene_ids(self):
-        return self._ensembl_gene_ids
+    @ensembl_gene_ids.setter
+    def ensembl_gene_ids(self, value):
+        self.__ensembl_gene_ids = value
+
+    # def add_ensembl_gene_id(self, new_ensembl_gene_id):
+    #     self._ensembl_gene_ids.add(new_ensembl_gene_id)
 
     def add_so_term(self, soName):
         if self._so_terms is None:
@@ -186,6 +191,3 @@ class ConsequenceType(object):
 
     def get_so_terms(self):
         return self._so_terms
-
-    def add_ensembl_gene_id(self, new_ensembl_gene_id):
-        self._ensembl_gene_ids.add(new_ensembl_gene_id)
