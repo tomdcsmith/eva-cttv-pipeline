@@ -135,10 +135,6 @@ class SoTerm(object):
         else:
             return SoTerm.ranked_so_names_list.index(self.so_name)
 
-    @staticmethod
-    def get_ranked_so_names():
-        return SoTerm.ranked_so_names_list
-
     def __eq__(self, other):
         return self.accession == other.accession
 
