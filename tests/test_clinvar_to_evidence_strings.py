@@ -109,10 +109,6 @@ class GetCttvSomaticEvidenceStringTest(unittest.TestCase):
 
         test_ev_string = ES.CTTVEvidenceString(test_dict)
 
-        print("test ev string: ", test_ev_string)
-
-        print("made ev string: ", self.evidence_string)
-
         self.assertEqual(self.evidence_string, test_ev_string)
 
 
