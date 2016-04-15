@@ -56,6 +56,7 @@ def get_args_GetCttvGeneticsEvidenceStringTest():
 
 # TODO look into why these failed with travis
 class GetCttvGeneticsEvidenceStringTest(unittest.TestCase):
+    maxDiff = None
     def setUp(self):
         test_args = get_args_GetCttvGeneticsEvidenceStringTest()
         self.evidence_string, n_more_than_one_efo_term = clinvar_to_evidence_strings.get_cttv_genetics_evidence_string(*test_args)
@@ -99,6 +100,7 @@ class GetCttvSomaticEvidenceStringTest(unittest.TestCase):
 
     def test_evidence_string(self):
         test_dict = {'evidence': {'provenance_type': {'expert': {'status': True, 'statement': 'Primary submitter of data'}, 'database': {'dbxref': {'id': 'http://identifiers.org/clinvar', 'url': 'http://identifiers.org/clinvar.record/RCV000122455', 'version': '2015-04'}, 'id': 'EVA', 'version': '1.0'}}, 'resource_score': {'value': 1, 'type': 'probability'}, 'date_asserted': '2014-10-11T00:00:00', 'is_associated': True, 'known_mutations': [{'functional_consequence': 'http://purl.obolibrary.org/obo/SO_0001587', 'preferred_name': 'stop_gained'}], 'urls': [{'url': 'http://www.ncbi.nlm.nih.gov/clinvar/RCV000122455', 'nice_name': 'Further details in ClinVar database'}], 'evidence_codes': ['http://purl.obolibrary.org/obo/ECO_0000205']}, 'type': 'somatic_mutation', 'sourceID': 'eva_somatic', 'access_level': 'public', 'disease': {'id': ['http://www.ebi.ac.uk/efo/EFO_0003840']}, 'validated_against_schema_version': '1.2.2', 'target': {'activity': 'http://identifiers.org/cttv.activity/predicted_damaging', 'id': ['http://identifiers.org/ensembl/ENSG00000135486'], 'target_type': 'http://identifiers.org/cttv.target/gene_variant'}, 'unique_association_fields': {'phenotype': 'http://www.ebi.ac.uk/efo/EFO_0003840', 'alleleOrigin': 'somatic', 'gene': 'ENSG00000135486', 'clinvarAccession': 'RCV000122455'}}
+
         self.assertEqual(self.evidence_string, test_dict)
 
 

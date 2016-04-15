@@ -337,7 +337,6 @@ def get_cttv_somatic_evidence_string(efo_list, clin_sig, clin_sig_2_activity, cl
     ev_string.date = clinvarRecord.date
     ev_string.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.acc
     ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.acc
-    print("clinsig: ", clin_sig)
     ev_string.association = (clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign')
 
     ev_string.set_known_mutations(consequenceType)
