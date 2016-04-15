@@ -298,7 +298,7 @@ def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, c
     ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc()
     ev_string.association = clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign'
     ev_string.gene_2_var_ev_codes = rcv_to_gene_evidence_codes
-    most_severe_so_term = consequenceType.getMostSevereSo()
+    most_severe_so_term = consequenceType.most_severe_so()
     if most_severe_so_term.accession is None:
         ev_string.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + most_severe_so_term.so_name
     else:
