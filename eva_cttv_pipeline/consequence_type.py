@@ -156,9 +156,9 @@ class ConsequenceType(object):
         self._ensemblTranscriptId = None
 
         if so_names is not None:
-            self._so_terms = set([SoTerm(so_name) for so_name in so_names])
+            self.so_terms = set([SoTerm(so_name) for so_name in so_names])
         else:
-            self._so_terms = None
+            self.so_terms = set()
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -174,20 +174,9 @@ class ConsequenceType(object):
     def ensembl_gene_ids(self, value):
         self.__ensembl_gene_ids = value
 
-    # def add_ensembl_gene_id(self, new_ensembl_gene_id):
-    #     self._ensembl_gene_ids.add(new_ensembl_gene_id)
-
     def add_so_term(self, soName):
-        if self._so_terms is None:
-            self._so_terms = {SoTerm(soName)}
-        else:
-            self._so_terms.add(SoTerm(soName))
+        self.so_terms.add(SoTerm(soName))
 
-    def get_so_accessions(self):
-        return [soTerm.accession for soTerm in self._so_terms]
-
-    def getMostSevereSo(self):
-        return min(list(self._so_terms), key=lambda x: x.rank)
-
-    def get_so_terms(self):
-        return self._so_terms
+    @property
+    def most_severe_so(self):
+        return min(list(self.so_terms), key=lambda x: x.rank)
