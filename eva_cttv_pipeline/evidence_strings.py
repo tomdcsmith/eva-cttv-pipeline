@@ -1,3 +1,4 @@
+from collections import UserDict
 import json
 
 import jsonschema
@@ -14,9 +15,9 @@ GEN_SCHEMA_FILE = utilities.get_resource_file(__package__, config.local_schema +
 SOM_SCHEMA_FILE = utilities.get_resource_file(__package__, config.local_schema + "/src/literature_curated.json")
 
 
-class CTTVEvidenceString(dict):
+class CTTVEvidenceString(UserDict):
     def __init__(self, a_dictionary):
-        super(CTTVEvidenceString, self).__init__(a_dictionary)
+        super().__init__(a_dictionary)
         # dict.__init__(a_dictionary)
 
     def add_unique_association_field(self, key, value):
@@ -144,7 +145,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                                      }
 
         # CTTVEvidenceString.__init__(self, a_dictionary)
-        super(CTTVGeneticsEvidenceString, self).__init__(a_dictionary)
+        super().__init__(a_dictionary)
 
     @property
     def db_xref_url(self):
@@ -296,7 +297,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                                      }
         # CTTVEvidenceString.__init__(self,a_dictionary)
 
-        super(CTTVSomaticEvidenceString, self).__init__(a_dictionary)
+        super().__init__(a_dictionary)
 
     @property
     def db_xref_url(self):
