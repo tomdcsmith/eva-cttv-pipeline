@@ -114,7 +114,7 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
                         # Mapping rs->Gene was found at Mick's file and therefore ensembl_gene_id will never be None
                         if consequenceType is not None:
 
-                            for ensembl_gene_id in consequenceType.get_ensembl_gene_ids():
+                            for ensembl_gene_id in consequenceType.ensembl_gene_ids:
 
                                 rcv_to_gene_evidence_codes = ['http://identifiers.org/eco/cttv_mapping_pipeline']  # Evidence codes provided by Mick
                                 ensembl_gene_id_uri = 'http://identifiers.org/ensembl/' + ensembl_gene_id
