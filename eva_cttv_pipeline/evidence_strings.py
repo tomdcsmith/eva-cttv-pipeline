@@ -229,8 +229,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 
     @property
     def date(self):
-        if self['evidence']['gene2variant']['date_asserted'] \
-                == self['evidence']['variant2disease']['date_asserted']:
+        if self['evidence']['gene2variant']['date_asserted'] == self['evidence']['variant2disease']['date_asserted']:
             return self['evidence']['gene2variant']['date_asserted']
         else:
             raise Exception("date attributes have different values")
