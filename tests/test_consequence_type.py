@@ -44,5 +44,44 @@ class SoTermTest(unittest.TestCase):
         self.assertEqual(CT.SoTerm.get_ranked_so_names(), ['transcript_ablation', 'splice_acceptor_variant', 'splice_donor_variant', 'stop_gained', 'frameshift_variant', 'stop_lost', 'initiator_codon_variant', 'transcript_amplification', 'inframe_insertion', 'inframe_deletion', 'missense_variant', 'splice_region_variant', 'incomplete_terminal_codon_variant', 'stop_retained_variant', 'synonymous_variant', 'coding_sequence_variant', 'mature_miRNA_variant', '5_prime_UTR_variant', '3_prime_UTR_variant', 'non_coding_transcript_exon_variant', 'intron_variant', 'NMD_transcript_variant', 'non_coding_transcript_variant', 'upstream_gene_variant', 'downstream_gene_variant', 'TFBS_ablation', 'TFBS_amplification', 'TF_binding_site_variant', 'regulatory_region_ablation', 'regulatory_region_amplification', 'regulatory_region_variant', 'feature_elongation', 'feature_truncation', 'intergenic_variant'])
 
 
-# class ConsequenceTypeTest(unittest.TestCase):
-#
+class ConsequenceTypeTest(unittest.TestCase):
+    def setUp(self):
+        self.test_ensembl_gene_ids_a = {"ENSG00000083093"}
+        self.test_so_name_a = "intron_variant"
+        self.test_so_name_b = "transcript_ablation"
+        self.test_so_term_a = CT.SoTerm(self.test_so_name_a)
+        self.test_so_term_b = CT.SoTerm(self.test_so_name_b)
+        self.test_consequence_type_a = CT.ConsequenceType(ensembl_gene_ids=self.test_ensembl_gene_ids_a, so_names={self.test_so_name_a})
+        self.test_consequence_type_b = CT.ConsequenceType()
+        self.test_consequence_type_c = CT.ConsequenceType(ensembl_gene_ids=self.test_ensembl_gene_ids_a, so_names={self.test_so_name_a, self.test_so_name_b})
+
+    def test_ensembl_gene_ids(self):
+        self.assertEqual(self.test_consequence_type_a.ensembl_gene_ids, self.test_ensembl_gene_ids_a)
+        new_id = "new_id"
+        self.test_ensembl_gene_ids_a.add(new_id)
+        self.test_consequence_type_a.ensembl_gene_ids.add(new_id)
+        self.assertEqual(self.test_consequence_type_a.ensembl_gene_ids, self.test_ensembl_gene_ids_a)
+
+        new_ids = {"id1", "id2"}
+        self.test_consequence_type_a.ensembl_gene_ids = new_ids
+        self.assertEqual(self.test_consequence_type_a.ensembl_gene_ids, new_ids)
+
+        self.assertEqual(self.test_consequence_type_b.ensembl_gene_ids, set())
+        self.test_consequence_type_b.ensembl_gene_ids = new_ids
+        self.assertEqual(self.test_consequence_type_b.ensembl_gene_ids, new_ids)
+
+    def test_add_so_term(self):
+        self.assertEqual(self.test_consequence_type_a.so_terms, {self.test_so_term_a})
+        self.test_consequence_type_a.add_so_term(self.test_so_name_b)
+        self.assertEqual(self.test_consequence_type_a.so_terms, {self.test_so_term_a, self.test_so_term_b})
+
+        self.assertEqual(self.test_consequence_type_b.so_terms, set())
+        self.test_consequence_type_b.add_so_term(self.test_so_name_b)
+        self.assertEqual(self.test_consequence_type_b.so_terms, {self.test_so_term_b})
+
+    def test_most_severe_so(self):
+        self.assertEqual(self.test_consequence_type_a.most_severe_so, self.test_so_term_a)
+        self.test_consequence_type_a.add_so_term(self.test_so_name_b)
+        self.assertEqual(self.test_consequence_type_a.most_severe_so, self.test_so_term_b)
+
+        self.assertEqual(self.test_consequence_type_c.most_severe_so, self.test_so_term_b)
