@@ -285,7 +285,7 @@ def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, c
                                       unrecognised_clin_sigs):
     ev_string = evidence_strings.CTTVGeneticsEvidenceString()
     ev_string.add_unique_association_field('gene', ensembl_gene_id)
-    ev_string.add_unique_association_field('clinvarAccession', clinvarRecord.get_acc())
+    ev_string.add_unique_association_field('clinvarAccession', clinvarRecord.acc)
     ev_string.add_unique_association_field('alleleOrigin', 'germline')
     try:
         ev_string.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
@@ -293,12 +293,12 @@ def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, c
         unrecognised_clin_sigs.add(clin_sig)
         ev_string.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
     ev_string.set_variant('http://identifiers.org/dbsnp/' + rs, get_cttv_variant_type(record['reference'], record['alternate']))
-    ev_string.date = clinvarRecord.get_date()
-    ev_string.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.get_acc()
-    ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc()
+    ev_string.date = clinvarRecord.date
+    ev_string.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.acc
+    ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.acc
     ev_string.association = clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign'
     ev_string.gene_2_var_ev_codes = rcv_to_gene_evidence_codes
-    most_severe_so_term = consequenceType.most_severe_so()
+    most_severe_so_term = consequenceType.most_severe_so
     if most_severe_so_term.accession is None:
         ev_string.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + most_severe_so_term.so_name
     else:
@@ -326,7 +326,7 @@ def get_cttv_somatic_evidence_string(efo_list, clin_sig, clin_sig_2_activity, cl
                                      unrecognised_clin_sigs, consequenceType):
     ev_string = evidence_strings.CTTVSomaticEvidenceString()
     ev_string.add_unique_association_field('gene', ensembl_gene_id)
-    ev_string.add_unique_association_field('clinvarAccession', clinvarRecord.get_acc())
+    ev_string.add_unique_association_field('clinvarAccession', clinvarRecord.acc)
     ev_string.add_unique_association_field('alleleOrigin', 'somatic')
     try:
         ev_string.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
@@ -334,12 +334,11 @@ def get_cttv_somatic_evidence_string(efo_list, clin_sig, clin_sig_2_activity, cl
         unrecognised_clin_sigs.add(clin_sig)
         ev_string.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
 
-    ev_string.date = clinvarRecord.get_date()
-    ev_string.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.get_acc()
-    ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc()
-    ev_string.association(
-        clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic'
-        and clin_sig != 'likely benign' and clin_sig != 'benign')
+    ev_string.date = clinvarRecord.date
+    ev_string.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.acc
+    ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.acc
+    print("clinsig: ", clin_sig)
+    ev_string.association = (clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign')
 
     ev_string.set_known_mutations(consequenceType)
 
@@ -365,13 +364,13 @@ def add_evidence_string(clinvarRecord, ev_string, evidence_string_list, n_eviden
         n_evidence_strings_per_record += 1
     except jsonschema.exceptions.ValidationError as err:
         print('Error: evidence_string does not validate against schema.')
-        print('ClinVar accession: ' + clinvarRecord.get_acc())
+        print('ClinVar accession: ' + clinvarRecord.acc)
         print(err)
         print(json.dumps(ev_string))
         sys.exit(1)
     except efo_term.EFOTerm.IsObsoleteException as err:
         print('Error: obsolete EFO term.')
-        print('Term: ' + ev_string.get_disease().get_id())
+        print('Term: ' + ev_string.get_disease().efoid)
         print(err)
         print(json.dumps(ev_string))
         sys.exit(1)
