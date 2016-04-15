@@ -16,7 +16,8 @@ SOM_SCHEMA_FILE = utilities.get_resource_file(__package__, config.local_schema +
 
 class CTTVEvidenceString(dict):
     def __init__(self, a_dictionary):
-        dict.__init__(self, a_dictionary)
+        super(CTTVEvidenceString, self).__init__(a_dictionary)
+        # dict.__init__(a_dictionary)
 
     def add_unique_association_field(self, key, value):
         self['unique_association_fields'][key] = value
@@ -55,8 +56,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 
     def __init__(self):
 
-        CTTVEvidenceString.__init__(self,
-                                    {'sourceID': 'eva',
+        a_dictionary = {'sourceID': 'eva',
                                      'validated_against_schema_version': '1.2.2',
                                      'type': 'genetic_association',
                                      'access_level': 'public',
@@ -142,7 +142,9 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                                          'id': [],  # EFO terms
                                      }
                                      }
-                                    )
+
+        # CTTVEvidenceString.__init__(self, a_dictionary)
+        super(CTTVGeneticsEvidenceString, self).__init__(a_dictionary)
 
     @property
     def db_xref_url(self):
@@ -242,9 +244,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
     schema = json.loads(open(SOM_SCHEMA_FILE, 'r').read())
 
     def __init__(self):
-
-        CTTVEvidenceString.__init__(self,
-                                    {'sourceID': 'eva_somatic',
+        a_dictionary = {'sourceID': 'eva_somatic',
                                      'validated_against_schema_version': '1.2.2',
                                      'type': 'somatic_mutation',
                                      'access_level': 'public',
@@ -294,7 +294,9 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                                          'id': [],  # EFO terms
                                      }
                                      }
-                                    )
+        # CTTVEvidenceString.__init__(self,a_dictionary)
+
+        super(CTTVSomaticEvidenceString, self).__init__(a_dictionary)
 
     @property
     def db_xref_url(self):
