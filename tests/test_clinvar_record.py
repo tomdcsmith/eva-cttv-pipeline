@@ -15,38 +15,38 @@ class TestClinvarRecord(unittest.TestCase):
         cls.rcv_to_rs, cls.rcv_to_nsv = CR.get_rcv_to_rsnsv_mapping(test_config.variant_summary_file)
         cls.consequence_type_dict = CT.process_consequence_type_file(test_config.snp_2_gene_file)
 
-    def test_get_gene_id(self):
-        self.assertEqual(self.test_clinvar_record.get_gene_id(), "NM_000548")
+    def test_gene_id(self):
+        self.assertEqual(self.test_clinvar_record.gene_id, "NM_000548")
 
-    def test_get_ensembl_id(self):
-        self.assertEqual(self.test_clinvar_record.get_ensembl_id(), "ENSG00000008710")
+    def test_ensembl_id(self):
+        self.assertEqual(self.test_clinvar_record.ensembl_id, "ENSG00000008710")
 
-    def test_get_date(self):
-        self.assertEqual(self.test_clinvar_record.get_date(), datetime.fromtimestamp(1412982000000/1000).isoformat())
+    def test_date(self):
+        self.assertEqual(self.test_clinvar_record.date, datetime.fromtimestamp(1412982000000/1000).isoformat())
 
-    def test_get_score(self):
-        self.assertEqual(self.test_clinvar_record.get_score(), None)
+    def test_score(self):
+        self.assertEqual(self.test_clinvar_record.score, None)
 
-    def test_get_acc(self):
-        self.assertEqual(self.test_clinvar_record.get_acc(), "RCV000055062")
+    def test_acc(self):
+        self.assertEqual(self.test_clinvar_record.accession, "RCV000055062")
 
-    def test_get_traits(self):
-        self.assertEqual(self.test_clinvar_record.get_traits(), [['Tuberous sclerosis syndrome']])
+    def test_traits(self):
+        self.assertEqual(self.test_clinvar_record.traits, [['Tuberous sclerosis syndrome']])
 
-    def test_get_trait_pubmed_refs(self):
-        self.assertEqual(self.test_clinvar_record.get_trait_pubmed_refs(), [[20301399]])
+    def test_trait_pubmed_refs(self):
+        self.assertEqual(self.test_clinvar_record.trait_pubmed_refs, [[20301399]])
 
-    def test_get_observed_pubmed_refs(self):
-        self.assertEqual(self.test_clinvar_record.get_observed_pubmed_refs(), [])
+    def test_observed_pubmed_refs(self):
+        self.assertEqual(self.test_clinvar_record.observed_pubmed_refs, [])
 
-    def test_get_measure_set_pubmed_refs(self):
-        self.assertEqual(self.test_clinvar_record.get_measure_set_pubmed_refs(), [])
+    def test_measure_set_pubmed_refs(self):
+        self.assertEqual(self.test_clinvar_record.measure_set_pubmed_refs, [])
 
-    def test_get_hgvs(self):
-        self.assertEqual(self.test_clinvar_record.get_hgvs(), ['NM_000548.3:c.*154dup', 'NM_001009944.2:c.*963dupC', 'NG_005895.1:g.44459dupG', 'NC_000016.10:g.2088764dupG', 'NC_000016.9:g.2138765dupG', 'p.(=)'])
+    def test_hgvs(self):
+        self.assertEqual(self.test_clinvar_record.hgvs, ['NM_000548.3:c.*154dup', 'NM_001009944.2:c.*963dupC', 'NG_005895.1:g.44459dupG', 'NC_000016.10:g.2088764dupG', 'NC_000016.9:g.2138765dupG', 'p.(=)'])
 
-    def test_get_clinical_significance(self):
-        self.assertEqual(self.test_clinvar_record.get_clinical_significance(), "not provided")
+    def test_clinical_significance(self):
+        self.assertEqual(self.test_clinvar_record.clinical_significance, "not provided")
 
     def test_get_rs(self):
         self.assertEqual(self.test_clinvar_record.get_rs(self.rcv_to_rs), "rs397514891")
@@ -62,11 +62,11 @@ class TestClinvarRecord(unittest.TestCase):
         self.assertEqual(self.test_clinvar_record.get_main_consequence_types(self.consequence_type_dict, self.rcv_to_rs), test_consequence_type)
         self.assertEqual(self.test_clinvar_record.get_main_consequence_types({}, {}), None)
 
-    def test_get_variant_type(self):
-        self.assertEqual(self.test_clinvar_record.get_variant_type(), "Duplication")
+    def test_variant_type(self):
+        self.assertEqual(self.test_clinvar_record.variant_type, "Duplication")
 
-    def test_get_allele_origins(self):
-        self.assertEqual(self.test_clinvar_record.get_allele_origins(), ['germline'])
+    def test_allele_origins(self):
+        self.assertEqual(self.test_clinvar_record.allele_origins, ['germline'])
 
 
 class TestGetRcvToRSNSVMapping(unittest.TestCase):
