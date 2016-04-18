@@ -139,7 +139,7 @@ class ClinvarRecord(dict):
         return self.score_map[self['referenceClinVarAssertion']['clinicalSignificance']['reviewStatus']]
 
     @property
-    def acc(self):
+    def accession(self):
         return self['referenceClinVarAssertion']['clinVarAccession']['acc']
 
     @property
@@ -209,13 +209,13 @@ class ClinvarRecord(dict):
 
     def get_rs(self, rcv_to_rs):
         try:
-            return rcv_to_rs[self.acc]
+            return rcv_to_rs[self.accession]
         except KeyError:
             return None
 
     def get_nsv(self, rcv_to_nsv):
         try:
-            return rcv_to_nsv[self.acc]
+            return rcv_to_nsv[self.accession]
         except KeyError:
             return None
 
