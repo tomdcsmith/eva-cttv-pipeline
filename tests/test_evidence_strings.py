@@ -8,6 +8,34 @@ from eva_cttv_pipeline import consequence_type as CT
 import tests.test_config as test_config
 
 
+class GetCttvVariantTypeTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        record_single_a = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "C"}, "snp single")
+        record_single_b = ({"reference": "A", "alternate": "C"}, "snp single")
+        record_single_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG"}, "snp single")
+
+        cls.test_records_singles = [record_single_a, record_single_b, record_single_c]
+
+        record_structurals_a = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT", "alternate": "C"},
+                                "structural variant")
+        record_structurals_b = ({"reference": "A", "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
+                                "structural variant")
+        record_structurals_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT",
+                                 "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
+                                "structural variant")
+
+        cls.test_records_structurals = [record_structurals_a, record_structurals_b, record_structurals_c]
+
+    def test_get_cttv_variant_type_singles(self):
+        for record in self.test_records_singles:
+            self.assertEqual(ES.get_cttv_variant_type(record[0]["reference"], record[0]["alternate"]), record[1])
+
+    def test_get_cttv_variant_type_structurals(self):
+        for record in self.test_records_structurals:
+            self.assertEqual(ES.get_cttv_variant_type(record[0]["reference"], record[0]["alternate"]), record[1])
+
+
 class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
     def setUp(self):
         self.test_ges = ES.CTTVGeneticsEvidenceString()
