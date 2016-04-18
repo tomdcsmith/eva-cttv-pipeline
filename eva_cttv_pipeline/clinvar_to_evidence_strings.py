@@ -8,7 +8,8 @@ import codecs
 import jsonschema
 import xlrd
 
-from eva_cttv_pipeline import efo_term, clinvar_record, evidence_strings, consequence_type
+from eva_cttv_pipeline import efo_term, clinvar_record, consequence_type
+from eva_cttv_pipeline import evidence_strings as ES
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
@@ -33,27 +34,6 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
 
     consequence_type_dict = consequence_type.process_consequence_type_file(snp_2_gene_file)
     rcv_to_rs, rcv_to_nsv = clinvar_record.get_rcv_to_rsnsv_mapping(variant_summary_file)
-
-    clin_sig_2_activity = {'unknown': 'http://identifiers.org/cttv.activity/unknown',
-                                     'untested': 'http://identifiers.org/cttv.activity/unknown',
-                                     'non-pathogenic': 'http://identifiers.org/cttv.activity/tolerated_by_target',
-                                     'probable-non-pathogenic': 'http://identifiers.org/cttv.activity/predicted_tolerated',
-                                     'probable-pathogenic': 'http://identifiers.org/cttv.activity/predicted_damaging',
-                                     'pathogenic': 'http://identifiers.org/cttv.activity/damaging_to_target',
-                                     'drug-response': 'http://identifiers.org/cttv.activity/unknown',
-                                     'histocompatibility': 'http://identifiers.org/cttv.activity/unknown',
-                                     'other': 'http://identifiers.org/cttv.activity/unknown',
-                                     'benign': 'http://identifiers.org/cttv.activity/tolerated_by_target',
-                                     'protective': 'http://identifiers.org/cttv.activity/tolerated_by_target',
-                                     'not provided': 'http://identifiers.org/cttv.activity/unknown',
-                                     'likely benign': 'http://identifiers.org/cttv.activity/predicted_tolerated',
-                                     'confers sensitivity': 'http://identifiers.org/cttv.activity/predicted_damaging',
-                                     'uncertain significance': 'http://identifiers.org/cttv.activity/unknown',
-                                     'likely pathogenic': 'http://identifiers.org/cttv.activity/predicted_damaging',
-                                     'conflicting data from submitters': 'http://identifiers.org/cttv.activity/unknown',
-                                     'risk factor': 'http://identifiers.org/cttv.activity/predicted_damaging',
-                                     'association': 'http://identifiers.org/cttv.activity/damaging_to_target'
-                                     }
 
     if allowed_clinical_significance is None:
         allowed_clinical_significance = ['unknown', 'untested', 'non-pathogenic', 'probable-non-pathogenic',
@@ -134,24 +114,20 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
                                         'somatic' not in clinvar_record_allele_origins))
                                         for allele_origin_counter, alleleOrigin in enumerate(clinvar_record_allele_origins):
                                             if alleleOrigin == 'germline':
-                                                evidence_string, n_more_than_one_efo_term = get_cttv_genetics_evidence_string(efo_list,
-                                                                                                                              clin_sig,
-                                                                                                                              clin_sig_2_activity,
-                                                                                                                              clinvarRecord,
-                                                                                                                              consequenceType,
-                                                                                                                              ensembl_gene_id,
-                                                                                                                              ensembl_gene_id_uri,
-                                                                                                                              ensembl_gene_id_uris,
-                                                                                                                              measure_set_refs_list,
-                                                                                                                              n_more_than_one_efo_term,
-                                                                                                                              observed_regs_list,
-                                                                                                                              rcv_to_gene_evidence_codes,
-                                                                                                                              record,
-                                                                                                                              rs,
-                                                                                                                              trait_counter,
-                                                                                                                              trait_refs_list,
-                                                                                                                              traits,
-                                                                                                                              unrecognised_clin_sigs)
+                                                evidence_string = ES.CTTVGeneticsEvidenceString(efo_list,
+                                                                                                clin_sig,
+                                                                                                clinvarRecord,
+                                                                                                consequenceType,
+                                                                                                ensembl_gene_id,
+                                                                                                ensembl_gene_id_uri,
+                                                                                                measure_set_refs_list,
+                                                                                                observed_regs_list,
+                                                                                                rcv_to_gene_evidence_codes,
+                                                                                                record,
+                                                                                                rs,
+                                                                                                trait_counter,
+                                                                                                trait_refs_list,
+                                                                                                unrecognised_clin_sigs)
                                                 n_ev_strings_per_record = add_evidence_string(clinvarRecord, evidence_string,
                                                                                               evidence_string_list,
                                                                                               n_ev_strings_per_record)
@@ -159,22 +135,21 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
                                                     [clinvarRecord.accession, rs, ','.join(clinvar_trait_list),
                                                      ','.join(efo_list)])
                                                 n_valid_rs_and_nsv += (clinvarRecord.get_nsv(rcv_to_nsv) is not None)
+                                                n_more_than_one_efo_term += (len(efo_list) > 1)
+                                                traits.update(set(efo_list))
+                                                ensembl_gene_id_uris.add(ensembl_gene_id_uri)
                                             elif alleleOrigin == 'somatic':
-                                                evidence_string, n_more_than_one_efo_term = get_cttv_somatic_evidence_string(efo_list,
-                                                                                                                             clin_sig,
-                                                                                                                             clin_sig_2_activity,
-                                                                                                                             clinvarRecord,
-                                                                                                                             ensembl_gene_id,
-                                                                                                                             ensembl_gene_id_uri,
-                                                                                                                             ensembl_gene_id_uris,
-                                                                                                                             measure_set_refs_list,
-                                                                                                                             n_more_than_one_efo_term,
-                                                                                                                             observed_regs_list,
-                                                                                                                             trait_counter,
-                                                                                                                             trait_refs_list,
-                                                                                                                             traits,
-                                                                                                                             unrecognised_clin_sigs,
-                                                                                                                             consequenceType)
+                                                evidence_string = ES.CTTVSomaticEvidenceString(efo_list,
+                                                                                               clin_sig,
+                                                                                               clinvarRecord,
+                                                                                               ensembl_gene_id,
+                                                                                               ensembl_gene_id_uri,
+                                                                                               measure_set_refs_list,
+                                                                                               observed_regs_list,
+                                                                                               trait_counter,
+                                                                                               trait_refs_list,
+                                                                                               unrecognised_clin_sigs,
+                                                                                               consequenceType)
                                                 n_ev_strings_per_record = add_evidence_string(clinvarRecord, evidence_string,
                                                                                               evidence_string_list,
                                                                                               n_ev_strings_per_record)
@@ -182,6 +157,9 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
                                                     [clinvarRecord.accession, rs, ','.join(clinvar_trait_list),
                                                      ','.join(efo_list)])
                                                 n_valid_rs_and_nsv += (clinvarRecord.get_nsv(rcv_to_nsv) is not None)
+                                                n_more_than_one_efo_term += (len(efo_list) > 1)
+                                                traits.update(set(efo_list))
+                                                ensembl_gene_id_uris.add(ensembl_gene_id_uri)
                                             elif alleleOrigin not in n_unrecognised_allele_origin:
                                                 n_unrecognised_allele_origin[alleleOrigin] = 1
                                             else:
@@ -278,84 +256,6 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
     print(str(n_nsv_skipped_wrong_ref_alt) + ' ClinVar nsvs were skipped because of same ref and alt')
 
 
-def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, clinvarRecord,
-                                      consequenceType, ensembl_gene_id, ensembl_gene_id_uri, ensembl_gene_id_uris,
-                                      measure_set_refs_list, n_more_than_one_efo_term, observed_refs_list, rcv_to_gene_evidence_codes,
-                                      record, rs, trait_counter, traits_ref_list, traits,
-                                      unrecognised_clin_sigs):
-    ev_string = evidence_strings.CTTVGeneticsEvidenceString()
-    ev_string.add_unique_association_field('gene', ensembl_gene_id)
-    ev_string.add_unique_association_field('clinvarAccession', clinvarRecord.accession)
-    ev_string.add_unique_association_field('alleleOrigin', 'germline')
-    try:
-        ev_string.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
-    except KeyError:
-        unrecognised_clin_sigs.add(clin_sig)
-        ev_string.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
-    ev_string.set_variant('http://identifiers.org/dbsnp/' + rs, get_cttv_variant_type(record['reference'], record['alternate']))
-    ev_string.date = clinvarRecord.date
-    ev_string.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.accession
-    ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.accession
-    ev_string.association = clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign'
-    ev_string.gene_2_var_ev_codes = rcv_to_gene_evidence_codes
-    most_severe_so_term = consequenceType.most_severe_so
-    if most_severe_so_term.accession is None:
-        ev_string.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + most_severe_so_term.so_name
-    else:
-        ev_string.gene_2_var_func_consequence = 'http://purl.obolibrary.org/obo/' + most_severe_so_term.accession.replace(':', '_')
-
-    ref_list = list(set(traits_ref_list[trait_counter] + observed_refs_list + measure_set_refs_list))
-    if len(ref_list) > 0:
-        ev_string.set_var_2_disease_literature(ref_list)
-        # Arbitrarily select only one reference among all
-        ev_string.unique_reference = ref_list[0]
-        ev_string.top_level_literature = ref_list
-    efo_list.sort()
-    # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
-    ev_string.disease = efo_list[0]
-    ev_string.add_unique_association_field('phenotype', efo_list[0])
-    n_more_than_one_efo_term += (len(efo_list) > 1)
-    traits.update(set(efo_list))
-    ensembl_gene_id_uris.add(ensembl_gene_id_uri)
-    return ev_string, n_more_than_one_efo_term
-
-
-def get_cttv_somatic_evidence_string(efo_list, clin_sig, clin_sig_2_activity, clinvarRecord,
-                                     ensembl_gene_id, ensembl_gene_id_uri, ensembl_gene_id_uris, measure_set_refs_list,
-                                     n_more_than_one_efo_term, observed_refs_list, trait_counter, trait_refs_list, traits,
-                                     unrecognised_clin_sigs, consequenceType):
-    ev_string = evidence_strings.CTTVSomaticEvidenceString()
-    ev_string.add_unique_association_field('gene', ensembl_gene_id)
-    ev_string.add_unique_association_field('clinvarAccession', clinvarRecord.accession)
-    ev_string.add_unique_association_field('alleleOrigin', 'somatic')
-    try:
-        ev_string.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
-    except KeyError:
-        unrecognised_clin_sigs.add(clin_sig)
-        ev_string.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
-
-    ev_string.date = clinvarRecord.date
-    ev_string.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.accession
-    ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.accession
-    ev_string.association = (clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign')
-
-    ev_string.set_known_mutations(consequenceType)
-
-    ref_list = list(set(trait_refs_list[trait_counter] + observed_refs_list + measure_set_refs_list))
-    if len(ref_list) > 0:
-        ev_string.evidence_literature = ref_list
-        ev_string.top_level_literature = ref_list
-
-    efo_list.sort()
-    # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
-    ev_string.disease = efo_list[0]
-    ev_string.add_unique_association_field('phenotype', efo_list[0])
-    n_more_than_one_efo_term += (len(efo_list) > 1)
-    traits.update(set(efo_list))
-    ensembl_gene_id_uris.add(ensembl_gene_id_uri)
-    return ev_string, n_more_than_one_efo_term
-
-
 def add_evidence_string(clinvarRecord, ev_string, evidence_string_list, n_evidence_strings_per_record):
     try:
         ev_string.validate()
@@ -388,18 +288,6 @@ def append_nsv(nsv_list, clinvarRecord, rcv_to_nsv):
     if nsv is not None:
         nsv_list.append(nsv)
     return nsv_list
-
-
-def get_cttv_variant_type(ref, alt):
-    if len(ref) < 2 and len(alt) < 2:
-        cttv_variant_type = 'snp single'
-    elif len(ref) > 50 or len(alt) > 50:
-        cttv_variant_type = 'structural variant'
-    else:
-        cttv_variant_type = 'snp single'  # Sam asked for this in his email 21/05/2015
-        # cttv_variant_type = 'snp multiple'
-
-    return cttv_variant_type
 
 
 def map_efo(trait_2_efo, trait_list):
