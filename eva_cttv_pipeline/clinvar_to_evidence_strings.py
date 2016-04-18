@@ -103,7 +103,7 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
         for record in curr_result_list:
             n_ev_strings_per_record = 0
             clinvarRecord = clinvar_record.ClinvarRecord(record['clinvarSet'])
-            clin_sig = clinvarRecord.get_clinical_significance().lower()
+            clin_sig = clinvarRecord.clinical_significance.lower()
             n_nsvs += (clinvarRecord.get_nsv(rcv_to_nsv) is not None)
             if clin_sig in allowed_clinical_significance:
                 if record['reference'] != record['alternate']:
@@ -114,18 +114,18 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
                         # Mapping rs->Gene was found at Mick's file and therefore ensembl_gene_id will never be None
                         if consequenceType is not None:
 
-                            for ensembl_gene_id in consequenceType.get_ensembl_gene_ids():
+                            for ensembl_gene_id in consequenceType.ensembl_gene_ids:
 
                                 rcv_to_gene_evidence_codes = ['http://identifiers.org/eco/cttv_mapping_pipeline']  # Evidence codes provided by Mick
                                 ensembl_gene_id_uri = 'http://identifiers.org/ensembl/' + ensembl_gene_id
-                                trait_refs_list = [['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList] for refList in clinvarRecord.get_trait_pubmed_refs()]
-                                observed_regs_list = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.get_observed_pubmed_refs()]
-                                measure_set_refs_list = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.get_measure_set_pubmed_refs()]
-                                for trait_counter, trait_list in enumerate(clinvarRecord.get_traits()):
+                                trait_refs_list = [['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList] for refList in clinvarRecord.trait_pubmed_refs]
+                                observed_regs_list = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.observed_pubmed_refs]
+                                measure_set_refs_list = ['http://europepmc.org/abstract/MED/' + str(ref) for ref in clinvarRecord.measure_set_pubmed_refs]
+                                for trait_counter, trait_list in enumerate(clinvarRecord.traits):
                                     clinvar_trait_list, efo_list = map_efo(trait_2_efo, trait_list)
                                     # Only ClinVar records associated to a trait with mapped EFO term will generate evidence_strings
                                     if len(efo_list) > 0:
-                                        clinvar_record_allele_origins = clinvarRecord.get_allele_origins()
+                                        clinvar_record_allele_origins = clinvarRecord.allele_origins
                                         n_multiple_allele_origin += (len(clinvar_record_allele_origins) > 1)
                                         n_germline_somatic += (('germline' in clinvar_record_allele_origins) and (
                                         'somatic' in clinvar_record_allele_origins))
@@ -156,7 +156,7 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
                                                                                               evidence_string_list,
                                                                                               n_ev_strings_per_record)
                                                 evidence_list.append(
-                                                    [clinvarRecord.get_acc(), rs, ','.join(clinvar_trait_list),
+                                                    [clinvarRecord.accession, rs, ','.join(clinvar_trait_list),
                                                      ','.join(efo_list)])
                                                 n_valid_rs_and_nsv += (clinvarRecord.get_nsv(rcv_to_nsv) is not None)
                                             elif alleleOrigin == 'somatic':
@@ -179,7 +179,7 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
                                                                                               evidence_string_list,
                                                                                               n_ev_strings_per_record)
                                                 evidence_list.append(
-                                                    [clinvarRecord.get_acc(), rs, ','.join(clinvar_trait_list),
+                                                    [clinvarRecord.accession, rs, ','.join(clinvar_trait_list),
                                                      ','.join(efo_list)])
                                                 n_valid_rs_and_nsv += (clinvarRecord.get_nsv(rcv_to_nsv) is not None)
                                             elif alleleOrigin not in n_unrecognised_allele_origin:
@@ -285,7 +285,7 @@ def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, c
                                       unrecognised_clin_sigs):
     ev_string = evidence_strings.CTTVGeneticsEvidenceString()
     ev_string.add_unique_association_field('gene', ensembl_gene_id)
-    ev_string.add_unique_association_field('clinvarAccession', clinvarRecord.get_acc())
+    ev_string.add_unique_association_field('clinvarAccession', clinvarRecord.accession)
     ev_string.add_unique_association_field('alleleOrigin', 'germline')
     try:
         ev_string.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
@@ -293,30 +293,26 @@ def get_cttv_genetics_evidence_string(efo_list, clin_sig, clin_sig_2_activity, c
         unrecognised_clin_sigs.add(clin_sig)
         ev_string.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
     ev_string.set_variant('http://identifiers.org/dbsnp/' + rs, get_cttv_variant_type(record['reference'], record['alternate']))
-    ev_string.set_date(clinvarRecord.get_date())
-    ev_string.set_db_xref_url('http://identifiers.org/clinvar.record/' + clinvarRecord.get_acc())
-    ev_string.set_url('http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc())
-    ev_string.set_association(
-        clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic'
-        and clin_sig != 'likely benign' and clin_sig != 'benign')
-    ev_string.set_gene_2_var_ev_codes(rcv_to_gene_evidence_codes)
-    most_severe_so_term = consequenceType.getMostSevereSo()
-    if most_severe_so_term.get_accession() is None:
-        ev_string.set_gene_2_var_func_consequence(
-            'http://targetvalidation.org/sequence/' + most_severe_so_term.get_name())
+    ev_string.date = clinvarRecord.date
+    ev_string.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.accession
+    ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.accession
+    ev_string.association = clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign'
+    ev_string.gene_2_var_ev_codes = rcv_to_gene_evidence_codes
+    most_severe_so_term = consequenceType.most_severe_so
+    if most_severe_so_term.accession is None:
+        ev_string.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + most_severe_so_term.so_name
     else:
-        ev_string.set_gene_2_var_func_consequence(
-            'http://purl.obolibrary.org/obo/' + most_severe_so_term.get_accession().replace(':', '_'))
+        ev_string.gene_2_var_func_consequence = 'http://purl.obolibrary.org/obo/' + most_severe_so_term.accession.replace(':', '_')
 
     ref_list = list(set(traits_ref_list[trait_counter] + observed_refs_list + measure_set_refs_list))
     if len(ref_list) > 0:
         ev_string.set_var_2_disease_literature(ref_list)
         # Arbitrarily select only one reference among all
-        ev_string.set_unique_reference(ref_list[0])
-        ev_string.set_top_level_literature(ref_list)
+        ev_string.unique_reference = ref_list[0]
+        ev_string.top_level_literature = ref_list
     efo_list.sort()
     # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
-    ev_string.set_disease(efo_list[0])
+    ev_string.disease = efo_list[0]
     ev_string.add_unique_association_field('phenotype', efo_list[0])
     n_more_than_one_efo_term += (len(efo_list) > 1)
     traits.update(set(efo_list))
@@ -330,7 +326,7 @@ def get_cttv_somatic_evidence_string(efo_list, clin_sig, clin_sig_2_activity, cl
                                      unrecognised_clin_sigs, consequenceType):
     ev_string = evidence_strings.CTTVSomaticEvidenceString()
     ev_string.add_unique_association_field('gene', ensembl_gene_id)
-    ev_string.add_unique_association_field('clinvarAccession', clinvarRecord.get_acc())
+    ev_string.add_unique_association_field('clinvarAccession', clinvarRecord.accession)
     ev_string.add_unique_association_field('alleleOrigin', 'somatic')
     try:
         ev_string.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
@@ -338,23 +334,21 @@ def get_cttv_somatic_evidence_string(efo_list, clin_sig, clin_sig_2_activity, cl
         unrecognised_clin_sigs.add(clin_sig)
         ev_string.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
 
-    ev_string.set_date(clinvarRecord.get_date())
-    ev_string.set_db_xref_url('http://identifiers.org/clinvar.record/' + clinvarRecord.get_acc())
-    ev_string.set_url('http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.get_acc())
-    ev_string.set_association(
-        clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic'
-        and clin_sig != 'likely benign' and clin_sig != 'benign')
+    ev_string.date = clinvarRecord.date
+    ev_string.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.accession
+    ev_string.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.accession
+    ev_string.association = (clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign')
 
     ev_string.set_known_mutations(consequenceType)
 
     ref_list = list(set(trait_refs_list[trait_counter] + observed_refs_list + measure_set_refs_list))
     if len(ref_list) > 0:
-        ev_string.set_evidence_literature(ref_list)
-        ev_string.set_top_level_literature(ref_list)
+        ev_string.evidence_literature = ref_list
+        ev_string.top_level_literature = ref_list
 
     efo_list.sort()
     # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
-    ev_string.set_disease(efo_list[0])
+    ev_string.disease = efo_list[0]
     ev_string.add_unique_association_field('phenotype', efo_list[0])
     n_more_than_one_efo_term += (len(efo_list) > 1)
     traits.update(set(efo_list))
@@ -369,13 +363,13 @@ def add_evidence_string(clinvarRecord, ev_string, evidence_string_list, n_eviden
         n_evidence_strings_per_record += 1
     except jsonschema.exceptions.ValidationError as err:
         print('Error: evidence_string does not validate against schema.')
-        print('ClinVar accession: ' + clinvarRecord.get_acc())
+        print('ClinVar accession: ' + clinvarRecord.accession)
         print(err)
         print(json.dumps(ev_string))
         sys.exit(1)
     except efo_term.EFOTerm.IsObsoleteException as err:
         print('Error: obsolete EFO term.')
-        print('Term: ' + ev_string.get_disease().get_id())
+        print('Term: ' + ev_string.get_disease().efoid)
         print(err)
         print(json.dumps(ev_string))
         sys.exit(1)

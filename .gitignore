@@ -1,4 +1,3 @@
-/resources/ignore_file.txt
 /resources/rs_ids_2015_05.txt
 /resources/bad_snp2gene
 /.python-version
@@ -28,8 +27,8 @@
 /resources/rs_ids_2015_05.txt
 /eva_cttv_pipeline/resources/schema_local
 /resources/bad_snp2gene
-.cache/
-/.eggs
+.cache
+.eggs
 *.coverage
 
 # General
