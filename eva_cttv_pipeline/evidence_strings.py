@@ -49,9 +49,31 @@ def get_cttv_variant_type(ref, alt):
 
 
 class CTTVEvidenceString(UserDict):
-    def __init__(self, a_dictionary):
+    def __init__(self, a_dictionary, ensembl_gene_id=None, clinvar_record=None, ensembl_gene_id_uri=None, clin_sig=None,
+                 efo_list=None, ref_list=None):
         super().__init__(a_dictionary)
         # dict.__init__(a_dictionary)
+
+        if ensembl_gene_id:
+            self.add_unique_association_field('gene', ensembl_gene_id)
+        if clinvar_record:
+            self.add_unique_association_field('clinvarAccession', clinvar_record.accession)
+
+        if ensembl_gene_id_uri:
+            try:
+                self.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
+            except KeyError:
+                # unrecognised_clin_sigs.add(clin_sig)  # TODO fix this
+                self.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
+
+        if ref_list and len(ref_list) > 0:
+            self.top_level_literature = ref_list
+
+        if efo_list:
+            efo_list.sort()
+            # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
+            self.disease = efo_list[0]
+            self.add_unique_association_field('phenotype', efo_list[0])
 
     def add_unique_association_field(self, key, value):
         self['unique_association_fields'][key] = value
@@ -183,16 +205,12 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                                      }
 
         # CTTVEvidenceString.__init__(self, a_dictionary)
-        super().__init__(a_dictionary)
 
-        self.add_unique_association_field('gene', ensembl_gene_id)
-        self.add_unique_association_field('clinvarAccession', clinvarRecord.accession)
+        ref_list = list(set(traits_ref_list[trait_counter] + observed_refs_list + measure_set_refs_list))
+
+        super().__init__(a_dictionary, ensembl_gene_id, clinvarRecord, ensembl_gene_id_uri, clin_sig, efo_list, ref_list)
+
         self.add_unique_association_field('alleleOrigin', 'germline')
-        try:
-            self.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
-        except KeyError:
-            unrecognised_clin_sigs.add(clin_sig)
-            self.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
         self.set_variant('http://identifiers.org/dbsnp/' + rs, get_cttv_variant_type(record['reference'], record['alternate']))
         self.date = clinvarRecord.date
         self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.accession
@@ -205,16 +223,10 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         else:
             self.gene_2_var_func_consequence = 'http://purl.obolibrary.org/obo/' + most_severe_so_term.accession.replace(':', '_')
 
-        ref_list = list(set(traits_ref_list[trait_counter] + observed_refs_list + measure_set_refs_list))
         if len(ref_list) > 0:
             self.set_var_2_disease_literature(ref_list)
             # Arbitrarily select only one reference among all
             self.unique_reference = ref_list[0]
-            self.top_level_literature = ref_list
-        efo_list.sort()
-        # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
-        self.disease = efo_list[0]
-        self.add_unique_association_field('phenotype', efo_list[0])
 
     @property
     def db_xref_url(self):
@@ -371,16 +383,11 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                                      }
         # CTTVEvidenceString.__init__(self,a_dictionary)
 
-        super().__init__(a_dictionary)
+        ref_list = list(set(trait_refs_list[trait_counter] + observed_refs_list + measure_set_refs_list))
 
-        self.add_unique_association_field('gene', ensembl_gene_id)
-        self.add_unique_association_field('clinvarAccession', clinvarRecord.accession)
+        super().__init__(a_dictionary, ensembl_gene_id, clinvarRecord, ensembl_gene_id_uri, clin_sig, efo_list, ref_list)
+
         self.add_unique_association_field('alleleOrigin', 'somatic')
-        try:
-            self.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
-        except KeyError:
-            unrecognised_clin_sigs.add(clin_sig)
-            self.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
 
         self.date = clinvarRecord.date
         self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.accession
@@ -389,15 +396,8 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
         self.set_known_mutations(consequenceType)
 
-        ref_list = list(set(trait_refs_list[trait_counter] + observed_refs_list + measure_set_refs_list))
         if len(ref_list) > 0:
             self.evidence_literature = ref_list
-            self.top_level_literature = ref_list
-
-        efo_list.sort()
-        # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
-        self.disease = efo_list[0]
-        self.add_unique_association_field('phenotype', efo_list[0])
 
     @property
     def db_xref_url(self):
