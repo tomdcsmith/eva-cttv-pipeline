@@ -132,7 +132,7 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
                                                                                               evidence_string_list,
                                                                                               n_ev_strings_per_record)
                                                 evidence_list.append(
-                                                    [clinvarRecord.acc, rs, ','.join(clinvar_trait_list),
+                                                    [clinvarRecord.accession, rs, ','.join(clinvar_trait_list),
                                                      ','.join(efo_list)])
                                                 n_valid_rs_and_nsv += (clinvarRecord.get_nsv(rcv_to_nsv) is not None)
                                                 n_more_than_one_efo_term += (len(efo_list) > 1)
@@ -154,7 +154,7 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
                                                                                               evidence_string_list,
                                                                                               n_ev_strings_per_record)
                                                 evidence_list.append(
-                                                    [clinvarRecord.acc, rs, ','.join(clinvar_trait_list),
+                                                    [clinvarRecord.accession, rs, ','.join(clinvar_trait_list),
                                                      ','.join(efo_list)])
                                                 n_valid_rs_and_nsv += (clinvarRecord.get_nsv(rcv_to_nsv) is not None)
                                                 n_more_than_one_efo_term += (len(efo_list) > 1)
@@ -263,7 +263,7 @@ def add_evidence_string(clinvarRecord, ev_string, evidence_string_list, n_eviden
         n_evidence_strings_per_record += 1
     except jsonschema.exceptions.ValidationError as err:
         print('Error: evidence_string does not validate against schema.')
-        print('ClinVar accession: ' + clinvarRecord.acc)
+        print('ClinVar accession: ' + clinvarRecord.accession)
         print(err)
         print(json.dumps(ev_string))
         sys.exit(1)
