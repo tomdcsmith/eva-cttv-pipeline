@@ -28,7 +28,7 @@ class TestClinvarRecord(unittest.TestCase):
         self.assertEqual(self.test_clinvar_record.score, None)
 
     def test_acc(self):
-        self.assertEqual(self.test_clinvar_record.acc, "RCV000055062")
+        self.assertEqual(self.test_clinvar_record.accession, "RCV000055062")
 
     def test_traits(self):
         self.assertEqual(self.test_clinvar_record.traits, [['Tuberous sclerosis syndrome']])
