@@ -15,7 +15,25 @@ GEN_SCHEMA_FILE = utilities.get_resource_file(__package__, config.local_schema +
 SOM_SCHEMA_FILE = utilities.get_resource_file(__package__, config.local_schema + "/src/literature_curated.json")
 
 
-clin_sig_2_activity = {'other': 'http://identifiers.org/cttv.activity/unknown', 'unknown': 'http://identifiers.org/cttv.activity/unknown', 'protective': 'http://identifiers.org/cttv.activity/tolerated_by_target', 'probable-pathogenic': 'http://identifiers.org/cttv.activity/predicted_damaging', 'non-pathogenic': 'http://identifiers.org/cttv.activity/tolerated_by_target', 'benign': 'http://identifiers.org/cttv.activity/tolerated_by_target', 'likely pathogenic': 'http://identifiers.org/cttv.activity/predicted_damaging', 'probable-non-pathogenic': 'http://identifiers.org/cttv.activity/predicted_tolerated', 'pathogenic': 'http://identifiers.org/cttv.activity/damaging_to_target', 'association': 'http://identifiers.org/cttv.activity/damaging_to_target', 'conflicting data from submitters': 'http://identifiers.org/cttv.activity/unknown', 'uncertain significance': 'http://identifiers.org/cttv.activity/unknown', 'likely benign': 'http://identifiers.org/cttv.activity/predicted_tolerated', 'histocompatibility': 'http://identifiers.org/cttv.activity/unknown', 'not provided': 'http://identifiers.org/cttv.activity/unknown', 'untested': 'http://identifiers.org/cttv.activity/unknown', 'confers sensitivity': 'http://identifiers.org/cttv.activity/predicted_damaging', 'drug-response': 'http://identifiers.org/cttv.activity/unknown', 'risk factor': 'http://identifiers.org/cttv.activity/predicted_damaging'}
+clin_sig_2_activity = {'other': 'http://identifiers.org/cttv.activity/unknown',
+                       'unknown': 'http://identifiers.org/cttv.activity/unknown',
+                       'protective': 'http://identifiers.org/cttv.activity/tolerated_by_target',
+                       'probable-pathogenic': 'http://identifiers.org/cttv.activity/predicted_damaging',
+                       'non-pathogenic': 'http://identifiers.org/cttv.activity/tolerated_by_target',
+                       'benign': 'http://identifiers.org/cttv.activity/tolerated_by_target',
+                       'likely pathogenic': 'http://identifiers.org/cttv.activity/predicted_damaging',
+                       'probable-non-pathogenic': 'http://identifiers.org/cttv.activity/predicted_tolerated',
+                       'pathogenic': 'http://identifiers.org/cttv.activity/damaging_to_target',
+                       'association': 'http://identifiers.org/cttv.activity/damaging_to_target',
+                       'conflicting data from submitters': 'http://identifiers.org/cttv.activity/unknown',
+                       'uncertain significance': 'http://identifiers.org/cttv.activity/unknown',
+                       'likely benign': 'http://identifiers.org/cttv.activity/predicted_tolerated',
+                       'histocompatibility': 'http://identifiers.org/cttv.activity/unknown',
+                       'not provided': 'http://identifiers.org/cttv.activity/unknown',
+                       'untested': 'http://identifiers.org/cttv.activity/unknown',
+                       'confers sensitivity': 'http://identifiers.org/cttv.activity/predicted_damaging',
+                       'drug-response': 'http://identifiers.org/cttv.activity/unknown',
+                       'risk factor': 'http://identifiers.org/cttv.activity/predicted_damaging'}
 
 
 def get_cttv_variant_type(ref, alt):
