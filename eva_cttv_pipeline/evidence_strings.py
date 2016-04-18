@@ -168,7 +168,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         super().__init__(a_dictionary)
 
         self.add_unique_association_field('gene', ensembl_gene_id)
-        self.add_unique_association_field('clinvarAccession', clinvarRecord.acc)
+        self.add_unique_association_field('clinvarAccession', clinvarRecord.accession)
         self.add_unique_association_field('alleleOrigin', 'germline')
         try:
             self.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
@@ -177,8 +177,8 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
             self.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
         self.set_variant('http://identifiers.org/dbsnp/' + rs, get_cttv_variant_type(record['reference'], record['alternate']))
         self.date = clinvarRecord.date
-        self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.acc
-        self.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.acc
+        self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.accession
+        self.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.accession
         self.association = clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign'
         self.gene_2_var_ev_codes = rcv_to_gene_evidence_codes
         most_severe_so_term = consequenceType.most_severe_so
@@ -356,7 +356,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
         super().__init__(a_dictionary)
 
         self.add_unique_association_field('gene', ensembl_gene_id)
-        self.add_unique_association_field('clinvarAccession', clinvarRecord.acc)
+        self.add_unique_association_field('clinvarAccession', clinvarRecord.accession)
         self.add_unique_association_field('alleleOrigin', 'somatic')
         try:
             self.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
@@ -365,8 +365,8 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
             self.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
 
         self.date = clinvarRecord.date
-        self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.acc
-        self.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.acc
+        self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.accession
+        self.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.accession
         self.association = (clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign')
 
         self.set_known_mutations(consequenceType)
