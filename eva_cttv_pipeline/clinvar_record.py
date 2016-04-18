@@ -52,7 +52,8 @@ class ClinvarRecord(dict):
         else:
             dict.__init__(self, a_dictionary)
 
-    def get_gene_id(self):
+    @property
+    def gene_id(self):
         j = 0
         measure = self['referenceClinVarAssertion']['measureSet']['measure']
         found = False
@@ -69,7 +70,8 @@ class ClinvarRecord(dict):
         else:
             return self['referenceClinVarAssertion']['measureSet']['measure'][0]['name'][0]['elementValue']['value']
 
-    def get_ensembl_id(self):
+    @property
+    def ensembl_id(self):
         global ensembl_json
         j = 0
         measure = self['referenceClinVarAssertion']['measureSet']['measure']
@@ -128,16 +130,20 @@ class ClinvarRecord(dict):
 
         return None
 
-    def get_date(self):
+    @property
+    def date(self):
         return datetime.fromtimestamp(self['referenceClinVarAssertion']['dateLastUpdated'] / 1000).isoformat()
 
-    def get_score(self):
+    @property
+    def score(self):
         return self.score_map[self['referenceClinVarAssertion']['clinicalSignificance']['reviewStatus']]
 
-    def get_acc(self):
+    @property
+    def accession(self):
         return self['referenceClinVarAssertion']['clinVarAccession']['acc']
 
-    def get_traits(self):
+    @property
+    def traits(self):
         trait_list = []
         for trait_record in self['referenceClinVarAssertion']['traitSet']['trait']:
             trait_list.append([])
@@ -150,7 +156,8 @@ class ClinvarRecord(dict):
 
         return trait_list
 
-    def get_trait_pubmed_refs(self):
+    @property
+    def trait_pubmed_refs(self):
         pubmed_refs_list = []
         for trait_record in self['referenceClinVarAssertion']['traitSet']['trait']:
             pubmed_refs_list.append([])
@@ -162,7 +169,8 @@ class ClinvarRecord(dict):
 
         return pubmed_refs_list
 
-    def get_observed_pubmed_refs(self):
+    @property
+    def observed_pubmed_refs(self):
         pubmedrefsList = []
         if 'observedIn' in self['referenceClinVarAssertion']:
             for observedInRecord in self['referenceClinVarAssertion']['observedIn']:
@@ -174,7 +182,8 @@ class ClinvarRecord(dict):
                                     pubmedrefsList.append(int(citationRecord['id']['value']))
         return pubmedrefsList
 
-    def get_measure_set_pubmed_refs(self):
+    @property
+    def measure_set_pubmed_refs(self):
         pubmed_refs_list = []
         for measure_record in self['referenceClinVarAssertion']['measureSet']['measure']:
             if 'citation' in measure_record:
@@ -184,7 +193,8 @@ class ClinvarRecord(dict):
                             pubmed_refs_list.append(int(ciration_record['id']['value']))
         return pubmed_refs_list
 
-    def get_hgvs(self):
+    @property
+    def hgvs(self):
         hgvs_list = []
         for measure_record in self['referenceClinVarAssertion']['measureSet']['measure']:
             for attribute_set_record in measure_record['attributeSet']:
@@ -193,18 +203,19 @@ class ClinvarRecord(dict):
 
         return hgvs_list
 
-    def get_clinical_significance(self):
+    @property
+    def clinical_significance(self):
         return self['referenceClinVarAssertion']['clinicalSignificance']['description']
 
     def get_rs(self, rcv_to_rs):
         try:
-            return rcv_to_rs[self.get_acc()]
+            return rcv_to_rs[self.accession]
         except KeyError:
             return None
 
     def get_nsv(self, rcv_to_nsv):
         try:
-            return rcv_to_nsv[self.get_acc()]
+            return rcv_to_nsv[self.accession]
         except KeyError:
             return None
 
@@ -216,10 +227,12 @@ class ClinvarRecord(dict):
         else:
             return None
 
-    def get_variant_type(self):
+    @property
+    def variant_type(self):
         return self['referenceClinVarAssertion']['measureSet']['measure'][0]['type']
 
-    def get_allele_origins(self):
+    @property
+    def allele_origins(self):
         allele_origins = set()
         for clinvar_assetion_document in self['clinVarAssertion']:
             for observed_in_document in clinvar_assetion_document['observedIn']:
