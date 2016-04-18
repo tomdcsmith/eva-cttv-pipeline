@@ -61,6 +61,9 @@ class EFOTerm:
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def __repr__(self):
+        return "%s(%r)" % (self.__class__, self.__dict__)
+
     @property
     def efoid(self):
         return self.__efoid
