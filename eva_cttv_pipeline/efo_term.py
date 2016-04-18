@@ -52,24 +52,35 @@ class EFOTerm:
     obsolete_terms = get_obsolete_terms(sparqlep, user, password)
     cttv_available_terms = get_available_terms(sparqlep, user, password)
 
-    def __init__(self, _id=None):
-        self.id = _id
+    def __init__(self, efoid=None):
+        self.efoid = efoid
 
-    def get_id(self):
-        return self.id
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.efoid == other.efoid
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    @property
+    def efoid(self):
+        return self.__efoid
+
+    @efoid.setter
+    def efoid(self, value):
+        self.__efoid = value
 
     def is_obsolete(self):
-        if self.id is not None and self.id in EFOTerm.obsolete_terms:
+        if self.efoid is not None and self.efoid in EFOTerm.obsolete_terms:
             raise EFOTerm.IsObsoleteException(
-                "Term " + self.id + " is obsolete. Cause/Description/Action: " + EFOTerm.obsolete_terms[self.id])
+                "Term " + self.efoid + " is obsolete. Cause/Description/Action: " + EFOTerm.obsolete_terms[self.efoid])
         else:
             return False
 
     def is_cttv_available(self):
-        if self.id is not None and self.id in EFOTerm.cttv_available_terms:
+        if self.efoid is not None and self.efoid in EFOTerm.cttv_available_terms:
             return True
         else:
-            raise EFOTerm.NotCttvAvailableException("Term " + self.id + " is not currently available at EFO.")
+            raise EFOTerm.NotCttvAvailableException("Term " + self.efoid + " is not currently available at EFO.")
 
     class IsObsoleteException(Exception):
         def __init__(self, value):
