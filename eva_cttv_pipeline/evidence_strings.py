@@ -15,6 +15,18 @@ GEN_SCHEMA_FILE = utilities.get_resource_file(__package__, config.local_schema +
 SOM_SCHEMA_FILE = utilities.get_resource_file(__package__, config.local_schema + "/src/literature_curated.json")
 
 
+def get_cttv_variant_type(ref, alt):
+    if len(ref) < 2 and len(alt) < 2:
+        cttv_variant_type = 'snp single'
+    elif len(ref) > 50 or len(alt) > 50:
+        cttv_variant_type = 'structural variant'
+    else:
+        cttv_variant_type = 'snp single'  # Sam asked for this in his email 21/05/2015
+        # cttv_variant_type = 'snp multiple'
+
+    return cttv_variant_type
+
+
 class CTTVEvidenceString(UserDict):
     def __init__(self, a_dictionary):
         super().__init__(a_dictionary)
@@ -55,7 +67,11 @@ class CTTVEvidenceString(UserDict):
 class CTTVGeneticsEvidenceString(CTTVEvidenceString):
     schema = json.loads(open(GEN_SCHEMA_FILE, 'r').read())
 
-    def __init__(self):
+    def __init__(self, efo_list, clin_sig, clin_sig_2_activity, clinvarRecord,
+                                      consequenceType, ensembl_gene_id, ensembl_gene_id_uri, ensembl_gene_id_uris,
+                                      measure_set_refs_list, n_more_than_one_efo_term, observed_refs_list, rcv_to_gene_evidence_codes,
+                                      record, rs, trait_counter, traits_ref_list, traits,
+                                      unrecognised_clin_sigs):
 
         a_dictionary = {'sourceID': 'eva',
                                      'validated_against_schema_version': '1.2.2',
@@ -146,6 +162,37 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 
         # CTTVEvidenceString.__init__(self, a_dictionary)
         super().__init__(a_dictionary)
+
+        self.add_unique_association_field('gene', ensembl_gene_id)
+        self.add_unique_association_field('clinvarAccession', clinvarRecord.acc)
+        self.add_unique_association_field('alleleOrigin', 'germline')
+        try:
+            self.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
+        except KeyError:
+            unrecognised_clin_sigs.add(clin_sig)
+            self.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
+        self.set_variant('http://identifiers.org/dbsnp/' + rs, get_cttv_variant_type(record['reference'], record['alternate']))
+        self.date = clinvarRecord.date
+        self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.acc
+        self.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.acc
+        self.association = clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign'
+        self.gene_2_var_ev_codes = rcv_to_gene_evidence_codes
+        most_severe_so_term = consequenceType.most_severe_so
+        if most_severe_so_term.accession is None:
+            self.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + most_severe_so_term.so_name
+        else:
+            self.gene_2_var_func_consequence = 'http://purl.obolibrary.org/obo/' + most_severe_so_term.accession.replace(':', '_')
+
+        ref_list = list(set(traits_ref_list[trait_counter] + observed_refs_list + measure_set_refs_list))
+        if len(ref_list) > 0:
+            self.set_var_2_disease_literature(ref_list)
+            # Arbitrarily select only one reference among all
+            self.unique_reference = ref_list[0]
+            self.top_level_literature = ref_list
+        efo_list.sort()
+        # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
+        self.disease = efo_list[0]
+        self.add_unique_association_field('phenotype', efo_list[0])
 
     @property
     def db_xref_url(self):
@@ -243,7 +290,10 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 class CTTVSomaticEvidenceString(CTTVEvidenceString):
     schema = json.loads(open(SOM_SCHEMA_FILE, 'r').read())
 
-    def __init__(self):
+    def __init__(self, efo_list, clin_sig, clin_sig_2_activity, clinvarRecord,
+                                     ensembl_gene_id, ensembl_gene_id_uri, ensembl_gene_id_uris, measure_set_refs_list,
+                                     n_more_than_one_efo_term, observed_refs_list, trait_counter, trait_refs_list, traits,
+                                     unrecognised_clin_sigs, consequenceType):
         a_dictionary = {'sourceID': 'eva_somatic',
                                      'validated_against_schema_version': '1.2.2',
                                      'type': 'somatic_mutation',
@@ -297,6 +347,32 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
         # CTTVEvidenceString.__init__(self,a_dictionary)
 
         super().__init__(a_dictionary)
+
+        self.add_unique_association_field('gene', ensembl_gene_id)
+        self.add_unique_association_field('clinvarAccession', clinvarRecord.acc)
+        self.add_unique_association_field('alleleOrigin', 'somatic')
+        try:
+            self.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
+        except KeyError:
+            unrecognised_clin_sigs.add(clin_sig)
+            self.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
+
+        self.date = clinvarRecord.date
+        self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.acc
+        self.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.acc
+        self.association = (clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign')
+
+        self.set_known_mutations(consequenceType)
+
+        ref_list = list(set(trait_refs_list[trait_counter] + observed_refs_list + measure_set_refs_list))
+        if len(ref_list) > 0:
+            self.evidence_literature = ref_list
+            self.top_level_literature = ref_list
+
+        efo_list.sort()
+        # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
+        self.disease = efo_list[0]
+        self.add_unique_association_field('phenotype', efo_list[0])
 
     @property
     def db_xref_url(self):

@@ -65,7 +65,8 @@ class GetCttvGeneticsEvidenceStringTest(unittest.TestCase):
     maxDiff = None
     def setUp(self):
         test_args = get_args_GetCttvGeneticsEvidenceStringTest()
-        self.evidence_string, n_more_than_one_efo_term = clinvar_to_evidence_strings.get_cttv_genetics_evidence_string(*test_args)
+        # self.evidence_string, n_more_than_one_efo_term = clinvar_to_evidence_strings.get_cttv_genetics_evidence_string(*test_args)
+        self.evidence_string = ES.CTTVGeneticsEvidenceString(*test_args)
 
     def test_evidence_string(self):
         test_dict = {'validated_against_schema_version': '1.2.2', 'variant': {'type': 'snp single', 'id': ['http://identifiers.org/dbsnp/rs515726230']}, 'type': 'genetic_association', 'unique_association_fields': {'clinvarAccession': 'RCV000128628', 'alleleOrigin': 'germline', 'gene': 'ENSG00000197616', 'phenotype': 'http://www.orpha.net/ORDO/Orphanet_88991'}, 'evidence': {'variant2disease': {'provenance_type': {'database': {'dbxref': {'id': 'http://identifiers.org/clinvar', 'url': 'http://identifiers.org/clinvar.record/RCV000128628', 'version': '2015-04'}, 'id': 'EVA', 'version': '1.0'}, 'expert': {'status': True, 'statement': 'Primary submitter of data'}}, 'unique_experiment_reference': 'http://europepmc.org/abstract/MED/0', 'is_associated': True, 'evidence_codes': ['http://purl.obolibrary.org/obo/ECO_0000205'], 'urls': [{'url': 'http://www.ncbi.nlm.nih.gov/clinvar/RCV000128628', 'nice_name': 'Further details in ClinVar database'}], 'resource_score': {'type': 'pvalue', 'value': 1e-07, 'method': {'description': 'Not provided by data supplier', 'url': ''}}, 'date_asserted': DATE_ASSERTED}, 'gene2variant': {'provenance_type': {'database': {'dbxref': {'id': 'http://identifiers.org/clinvar', 'url': 'http://identifiers.org/clinvar.record/RCV000128628', 'version': '2015-04'}, 'id': 'EVA', 'version': '1.0'}, 'expert': {'status': True, 'statement': 'Primary submitter of data'}}, 'is_associated': True, 'evidence_codes': ['http://identifiers.org/eco/cttv_mapping_pipeline'], 'functional_consequence': 'http://purl.obolibrary.org/obo/SO_0001583', 'urls': [{'url': 'http://www.ncbi.nlm.nih.gov/clinvar/RCV000128628', 'nice_name': 'Further details in ClinVar database'}], 'date_asserted': DATE_ASSERTED}}, 'access_level': 'public', 'disease': {'id': ['http://www.orpha.net/ORDO/Orphanet_88991']}, 'target': {'id': ['http://identifiers.org/ensembl/ENSG00000197616'], 'target_type': 'http://identifiers.org/cttv.target/gene_variant', 'activity': 'http://identifiers.org/cttv.activity/predicted_damaging'}, 'sourceID': 'eva'}
@@ -102,7 +103,8 @@ def get_args_GetCttvSomaticEvidenceStringTest():
 class GetCttvSomaticEvidenceStringTest(unittest.TestCase):
     def setUp(self):
         test_args = get_args_GetCttvSomaticEvidenceStringTest()
-        self.evidence_string, n_more_than_one_efo_term = clinvar_to_evidence_strings.get_cttv_somatic_evidence_string(*test_args)
+        # self.evidence_string, n_more_than_one_efo_term = clinvar_to_evidence_strings.get_cttv_somatic_evidence_string(*test_args)
+        self.evidence_string = ES.CTTVSomaticEvidenceString(*test_args)
 
     def test_evidence_string(self):
         test_dict = {'evidence': {'provenance_type': {'expert': {'status': True, 'statement': 'Primary submitter of data'}, 'database': {'dbxref': {'id': 'http://identifiers.org/clinvar', 'url': 'http://identifiers.org/clinvar.record/RCV000122455', 'version': '2015-04'}, 'id': 'EVA', 'version': '1.0'}}, 'resource_score': {'value': 1, 'type': 'probability'}, 'date_asserted': DATE_ASSERTED, 'is_associated': True, 'known_mutations': [{'functional_consequence': 'http://purl.obolibrary.org/obo/SO_0001587', 'preferred_name': 'stop_gained'}], 'urls': [{'url': 'http://www.ncbi.nlm.nih.gov/clinvar/RCV000122455', 'nice_name': 'Further details in ClinVar database'}], 'evidence_codes': ['http://purl.obolibrary.org/obo/ECO_0000205']}, 'type': 'somatic_mutation', 'sourceID': 'eva_somatic', 'access_level': 'public', 'disease': {'id': ['http://www.ebi.ac.uk/efo/EFO_0003840']}, 'validated_against_schema_version': '1.2.2', 'target': {'activity': 'http://identifiers.org/cttv.activity/predicted_damaging', 'id': ['http://identifiers.org/ensembl/ENSG00000135486'], 'target_type': 'http://identifiers.org/cttv.target/gene_variant'}, 'unique_association_fields': {'phenotype': 'http://www.ebi.ac.uk/efo/EFO_0003840', 'alleleOrigin': 'somatic', 'gene': 'ENSG00000135486', 'clinvarAccession': 'RCV000122455'}}
@@ -112,32 +114,32 @@ class GetCttvSomaticEvidenceStringTest(unittest.TestCase):
         self.assertEqual(self.evidence_string, test_ev_string)
 
 
-class GetCttvVariantTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        record_single_a = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "C"}, "snp single")
-        record_single_b = ({"reference": "A", "alternate": "C"}, "snp single")
-        record_single_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG"}, "snp single")
-
-        cls.test_records_singles = [record_single_a, record_single_b, record_single_c]
-
-        record_structurals_a = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT", "alternate": "C"},
-                                "structural variant")
-        record_structurals_b = ({"reference": "A", "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
-                                "structural variant")
-        record_structurals_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT",
-                                 "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
-                                "structural variant")
-
-        cls.test_records_structurals = [record_structurals_a, record_structurals_b, record_structurals_c]
-
-    def test_get_cttv_variant_type_singles(self):
-        for record in self.test_records_singles:
-            self.assertEqual(clinvar_to_evidence_strings.get_cttv_variant_type(record[0]["reference"], record[0]["alternate"]), record[1])
-
-    def test_get_cttv_variant_type_structurals(self):
-        for record in self.test_records_structurals:
-            self.assertEqual(clinvar_to_evidence_strings.get_cttv_variant_type(record[0]["reference"], record[0]["alternate"]), record[1])
+# class GetCttvVariantTypeTest(unittest.TestCase):
+#     @classmethod
+#     def setUpClass(cls):
+#         record_single_a = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "C"}, "snp single")
+#         record_single_b = ({"reference": "A", "alternate": "C"}, "snp single")
+#         record_single_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG"}, "snp single")
+#
+#         cls.test_records_singles = [record_single_a, record_single_b, record_single_c]
+#
+#         record_structurals_a = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT", "alternate": "C"},
+#                                 "structural variant")
+#         record_structurals_b = ({"reference": "A", "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
+#                                 "structural variant")
+#         record_structurals_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT",
+#                                  "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
+#                                 "structural variant")
+#
+#         cls.test_records_structurals = [record_structurals_a, record_structurals_b, record_structurals_c]
+#
+#     def test_get_cttv_variant_type_singles(self):
+#         for record in self.test_records_singles:
+#             self.assertEqual(clinvar_to_evidence_strings.get_cttv_variant_type(record[0]["reference"], record[0]["alternate"]), record[1])
+#
+#     def test_get_cttv_variant_type_structurals(self):
+#         for record in self.test_records_structurals:
+#             self.assertEqual(clinvar_to_evidence_strings.get_cttv_variant_type(record[0]["reference"], record[0]["alternate"]), record[1])
 
 
 class LoadEfoMappingTest(unittest.TestCase):
