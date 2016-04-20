@@ -244,6 +244,11 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
         self.assertEqual(self.test_ges['evidence']['variant2disease']['date_asserted'], date_string)
         self.assertEqual(self.test_ges.date, date_string)
 
+    def test_validate(self):
+        test_args = get_args_CTTVGeneticsEvidenceString_init()
+        test_evidence_string = ES.CTTVGeneticsEvidenceString(*test_args)
+        test_evidence_string.validate()
+
 
 class CTTVSomaticEvidenceStringTest(unittest.TestCase):
     @classmethod
@@ -306,5 +311,10 @@ class CTTVSomaticEvidenceStringTest(unittest.TestCase):
         self.test_ses._clear_known_mutations()
         self.test_ses.set_known_mutations(test_consequence_type)
         self.assertEqual(self.test_ses['evidence']['known_mutations'], [{'functional_consequence': 'http://purl.obolibrary.org/obo/SO_0001624', 'preferred_name': '3_prime_UTR_variant'}, {'functional_consequence': 'http://targetvalidation.org/sequence/not_in_dict', 'preferred_name': 'not_in_dict'}])
+
+    def test_validate(self):
+        test_args = get_args_CTTVSomaticEvidenceString_init()
+        test_evidence_string = ES.CTTVSomaticEvidenceString(*test_args)
+        test_evidence_string.validate()
 
 
