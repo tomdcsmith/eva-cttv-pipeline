@@ -19,6 +19,7 @@ Building and (optional) Setting up virtual environment
 	7. to install: "python3 setup.py install"
 	8. to install to develop: "python3 setup.py develop"
 	9. to build a source distribution: "python3 setup.py sdist"
+7. Fill in CTTV sparql login details in file eva_cttv_pipeline/private_config.py
 
 
 Usage
