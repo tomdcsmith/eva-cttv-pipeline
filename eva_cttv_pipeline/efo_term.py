@@ -1,6 +1,6 @@
 import os
 
-import private_config as PC
+from eva_cttv_pipeline import private_config as PC
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
