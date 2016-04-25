@@ -247,7 +247,7 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
     def test_validate(self):
         test_args = get_args_CTTVGeneticsEvidenceString_init()
         test_evidence_string = ES.CTTVGeneticsEvidenceString(*test_args)
-        test_evidence_string.validate()
+        self.assertTrue(test_evidence_string.validate())
 
 
 class CTTVSomaticEvidenceStringTest(unittest.TestCase):
@@ -315,6 +315,6 @@ class CTTVSomaticEvidenceStringTest(unittest.TestCase):
     def test_validate(self):
         test_args = get_args_CTTVSomaticEvidenceString_init()
         test_evidence_string = ES.CTTVSomaticEvidenceString(*test_args)
-        test_evidence_string.validate()
+        self.assertTrue(test_evidence_string.validate())
 
 
