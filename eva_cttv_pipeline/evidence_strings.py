@@ -284,14 +284,9 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         self['evidence']['variant2disease']['is_associated'] = is_associated
 
     def validate(self):
-        # try:
         jsonschema.validate(self, CTTVGeneticsEvidenceString.schema, format_checker=jsonschema.FormatChecker())
-        # except Exception as e:
-        #     print(str(self))
-        #     print(e)
-        #     traceback.print_stack()
-        #     sys.exit()
         self.disease.is_obsolete()
+        return True
 
     def _clear_variant(self):
         self['variant']['id'] = []
@@ -430,6 +425,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
     def validate(self):
         jsonschema.validate(self, CTTVSomaticEvidenceString.schema, format_checker=jsonschema.FormatChecker())
         self.disease.is_obsolete()
+        return True
 
     @property
     def date(self):
