@@ -48,11 +48,10 @@ def get_cttv_variant_type(ref, alt):
     return cttv_variant_type
 
 
-class CTTVEvidenceString(UserDict):
+class CTTVEvidenceString(dict):
     def __init__(self, a_dictionary, ensembl_gene_id=None, clinvar_record=None, ensembl_gene_id_uri=None, clin_sig=None,
                  efo_list=None, ref_list=None):
         super().__init__(a_dictionary)
-        # dict.__init__(a_dictionary)
 
         if ensembl_gene_id:
             self.add_unique_association_field('gene', ensembl_gene_id)
@@ -204,8 +203,6 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                                      }
                                      }
 
-        # CTTVEvidenceString.__init__(self, a_dictionary)
-
         ref_list = list(set(traits_ref_list[trait_counter] + observed_refs_list + measure_set_refs_list))
 
         super().__init__(a_dictionary, ensembl_gene_id, clinvarRecord, ensembl_gene_id_uri, clin_sig, efo_list, ref_list)
@@ -287,14 +284,9 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         self['evidence']['variant2disease']['is_associated'] = is_associated
 
     def validate(self):
-        # try:
         jsonschema.validate(self, CTTVGeneticsEvidenceString.schema, format_checker=jsonschema.FormatChecker())
-        # except Exception as e:
-        #     print(str(self))
-        #     print(e)
-        #     traceback.print_stack()
-        #     sys.exit()
         self.disease.is_obsolete()
+        return True
 
     def _clear_variant(self):
         self['variant']['id'] = []
@@ -381,7 +373,6 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                                          'id': [],  # EFO terms
                                      }
                                      }
-        # CTTVEvidenceString.__init__(self,a_dictionary)
 
         ref_list = list(set(trait_refs_list[trait_counter] + observed_refs_list + measure_set_refs_list))
 
@@ -434,6 +425,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
     def validate(self):
         jsonschema.validate(self, CTTVSomaticEvidenceString.schema, format_checker=jsonschema.FormatChecker())
         self.disease.is_obsolete()
+        return True
 
     @property
     def date(self):
