@@ -24,33 +24,6 @@ NSVLISTFILE = 'nsvlist.txt'
 TMPDIR = '/tmp/'
 
 
-def write_output(dir_out, nsv_list, unmapped_traits, unavailable_efo_dict, evidence_string_list, evidence_list):
-    write_string_list_to_file(nsv_list, dir_out + '/' + NSVLISTFILE)
-
-    fdw = open(dir_out + '/' + UNMAPPEDTRAITSFILENAME, 'w')  # Contains traits without a mapping in Gary's xls
-    fdw.write('Trait\tCount\n')
-    for trait_list in unmapped_traits:
-        fdw.write(str(trait_list.encode('utf8')) + '\t' + str(unmapped_traits[trait_list]) + '\n')
-    fdw.close()
-
-    fdw = open(dir_out + '/' + UNAVAILABLEEFOFILENAME,
-               'w')  # Contains urls provided by Gary which are not yet included within EFO
-    fdw.write('Trait\tCount\n')
-    for url in unavailable_efo_dict:
-        fdw.write(url.encode('utf8') + '\t' + str(unavailable_efo_dict[url]) + '\n')
-    fdw.close()
-
-    fdw = open(dir_out + '/' + EVIDENCESTRINGSFILENAME, 'w')
-    for evidence_string in evidence_string_list:
-        fdw.write(json.dumps(evidence_string) + '\n')
-    fdw.close()
-
-    fdw = open(dir_out + '/' + EVIDENCERECORDSFILENAME, 'w')
-    for evidenceRecord in evidence_list:
-        fdw.write('\t'.join(evidenceRecord) + '\n')
-    fdw.close()
-
-
 def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ignore_terms_file=None,
                                 adapt_terms_file=None, efo_mapping_file=None, snp_2_gene_file=None,
                                 variant_summary_file=None):
@@ -233,6 +206,33 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
                   no_variant_to_ensg_mapping, n_missed_strings_unmapped_traits, n_records_no_recognised_allele_origin,
                   n_more_than_one_efo_term, unavailable_efo_dict, n_valid_rs_and_nsv, n_nsvs, n_nsv_skipped_clin_sig,
                   n_nsv_skipped_wrong_ref_alt)
+
+
+def write_output(dir_out, nsv_list, unmapped_traits, unavailable_efo_dict, evidence_string_list, evidence_list):
+    write_string_list_to_file(nsv_list, dir_out + '/' + NSVLISTFILE)
+
+    fdw = open(dir_out + '/' + UNMAPPEDTRAITSFILENAME, 'w')  # Contains traits without a mapping in Gary's xls
+    fdw.write('Trait\tCount\n')
+    for trait_list in unmapped_traits:
+        fdw.write(str(trait_list.encode('utf8')) + '\t' + str(unmapped_traits[trait_list]) + '\n')
+    fdw.close()
+
+    fdw = open(dir_out + '/' + UNAVAILABLEEFOFILENAME,
+               'w')  # Contains urls provided by Gary which are not yet included within EFO
+    fdw.write('Trait\tCount\n')
+    for url in unavailable_efo_dict:
+        fdw.write(url.encode('utf8') + '\t' + str(unavailable_efo_dict[url]) + '\n')
+    fdw.close()
+
+    fdw = open(dir_out + '/' + EVIDENCESTRINGSFILENAME, 'w')
+    for evidence_string in evidence_string_list:
+        fdw.write(json.dumps(evidence_string) + '\n')
+    fdw.close()
+
+    fdw = open(dir_out + '/' + EVIDENCERECORDSFILENAME, 'w')
+    for evidenceRecord in evidence_list:
+        fdw.write('\t'.join(evidenceRecord) + '\n')
+    fdw.close()
 
 
 def output_report(n_total_clinvar_records, evidence_string_list, n_processed_clinvar_records, unrecognised_clin_sigs,
