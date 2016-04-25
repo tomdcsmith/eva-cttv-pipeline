@@ -198,6 +198,17 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
         curr_result_list = curr_response['result']
     # pbar.finish()
 
+    write_output(dir_out, nsv_list, unmapped_traits, unavailable_efo_dict, evidence_string_list, evidence_list)
+
+    output_report(n_total_clinvar_records, evidence_string_list, n_processed_clinvar_records, unrecognised_clin_sigs,
+                  n_same_ref_alt, ensembl_gene_id_uris, traits, n_pathogenic_no_rs, n_multiple_evidence_strings,
+                  n_germline_somatic, n_multiple_allele_origin, n_unrecognised_allele_origin,
+                  no_variant_to_ensg_mapping, n_missed_strings_unmapped_traits, n_records_no_recognised_allele_origin,
+                  n_more_than_one_efo_term, unavailable_efo_dict, n_valid_rs_and_nsv, n_nsvs, n_nsv_skipped_clin_sig,
+                  n_nsv_skipped_wrong_ref_alt)
+
+
+def write_output(dir_out, nsv_list, unmapped_traits, unavailable_efo_dict, evidence_string_list, evidence_list):
     write_string_list_to_file(nsv_list, dir_out + '/' + NSVLISTFILE)
 
     fdw = open(dir_out + '/' + UNMAPPEDTRAITSFILENAME, 'w')  # Contains traits without a mapping in Gary's xls
@@ -222,13 +233,6 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
     for evidenceRecord in evidence_list:
         fdw.write('\t'.join(evidenceRecord) + '\n')
     fdw.close()
-
-    output_report(n_total_clinvar_records, evidence_string_list, n_processed_clinvar_records, unrecognised_clin_sigs,
-                  n_same_ref_alt, ensembl_gene_id_uris, traits, n_pathogenic_no_rs, n_multiple_evidence_strings,
-                  n_germline_somatic, n_multiple_allele_origin, n_unrecognised_allele_origin,
-                  no_variant_to_ensg_mapping, n_missed_strings_unmapped_traits, n_records_no_recognised_allele_origin,
-                  n_more_than_one_efo_term, unavailable_efo_dict, n_valid_rs_and_nsv, n_nsvs, n_nsv_skipped_clin_sig,
-                  n_nsv_skipped_wrong_ref_alt)
 
 
 def output_report(n_total_clinvar_records, evidence_string_list, n_processed_clinvar_records, unrecognised_clin_sigs,
