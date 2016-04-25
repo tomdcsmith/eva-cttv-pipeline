@@ -223,37 +223,54 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
         fdw.write('\t'.join(evidenceRecord) + '\n')
     fdw.close()
 
-    print(str(n_total_clinvar_records) + ' ClinVar records in total')
-    print(str(len(evidence_string_list)) + ' evidence string jsons generated')
-    print(str(n_processed_clinvar_records) + ' ClinVar records generated at least one evidence string')
-    print(str(len(
-        unrecognised_clin_sigs)) + " Clinical significance string(s) not found among those described in ClinVar documentation:")
-    print(str(unrecognised_clin_sigs))
-    print(str(
-        n_same_ref_alt) + ' ClinVar records with allowed clinical significance did present the same reference and alternate and were skipped')
-    print('Activities of those ClinVar records with unrecognized clinical significances were set to "unknown".')
-    print(str(len(ensembl_gene_id_uris)) + ' distinct ensembl gene ids appear in generated evidence string json objects')
-    print(str(len(traits)) + ' distinct trait names found to include in generated evidence string json objects')
-    print(str(n_pathogenic_no_rs) + ' ClinVar records with allowed clinical significance DO NOT have an rs id')
-    print(str(n_multiple_evidence_strings) + ' ClinVar records generated more than one evidence_string')
-    print(str(n_germline_somatic) + ' ClinVar records with germline and somatic origins')
-    print(str(n_multiple_allele_origin) + ' ClinVar records with more than one allele origin')
-    print('Number valid ClinVar records with unprocessed allele origins:')
-    for alleleOrigin in n_unrecognised_allele_origin:
-        print(' ' + alleleOrigin + ': ' + str(n_unrecognised_allele_origin[alleleOrigin]))
-    print(str(
-        no_variant_to_ensg_mapping) + ' ClinVar records with allowed clinical significance and valid rs id were skipped due to a lack of Variant->ENSG mapping.')
-    print(str(
-        n_missed_strings_unmapped_traits) + ' ClinVar records with allowed clinical significance, valid rs id and Variant->ENSG mapping were skipped due to a lack of EFO mapping (see ' + UNMAPPEDTRAITSFILENAME + ').')
-    print(str(
-        n_records_no_recognised_allele_origin) + ' ClinVar records with allowed clinical significance, valid rs id, valid Variant->ENSG mapping and valid EFO mapping were skipped due to a lack of a valid alleleOrigin.')
-    print(str(n_more_than_one_efo_term) + ' evidence strings with more than one trait mapped to EFO terms')
-    print(str(len(unavailable_efo_dict)) + ' evidence strings were generated with traits without EFO correspondence')
-    print(str(n_valid_rs_and_nsv) + ' evidence strings were generated from ClinVar records with rs and nsv ids')
-    print(str(n_nsvs) + ' total nsvs found')
-    print(str(
-        n_nsv_skipped_clin_sig) + ' ClinVar nsvs were skipped because of a different clinical significance')
-    print(str(n_nsv_skipped_wrong_ref_alt) + ' ClinVar nsvs were skipped because of same ref and alt')
+    output_report(n_total_clinvar_records, evidence_string_list, n_processed_clinvar_records, unrecognised_clin_sigs,
+                  n_same_ref_alt, ensembl_gene_id_uris, traits, n_pathogenic_no_rs, n_multiple_evidence_strings,
+                  n_germline_somatic, n_multiple_allele_origin, n_unrecognised_allele_origin,
+                  no_variant_to_ensg_mapping, n_missed_strings_unmapped_traits, n_records_no_recognised_allele_origin,
+                  n_more_than_one_efo_term, unavailable_efo_dict, n_valid_rs_and_nsv, n_nsvs, n_nsv_skipped_clin_sig,
+                  n_nsv_skipped_wrong_ref_alt)
+
+
+def output_report(n_total_clinvar_records, evidence_string_list, n_processed_clinvar_records, unrecognised_clin_sigs,
+                  n_same_ref_alt, ensembl_gene_id_uris, traits, n_pathogenic_no_rs, n_multiple_evidence_strings,
+                  n_germline_somatic, n_multiple_allele_origin, n_unrecognised_allele_origin,
+                  no_variant_to_ensg_mapping, n_missed_strings_unmapped_traits, n_records_no_recognised_allele_origin,
+                  n_more_than_one_efo_term, unavailable_efo_dict, n_valid_rs_and_nsv, n_nsvs, n_nsv_skipped_clin_sig,
+                  n_nsv_skipped_wrong_ref_alt):
+
+    report_strings = [
+        str(n_total_clinvar_records) + ' ClinVar records in total',
+        str(len(evidence_string_list)) + ' evidence string jsons generated',
+        str(n_processed_clinvar_records) + ' ClinVar records generated at least one evidence string',
+        str(len(unrecognised_clin_sigs)) + " Clinical significance string(s) not found among those described in ClinVar documentation:",
+        str(unrecognised_clin_sigs),
+        str(n_same_ref_alt) + ' ClinVar records with allowed clinical significance did present the same reference and alternate and were skipped',
+        'Activities of those ClinVar records with unrecognized clinical significances were set to "unknown".',
+        str(len(ensembl_gene_id_uris)) + ' distinct ensembl gene ids appear in generated evidence string json objects',
+            str(len(traits)) + ' distinct trait names found to include in generated evidence string json objects',
+        str(n_pathogenic_no_rs) + ' ClinVar records with allowed clinical significance DO NOT have an rs id',
+        str(n_multiple_evidence_strings) + ' ClinVar records generated more than one evidence_string',
+        str(n_germline_somatic) + ' ClinVar records with germline and somatic origins',
+        str(n_multiple_allele_origin) + ' ClinVar records with more than one allele origin',
+        'Number valid ClinVar records with unprocessed allele origins:'
+    ]
+
+    report_strings.extend([' ' + alleleOrigin + ': ' + str(n_unrecognised_allele_origin[alleleOrigin]) for alleleOrigin in n_unrecognised_allele_origin])
+
+    report_strings.extend([
+        str(no_variant_to_ensg_mapping) + ' ClinVar records with allowed clinical significance and valid rs id were skipped due to a lack of Variant->ENSG mapping.',
+        str(n_missed_strings_unmapped_traits) + ' ClinVar records with allowed clinical significance, valid rs id and Variant->ENSG mapping were skipped due to a lack of EFO mapping (see ' + UNMAPPEDTRAITSFILENAME + ').',
+        str(n_records_no_recognised_allele_origin) + ' ClinVar records with allowed clinical significance, valid rs id, valid Variant->ENSG mapping and valid EFO mapping were skipped due to a lack of a valid alleleOrigin.',
+        str(n_more_than_one_efo_term) + ' evidence strings with more than one trait mapped to EFO terms',
+        str(len(unavailable_efo_dict)) + ' evidence strings were generated with traits without EFO correspondence',
+        str(n_valid_rs_and_nsv) + ' evidence strings were generated from ClinVar records with rs and nsv ids',
+        str(n_nsvs) + ' total nsvs found',
+        str(n_nsv_skipped_clin_sig) + ' ClinVar nsvs were skipped because of a different clinical significance',
+        str(n_nsv_skipped_wrong_ref_alt) + ' ClinVar nsvs were skipped because of same ref and alt'
+    ])
+
+    for line in report_strings:
+        print(line)
 
 
 def add_evidence_string(clinvarRecord, ev_string, evidence_string_list, n_evidence_strings_per_record):
