@@ -11,6 +11,8 @@ __author__ = 'Javier Lopez: javild@gmail.com'
 
 
 utilities.check_for_local_schema()
+GEN_EV_STRING_JSON = utilities.get_resource_file(__package__, "resources/CTTVGeneticsEvidenceString.json")
+SOM_EV_STRING_JSON = utilities.get_resource_file(__package__, "resources/CTTVSomaticEvidenceString.json")
 GEN_SCHEMA_FILE = utilities.get_resource_file(__package__, config.local_schema + "/src/genetics.json")
 SOM_SCHEMA_FILE = utilities.get_resource_file(__package__, config.local_schema + "/src/literature_curated.json")
 
@@ -52,6 +54,7 @@ class CTTVEvidenceString(dict):
     def __init__(self, a_dictionary, ensembl_gene_id=None, clinvar_record=None, ensembl_gene_id_uri=None, clin_sig=None,
                  efo_list=None, ref_list=None):
         super().__init__(a_dictionary)
+        # dict.__init__(a_dictionary)
 
         if ensembl_gene_id:
             self.add_unique_association_field('gene', ensembl_gene_id)
@@ -116,92 +119,10 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                  ensembl_gene_id_uri, measure_set_refs_list, observed_refs_list, rcv_to_gene_evidence_codes, record, rs,
                  trait_counter, traits_ref_list, unrecognised_clin_sigs):
 
-        a_dictionary = {'sourceID': 'eva',
-                                     'validated_against_schema_version': '1.2.2',
-                                     'type': 'genetic_association',
-                                     'access_level': 'public',
-                                     'unique_association_fields': {},
-                                     'target': {
-                                         'id': [],  # ENSEMBL ID
-                                         'target_type': 'http://identifiers.org/cttv.target/gene_variant',
-                                         'activity': None  # http://identifiers.org/cttv.activity/predicted_damaging
-                                     },
-                                     'variant': {
-                                         'id': [],  # rs
-                                         'type': None  # snp single
-                                     },
-                                     'evidence': {
-                                         'gene2variant': {
-                                             'provenance_type': {
-                                                 'expert': {
-                                                     'status': True,
-                                                     'statement': 'Primary submitter of data'
-                                                 },
-                                                 'database': {
-                                                     'dbxref': {
-                                                         'id': 'http://identifiers.org/clinvar',
-                                                         'url': None,
-                                                         'version': '2015-04',
-                                                     },
-                                                     'id': 'EVA',
-                                                     'version': '1.0'
+        with open(GEN_EV_STRING_JSON) as gen_json_file:
+            a_dictionary = json.load(gen_json_file)
 
-                                                 }
-                                             },
-                                             'is_associated': True,
-                                             'date_asserted': None,
-                                             'evidence_codes': [],
-                                             'functional_consequence': None,
-                                             'urls': [
-                                                 {
-                                                     'nice_name': 'Further details in ClinVar database',
-                                                     'url': None  # http://www.ncbi.nlm.nih.gov/clinvar/RCV000038347
-                                                 }
-                                             ]
-                                         },
-                                         'variant2disease': {
-                                             'resource_score': {
-                                                 'type': 'pvalue',
-                                                 'value': 0.0000001,
-                                                 'method': {
-                                                     'url': '',
-                                                     'description': 'Not provided by data supplier'
-                                                 }
-                                             },
-                                             'provenance_type': {
-                                                 'expert': {
-                                                     'status': True,
-                                                     'statement': 'Primary submitter of data'
-                                                 },
-                                                 'database': {
-                                                     'dbxref': {
-                                                         'id': 'http://identifiers.org/clinvar',
-                                                         'url': None,
-                                                         'version': '2015-04',
-                                                     },
-                                                     'id': 'EVA',
-                                                     'version': '1.0'
-
-                                                 }
-                                             },
-                                             'unique_experiment_reference': 'http://europepmc.org/abstract/MED/0',
-                                             'is_associated': True,
-                                             'date_asserted': None,
-                                             'evidence_codes': [
-                                                 'http://purl.obolibrary.org/obo/ECO_0000205'
-                                             ],
-                                             'urls': [
-                                                 {
-                                                     'nice_name': 'Further details in ClinVar database',
-                                                     'url': None  # http://www.ncbi.nlm.nih.gov/clinvar/RCV000038347
-                                                 }
-                                             ]
-                                         },
-                                     },
-                                     'disease': {
-                                         'id': [],  # EFO terms
-                                     }
-                                     }
+        # CTTVEvidenceString.__init__(self, a_dictionary)
 
         ref_list = list(set(traits_ref_list[trait_counter] + observed_refs_list + measure_set_refs_list))
 
@@ -323,56 +244,11 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                                      ensembl_gene_id, ensembl_gene_id_uri, measure_set_refs_list,
                                      observed_refs_list, trait_counter, trait_refs_list,
                                      unrecognised_clin_sigs, consequenceType):
-        a_dictionary = {'sourceID': 'eva_somatic',
-                                     'validated_against_schema_version': '1.2.2',
-                                     'type': 'somatic_mutation',
-                                     'access_level': 'public',
-                                     'unique_association_fields': {},
-                                     'target': {
-                                         'id': [],  # ENSEMBL ID
-                                         'target_type': 'http://identifiers.org/cttv.target/gene_variant',
-                                         'activity': None  # http://identifiers.org/cttv.activity/predicted_damaging
-                                     },
-                                     'evidence': {
-                                         'resource_score': {
-                                             'type': 'probability',
-                                             'value': 1
-                                         },
-                                         'provenance_type': {
-                                             'expert': {
-                                                 'status': True,
-                                                 'statement': 'Primary submitter of data'
-                                             },
-                                             'database': {
-                                                 'dbxref': {
-                                                     'id': 'http://identifiers.org/clinvar',
-                                                     'url': None,
-                                                     'version': '2015-04',
-                                                 },
-                                                 'id': 'EVA',
-                                                 'version': '1.0'
 
-                                             }
-                                         },
-                                         'is_associated': True,
-                                         'date_asserted': None,
-                                         'evidence_codes': [
-                                             'http://purl.obolibrary.org/obo/ECO_0000205'
-                                         ],
-                                         'known_mutations': [
-                                         ],
-                                         'urls': [
-                                             {
-                                                 'nice_name': 'Further details in ClinVar database',
-                                                 'url': None  # http://www.ncbi.nlm.nih.gov/clinvar/RCV000038347
-                                             }
-                                         ]
-                                     },
+        with open(SOM_EV_STRING_JSON) as som_json_file:
+            a_dictionary = json.load(som_json_file)
 
-                                     'disease': {
-                                         'id': [],  # EFO terms
-                                     }
-                                     }
+        # CTTVEvidenceString.__init__(self,a_dictionary)
 
         ref_list = list(set(trait_refs_list[trait_counter] + observed_refs_list + measure_set_refs_list))
 
