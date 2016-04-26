@@ -1,5 +1,7 @@
 import os
 
+from eva_cttv_pipeline import config
+
 __author__ = 'Javier Lopez: javild@gmail.com'
 
 
@@ -45,9 +47,9 @@ def execute_query(sparqlep, user, password, query):
 class EFOTerm:
     print('Querying EFO  web services for valid terms...')
     # CONNECTION PARAMETERS
-    sparqlep = ""
-    user = ""
-    password = ""
+    sparqlep = config.sparqlep
+    user = config.sparql_user
+    password = config.sparql_password
 
     obsolete_terms = get_obsolete_terms(sparqlep, user, password)
     cttv_available_terms = get_available_terms(sparqlep, user, password)
