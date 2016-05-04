@@ -8,20 +8,19 @@ import codecs
 import jsonschema
 import xlrd
 
-from eva_cttv_pipeline import efo_term, clinvar_record, consequence_type
+from eva_cttv_pipeline import efo_term, clinvar_record, consequence_type, config
 from eva_cttv_pipeline import evidence_strings as ES
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
-BATCH_SIZE = 200
-# HOST = 'localhost:8080'
-HOST = 'www.ebi.ac.uk'
-EVIDENCESTRINGSFILENAME = 'evidence_strings.json'
-EVIDENCERECORDSFILENAME = 'evidence_records.tsv'
-UNMAPPEDTRAITSFILENAME = 'unmappedTraits.tsv'
-UNAVAILABLEEFOFILENAME = 'unavailableefo.tsv'
-NSVLISTFILE = 'nsvlist.txt'
-TMPDIR = '/tmp/'
+BATCH_SIZE = config.BATCH_SIZE
+HOST = config.HOST
+EVIDENCESTRINGSFILENAME = config.EVIDENCESTRINGSFILENAME
+EVIDENCERECORDSFILENAME = config.EVIDENCERECORDSFILENAME
+UNMAPPEDTRAITSFILENAME = config.UNMAPPEDTRAITSFILENAME
+UNAVAILABLEEFOFILENAME = config.UNAVAILABLEEFOFILENAME
+NSVLISTFILE = config.NSVLISTFILE
+TMPDIR = config.TMPDIR
 
 
 def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ignore_terms_file=None,
