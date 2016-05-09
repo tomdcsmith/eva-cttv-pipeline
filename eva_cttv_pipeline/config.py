@@ -1,9 +1,9 @@
-local_schema = "resources/schema_local"
+LOCAL_SCHEMA = "resources/schema_local"
 
 
-sparqlep = ""
-sparql_user = ""
-sparql_password = ""
+SPARQLEP = ""
+SPARQL_USER = ""
+SPARQL_PASSWORD = ""
 
 
 #########################################
@@ -14,11 +14,11 @@ BATCH_SIZE = 200
 HOST = 'www.ebi.ac.uk'
 
 # output settings
-EVIDENCESTRINGSFILENAME = 'evidence_strings.json'
-EVIDENCERECORDSFILENAME = 'evidence_records.tsv'
-UNMAPPEDTRAITSFILENAME = 'unmappedTraits.tsv'
-UNAVAILABLEEFOFILENAME = 'unavailableefo.tsv'
-NSVLISTFILE = 'nsvlist.txt'
+EVIDENCE_STRINGS_FILE_NAME = 'evidence_strings.json'
+EVIDENCE_RECORDS_FILE_NAME = 'evidence_records.tsv'
+UNMAPPED_TRAITS_FILE_NAME = 'unmappedTraits.tsv'
+UNAVAILABLE_EFO_FILE_NAME = 'unavailableefo.tsv'
+NSV_LIST_FILE = 'nsvlist.txt'
 
 ######
 
@@ -28,7 +28,7 @@ NSVLISTFILE = 'nsvlist.txt'
 ##############################
 GEN_EV_STRING_JSON = "resources/CTTVGeneticsEvidenceString.json"
 SOM_EV_STRING_JSON = "resources/CTTVSomaticEvidenceString.json"
-GEN_SCHEMA_FILE = local_schema + "/src/genetics.json"
-SOM_SCHEMA_FILE = local_schema + "/src/literature_curated.json"
+GEN_SCHEMA_FILE = LOCAL_SCHEMA + "/src/genetics.json"
+SOM_SCHEMA_FILE = LOCAL_SCHEMA + "/src/literature_curated.json"
 
 #############

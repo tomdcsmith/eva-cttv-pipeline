@@ -58,9 +58,8 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
     record_counter = 0
     n_total_clinvar_records = 0
     skip = 0
-    limit = config.BATCH_SIZE
 
-    answer = urllib.request.urlopen('http://' + config.HOST + '/cellbase/webservices/rest/v3/hsapiens/feature/clinical/all?source=clinvar&skip=' + str(skip) + '&limit=' + str(limit))
+    answer = urllib.request.urlopen('http://' + config.HOST + '/cellbase/webservices/rest/v3/hsapiens/feature/clinical/all?source=clinvar&skip=' + str(skip) + '&limit=' + str(config.BATCH_SIZE))
     reader = codecs.getreader("utf-8")
     curr_response = json.load(reader(answer))['response'][0]
     curr_result_list = curr_response['result']
@@ -183,7 +182,7 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
             record_counter += 1
         skip += config.BATCH_SIZE
 
-        answer = urllib.request.urlopen('http://' + config.HOST + '/cellbase/webservices/rest/v3/hsapiens/feature/clinical/all?source=clinvar&skip=' + str(skip) + '&limit=' + str(limit))
+        answer = urllib.request.urlopen('http://' + config.HOST + '/cellbase/webservices/rest/v3/hsapiens/feature/clinical/all?source=clinvar&skip=' + str(skip) + '&limit=' + str(config.BATCH_SIZE))
         reader = codecs.getreader("utf-8")
         curr_response = json.load(reader(answer))['response'][0]
         curr_result_list = curr_response['result']
@@ -200,27 +199,27 @@ def clinvar_to_evidence_strings(dir_out, allowed_clinical_significance=None, ign
 
 
 def write_output(dir_out, nsv_list, unmapped_traits, unavailable_efo_dict, evidence_string_list, evidence_list):
-    write_string_list_to_file(nsv_list, dir_out + '/' + config.NSVLISTFILE)
+    write_string_list_to_file(nsv_list, dir_out + '/' + config.NSV_LIST_FILE)
 
-    fdw = open(dir_out + '/' + config.UNMAPPEDTRAITSFILENAME, 'w')  # Contains traits without a mapping in Gary's xls
+    fdw = open(dir_out + '/' + config.UNMAPPED_TRAITS_FILE_NAME, 'w')  # Contains traits without a mapping in Gary's xls
     fdw.write('Trait\tCount\n')
     for trait_list in unmapped_traits:
         fdw.write(str(trait_list.encode('utf8')) + '\t' + str(unmapped_traits[trait_list]) + '\n')
     fdw.close()
 
-    fdw = open(dir_out + '/' + config.UNAVAILABLEEFOFILENAME,
+    fdw = open(dir_out + '/' + config.UNAVAILABLE_EFO_FILE_NAME,
                'w')  # Contains urls provided by Gary which are not yet included within EFO
     fdw.write('Trait\tCount\n')
     for url in unavailable_efo_dict:
         fdw.write(url.encode('utf8') + '\t' + str(unavailable_efo_dict[url]) + '\n')
     fdw.close()
 
-    fdw = open(dir_out + '/' + config.EVIDENCESTRINGSFILENAME, 'w')
+    fdw = open(dir_out + '/' + config.EVIDENCE_STRINGS_FILE_NAME, 'w')
     for evidence_string in evidence_string_list:
         fdw.write(json.dumps(evidence_string) + '\n')
     fdw.close()
 
-    fdw = open(dir_out + '/' + config.EVIDENCERECORDSFILENAME, 'w')
+    fdw = open(dir_out + '/' + config.EVIDENCE_RECORDS_FILE_NAME, 'w')
     for evidenceRecord in evidence_list:
         fdw.write('\t'.join(evidenceRecord) + '\n')
     fdw.close()
@@ -254,7 +253,7 @@ def output_report(n_total_clinvar_records, evidence_string_list, n_processed_cli
 
     report_strings.extend([
         str(no_variant_to_ensg_mapping) + ' ClinVar records with allowed clinical significance and valid rs id were skipped due to a lack of Variant->ENSG mapping.',
-        str(n_missed_strings_unmapped_traits) + ' ClinVar records with allowed clinical significance, valid rs id and Variant->ENSG mapping were skipped due to a lack of EFO mapping (see ' + config.UNMAPPEDTRAITSFILENAME + ').',
+        str(n_missed_strings_unmapped_traits) + ' ClinVar records with allowed clinical significance, valid rs id and Variant->ENSG mapping were skipped due to a lack of EFO mapping (see ' + config.UNMAPPED_TRAITS_FILE_NAME + ').',
         str(n_records_no_recognised_allele_origin) + ' ClinVar records with allowed clinical significance, valid rs id, valid Variant->ENSG mapping and valid EFO mapping were skipped due to a lack of a valid alleleOrigin.',
         str(n_more_than_one_efo_term) + ' evidence strings with more than one trait mapped to EFO terms',
         str(len(unavailable_efo_dict)) + ' evidence strings were generated with traits without EFO correspondence',
