@@ -72,7 +72,7 @@ def change_json_refs(local_schema_dir):
 def create_local_schema():
     json_schema_dir = get_resource_file(__package__, "resources/json_schema")
     # local_schema_dir = str(os.path.join(str(Path(json_schema_dir).parent), "schema_copy"))
-    local_schema_dir = str(os.path.join(os.path.dirname(os.path.dirname(json_schema_dir)), config.local_schema))
+    local_schema_dir = str(os.path.join(os.path.dirname(os.path.dirname(json_schema_dir)), config.LOCAL_SCHEMA))
 
     ready_file = local_schema_dir + "/READY"
     if os.path.exists(ready_file):
@@ -89,7 +89,7 @@ def create_local_schema():
 
 
 def check_for_local_schema():
-    local_schema = get_resource_file(__package__, config.local_schema)
+    local_schema = get_resource_file(__package__, config.LOCAL_SCHEMA)
     if not os.path.exists(local_schema):
         create_local_schema()
 
