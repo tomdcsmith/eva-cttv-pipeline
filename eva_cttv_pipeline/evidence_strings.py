@@ -11,10 +11,6 @@ __author__ = 'Javier Lopez: javild@gmail.com'
 
 
 utilities.check_for_local_schema()
-GEN_EV_STRING_JSON = utilities.get_resource_file(__package__, "resources/CTTVGeneticsEvidenceString.json")
-SOM_EV_STRING_JSON = utilities.get_resource_file(__package__, "resources/CTTVSomaticEvidenceString.json")
-GEN_SCHEMA_FILE = utilities.get_resource_file(__package__, config.local_schema + "/src/genetics.json")
-SOM_SCHEMA_FILE = utilities.get_resource_file(__package__, config.local_schema + "/src/literature_curated.json")
 
 
 clin_sig_2_activity = {'other': 'http://identifiers.org/cttv.activity/unknown',
@@ -113,13 +109,13 @@ class CTTVEvidenceString(dict):
 
 
 class CTTVGeneticsEvidenceString(CTTVEvidenceString):
-    schema = json.loads(open(GEN_SCHEMA_FILE, 'r').read())
+    schema = json.loads(open(utilities.get_resource_file(__package__, config.GEN_SCHEMA_FILE), 'r').read())
 
     def __init__(self, efo_list, clin_sig, clinvarRecord, consequenceType, ensembl_gene_id,
                  ensembl_gene_id_uri, measure_set_refs_list, observed_refs_list, rcv_to_gene_evidence_codes, record, rs,
                  trait_counter, traits_ref_list, unrecognised_clin_sigs):
 
-        with open(GEN_EV_STRING_JSON) as gen_json_file:
+        with open(utilities.get_resource_file(__package__, config.GEN_EV_STRING_JSON)) as gen_json_file:
             a_dictionary = json.load(gen_json_file)
 
         # CTTVEvidenceString.__init__(self, a_dictionary)
@@ -238,14 +234,14 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 
 
 class CTTVSomaticEvidenceString(CTTVEvidenceString):
-    schema = json.loads(open(SOM_SCHEMA_FILE, 'r').read())
+    schema = json.loads(open(utilities.get_resource_file(__package__, config.SOM_SCHEMA_FILE), 'r').read())
 
     def __init__(self, efo_list, clin_sig, clinvarRecord,
                                      ensembl_gene_id, ensembl_gene_id_uri, measure_set_refs_list,
                                      observed_refs_list, trait_counter, trait_refs_list,
                                      unrecognised_clin_sigs, consequenceType):
 
-        with open(SOM_EV_STRING_JSON) as som_json_file:
+        with open(utilities.get_resource_file(__package__, config.SOM_EV_STRING_JSON)) as som_json_file:
             a_dictionary = json.load(som_json_file)
 
         # CTTVEvidenceString.__init__(self,a_dictionary)
