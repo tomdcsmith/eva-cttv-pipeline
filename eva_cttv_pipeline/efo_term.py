@@ -47,9 +47,9 @@ def execute_query(sparqlep, user, password, query):
 class EFOTerm:
     print('Querying EFO  web services for valid terms...')
     # CONNECTION PARAMETERS
-    sparqlep = config.sparqlep
-    user = config.sparql_user
-    password = config.sparql_password
+    sparqlep = config.SPARQLEP
+    user = config.SPARQL_USER
+    password = config.SPARQL_PASSWORD
 
     obsolete_terms = get_obsolete_terms(sparqlep, user, password)
     cttv_available_terms = get_available_terms(sparqlep, user, password)
