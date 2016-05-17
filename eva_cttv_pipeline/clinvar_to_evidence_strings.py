@@ -28,7 +28,7 @@ class Report:
         self.unmapped_traits = defaultdict(int)
         self.evidence_string_list = []
         self.evidence_list = []  # To store Helen Parkinson records of the form
-        self.counters = self._get_counters()
+        self.counters = self.__get_counters()
 
     def __str__(self):
 
@@ -197,6 +197,8 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings):
             report.traits.update(set(trait.efo_list))
             report.ensembl_gene_id_uris.add(evidence_strings.get_ensembl_gene_id_uri(ensembl_gene_id))
 
+            record.n_ev_strings_per_record += 1
+
         if n_ev_strings_per_record > 0:
             report.counters["n_processed_clinvar_records"] += 1
             if n_ev_strings_per_record > 1:
@@ -245,8 +247,6 @@ def create_record(cellbase_record, mappings, **kwargs):
 
 
 def skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, mappings, counters):
-    if clinvarRecord.clinical_significance not in allowed_clinical_significance:
-        if clinvarRecord.get_nsv(mappings.rcv_to_nsv) is not None:
 
     if record.clin_sig not in allowed_clinical_significance:
         if record.clinvarRecord.get_nsv(rcv_to_nsv) is not None:
