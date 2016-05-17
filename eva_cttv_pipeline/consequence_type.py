@@ -1,4 +1,4 @@
-import xlrd
+
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 

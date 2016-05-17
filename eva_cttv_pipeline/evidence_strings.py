@@ -66,8 +66,8 @@ class CTTVEvidenceString(dict):
                 report.unrecognised_clin_sigs.add(clinvarRecord.clinical_significance)  # TODO fix this
                 self.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
 
-            if ref_list and len(ref_list) > 0:
-                self.top_level_literature = ref_list
+        if ref_list and len(ref_list) > 0:
+            self.top_level_literature = ref_list
 
         if efo_list:
             efo_list.sort()
@@ -133,10 +133,10 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                            not in ('non-pathogenic', 'probable-non-pathogenic', 'likely benign', 'benign')
         self.gene_2_var_ev_codes = ['http://identifiers.org/eco/cttv_mapping_pipeline']
         most_severe_so_term = consequence_type.most_severe_so
-        if most_severe_so_term.accession is None:
-            self.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + most_severe_so_term.so_name
-        else:
+        if most_severe_so_term.accession:
             self.gene_2_var_func_consequence = 'http://purl.obolibrary.org/obo/' + most_severe_so_term.accession.replace(':', '_')
+        else:
+            self.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + most_severe_so_term.so_name
 
         if len(ref_list) > 0:
             self.set_var_2_disease_literature(ref_list)
