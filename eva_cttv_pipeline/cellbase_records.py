@@ -12,9 +12,7 @@ def get_curr_response(skip, limit=config.BATCH_SIZE):
     return curr_response
 
 
-def get_curr_result_list(skip, limit=config.BATCH_SIZE):
-    curr_response = get_curr_response(skip)
-    # print(str(curr_response['numTotalResults']) + ' ClinVar records in total.')
+def get_curr_result_list(curr_response):
     curr_result_list = curr_response['result']
     return curr_result_list
 
@@ -22,7 +20,8 @@ def get_curr_result_list(skip, limit=config.BATCH_SIZE):
 def get_curr_result_lists():
     skip = 0
     while True:
-        curr_result_list = get_curr_result_list(skip)
+        curr_response = get_curr_response(skip)
+        curr_result_list = get_curr_result_list(curr_response)
         if len(curr_result_list) == 0:
             break
         skip += config.BATCH_SIZE
