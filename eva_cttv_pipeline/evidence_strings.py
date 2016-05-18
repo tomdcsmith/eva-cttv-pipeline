@@ -113,7 +113,7 @@ class CTTVEvidenceString(dict):
 class CTTVGeneticsEvidenceString(CTTVEvidenceString):
     schema = json.loads(open(utilities.get_resource_file(__package__, config.GEN_SCHEMA_FILE), 'r').read())
 
-    def __init__(self, clinvarRecord, consequence_type, report, trait, ensembl_gene_id, cellbase_record):
+    def __init__(self, clinvarRecord, report, trait, ensembl_gene_id, cellbase_record):
 
         with open(utilities.get_resource_file(__package__, config.GEN_EV_STRING_JSON)) as gen_json_file:
             a_dictionary = json.load(gen_json_file)
@@ -132,11 +132,11 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         self.association = clinvarRecord.clinical_significance \
                            not in ('non-pathogenic', 'probable-non-pathogenic', 'likely benign', 'benign')
         self.gene_2_var_ev_codes = ['http://identifiers.org/eco/cttv_mapping_pipeline']
-        most_severe_so_term = consequence_type.most_severe_so
-        if most_severe_so_term.accession:
-            self.gene_2_var_func_consequence = 'http://purl.obolibrary.org/obo/' + most_severe_so_term.accession.replace(':', '_')
-        else:
+        most_severe_so_term = clinvarRecord.consequence_type.most_severe_so
+        if most_severe_so_term.accession is None:
             self.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + most_severe_so_term.so_name
+        else:
+            self.gene_2_var_func_consequence = 'http://purl.obolibrary.org/obo/' + most_severe_so_term.accession.replace(':', '_')
 
         if len(ref_list) > 0:
             self.set_var_2_disease_literature(ref_list)
@@ -237,7 +237,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 class CTTVSomaticEvidenceString(CTTVEvidenceString):
     schema = json.loads(open(utilities.get_resource_file(__package__, config.SOM_SCHEMA_FILE), 'r').read())
 
-    def __init__(self, clinvarRecord, clinvarRecord_consequence_type, report, trait, ensembl_gene_id):
+    def __init__(self, clinvarRecord, report, trait, ensembl_gene_id):
 
         with open(utilities.get_resource_file(__package__, config.SOM_EV_STRING_JSON)) as som_json_file:
             a_dictionary = json.load(som_json_file)
@@ -256,7 +256,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
         self.association = clinvarRecord.clinical_significance \
                            not in ('non-pathogenic', 'probable-non-pathogenic', 'likely benign', 'benign')
 
-        self.set_known_mutations(clinvarRecord_consequence_type)
+        self.set_known_mutations(clinvarRecord.consequence_type)
 
         if len(ref_list) > 0:
             self.evidence_literature = ref_list
