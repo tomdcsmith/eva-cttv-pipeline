@@ -150,11 +150,11 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings):
 
     for cellbase_record in cellbase_records.CellbaseRecords():
         n_ev_strings_per_record = 0
-        clinvarRecord = clinvar_record.ClinvarRecord(cellbase_record['clinvarSet'])
+        clinvarRecord = clinvar_record.ClinvarRecord(mappings=mappings, a_dictionary=cellbase_record['clinvarSet'])
 
         report.counters["record_counter"] += 1
-        report.counters["n_nsvs"] += (clinvarRecord.get_nsv(mappings.rcv_to_nsv) is not None)
-        append_nsv(report.nsv_list, clinvarRecord, mappings.rcv_to_nsv)
+        report.counters["n_nsvs"] += (clinvarRecord.nsv is not None)
+        append_nsv(report.nsv_list, clinvarRecord)
 
         if skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, mappings, report.counters):
             continue
@@ -189,10 +189,10 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings):
                                                                              ensembl_gene_id)
             report.add_evidence_string(evidence_string)
             report.evidence_list.append([clinvarRecord.accession,
-                                         clinvarRecord.get_rs(mappings.rcv_to_rs),
+                                         clinvarRecord.rs,
                                          ','.join(trait.clinvar_trait_list),
                                          ','.join(trait.efo_list)])
-            report.counters["n_valid_rs_and_nsv"] += (clinvarRecord.get_nsv(mappings.rcv_to_nsv) is not None)
+            report.counters["n_valid_rs_and_nsv"] += (clinvarRecord.nsv is not None)
             report.counters["n_more_than_one_efo_term"] += (len(trait.efo_list) > 1)
             report.traits.update(set(trait.efo_list))
             report.ensembl_gene_id_uris.add(evidence_strings.get_ensembl_gene_id_uri(ensembl_gene_id))
@@ -218,24 +218,28 @@ def get_mappings(efo_mapping_file, ignore_terms_file, adapt_terms_file, snp_2_ge
     return mappings
 
 
-def skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, mappings, counters):
+def skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, counters):
     if clinvarRecord.clinical_significance not in allowed_clinical_significance:
-        if clinvarRecord.get_nsv(mappings.rcv_to_nsv) is not None:
+        if clinvarRecord.nsv is not None:
             counters["n_nsv_skipped_clin_sig"] += 1
+        print("Not in allowed")
         return True
 
     if cellbase_record['reference'] == cellbase_record['alternate']:
         counters["n_same_ref_alt"] += 1
-        if clinvarRecord.get_nsv(mappings.rcv_to_nsv) is not None:
+        if clinvarRecord.nsv is not None:
             counters["n_nsv_skipped_wrong_ref_alt"] += 1
+            print("ref != alt")
         return True
 
-    if clinvarRecord.get_rs(mappings.rcv_to_rs) is None:
+    if clinvarRecord.rs is None:
         counters["n_pathogenic_no_rs"] += 1
+        print("rs is none")
         return True
 
-    if clinvarRecord.get_main_consequence_types(mappings.consequence_type_dict, mappings.rcv_to_rs) is None:
+    if clinvarRecord.consequence_type is None:
         counters["no_variant_to_ensg_mapping"] += 1
+        print("con type is none")
         return True
 
     return False
@@ -269,8 +273,8 @@ def write_string_list_to_file(string_list, filename):
     fd.close()
 
 
-def append_nsv(nsv_list, clinvarRecord, rcv_to_nsv):
-    nsv = clinvarRecord.get_nsv(rcv_to_nsv)
+def append_nsv(nsv_list, clinvarRecord):
+    nsv = clinvarRecord.nsv
     if nsv is not None:
         nsv_list.append(nsv)
     return nsv_list

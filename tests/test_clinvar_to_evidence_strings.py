@@ -64,45 +64,6 @@ class GetMappingsTest(unittest.TestCase):
         self.assertEqual(self.mappings.rcv_to_rs["RCV000126020"], "rs75686037")
 
 
-class CreateRecordTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.mappings = MAPPINGS
-        cls.cellbase_record = test_evidence_strings._get_test_cellbase_record_gene()
-        cls.clinvarRecord = clinvar_record.ClinvarRecord(cls.cellbase_record['clinvarSet'])
-        cls.record = clinvar_to_evidence_strings.create_record(cls.cellbase_record, cls.mappings)
-
-    def test_clinvar_record(self):
-        self.assertEqual(self.record.clinvarRecord, self.cellbase_record['clinvarSet'])
-
-    def test_clin_sig(self):
-        self.assertEqual(self.record.clin_sig, self.clinvarRecord.clinical_significance.lower())
-        self.assertEqual(self.record.clin_sig, "likely pathogenic")
-
-    def test_rs(self):
-        self.assertEqual(self.record.rs, self.clinvarRecord.get_rs(self.mappings.rcv_to_rs))
-        self.assertEqual(self.record.rs, "rs515726230")
-
-    def test_con_type(self):
-        self.assertEqual(self.record.con_type, self.clinvarRecord.get_main_consequence_types(
-            self.mappings.consequence_type_dict, self.mappings.rcv_to_rs))
-
-    def test_trait_refs_list(self):
-        trait_refs_list_t = [['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList] for refList in
-                             self.clinvarRecord.trait_pubmed_refs]
-        self.assertEqual(self.record.trait_refs_list, trait_refs_list_t)
-
-    def test_observed_refs_list(self):
-        observed_refs_list_t = ['http://europepmc.org/abstract/MED/' + str(ref)
-                                for ref in self.clinvarRecord.observed_pubmed_refs]
-        self.assertEqual(self.record.observed_refs_list, observed_refs_list_t)
-
-    def test_measure_set_refs_list(self):
-        measure_set_refs_list_t = ['http://europepmc.org/abstract/MED/' + str(ref)
-                                   for ref in self.clinvarRecord.observed_pubmed_refs]
-        self.assertEqual(self.record.measure_set_refs_list, measure_set_refs_list_t)
-
-
 class CreateTraitTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -120,37 +81,27 @@ class CreateTraitTest(unittest.TestCase):
 
 
 class SkipRecordTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.clinvar_record = test_clinvar_record.get_test_record()
 
     def setUp(self):
+        self.clinvar_record = test_clinvar_record.get_test_record()
         report = clinvar_to_evidence_strings.Report()
-        self.record = clinvar_to_evidence_strings.create_record({"reference": "A", "alternate": "T"}, None,
-                                                                clin_sig="pathogenic",
-                                                                clinvarRecord=self.clinvar_record,
-                                                                con_type="transcript_ablation", rs="rs1")
-        # skip_record(cellbase_record, record, allowed_clinical_significance, rcv_to_nsv, counters)
-        self.args = [self.record, ["pathogenic", "likely pathogenic"],
-                     {'RCV000138025': 'nsv869213', 'RCV000133922': 'nsv491994'}, report.counters]
+        # skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, counters)
+        self.args = [self.clinvar_record, {"reference": "A", "alternate": "T"},
+                     ["not provided"], report.counters]  # allowed clin sig changed to just "non provided" to match that in the test record
 
     def test_return_false(self):
         self.assertFalse(clinvar_to_evidence_strings.skip_record(*self.args))
 
-    def test_not_in_allowed_clinical_significance(self):
-        self.record.clin_sig = "unknown"
-        self.assertTrue(clinvar_to_evidence_strings.skip_record(*self.args))
-
     def test_ref_eq_alt(self):
-        self.record.cellbase_record = {"reference": "A", "alternate": "A"}
+        self.args[1] = {"reference": "A", "alternate": "A"}
         self.assertTrue(clinvar_to_evidence_strings.skip_record(*self.args))
 
     def test_rs_is_none(self):
-        self.record.rs = None
+        self.clinvar_record.rs = None
         self.assertTrue(clinvar_to_evidence_strings.skip_record(*self.args))
 
     def test_con_type_is_none(self):
-        self.record.con_type = None
+        self.clinvar_record.consequence_type = None
         self.assertTrue(clinvar_to_evidence_strings.skip_record(*self.args))
 
 
