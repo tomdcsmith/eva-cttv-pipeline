@@ -12,7 +12,7 @@ def _get_mappings():
     efo_mapping_file = os.path.join(os.path.dirname(__file__), 'resources', 'ClinVar_Traits_EFO_090915.xls')
     ignore_file = os.path.join(os.path.dirname(__file__), 'resources', 'ignore_file.txt')
     snp_2_gene_file = os.path.join(os.path.dirname(__file__), 'resources', 'cttv012_snp2gene_20160222.tsv')
-    variant_summary_file = os.path.join(os.path.dirname(__file__), 'resources', 'variant_summary_2015-05.txt')
+    variant_summary_file = os.path.join(os.path.dirname(__file__), 'resources', 'variant_summary_2015-05_test_extract.txt')
 
     mappings = clinvar_to_evidence_strings.get_mappings(efo_mapping_file, ignore_file, None, snp_2_gene_file,
                                                         variant_summary_file)
@@ -52,8 +52,8 @@ class GetMappingsTest(unittest.TestCase):
         self.assertFalse("rs9" in self.mappings.consequence_type_dict)
 
     def test_rcv_to_rs_nsv(self):
-        self.assertEqual(len(self.mappings.rcv_to_rs), 134663)
-        self.assertEqual(len(self.mappings.rcv_to_nsv), 14290)
+        self.assertEqual(len(self.mappings.rcv_to_rs), 18)
+        self.assertEqual(len(self.mappings.rcv_to_nsv), 5)
 
         self.assertEqual(self.mappings.rcv_to_nsv["RCV000020147"], "nsv1067916")
         self.assertEqual(self.mappings.rcv_to_nsv["RCV000004182"], "nsv1067860")
