@@ -47,8 +47,6 @@ def get_cttv_variant_type(ref, alt):
 
 
 class CTTVEvidenceString(dict):
-    # def __init__(self, a_dictionary, ensembl_gene_id=None, clinvar_record=None, clin_sig=None, efo_list=None,
-    #              ref_list=None, report=None):
     def __init__(self, a_dictionary, clinvarRecord=None, efo_list=None, ref_list=None, ensembl_gene_id=None, report=None):
         super().__init__(a_dictionary)
         # dict.__init__(a_dictionary)
@@ -117,8 +115,6 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 
         with open(utilities.get_resource_file(__package__, config.GEN_EV_STRING_JSON)) as gen_json_file:
             a_dictionary = json.load(gen_json_file)
-
-        # CTTVEvidenceString.__init__(self, a_dictionary)
 
         ref_list = list(set(clinvarRecord.trait_refs_list[trait.trait_counter] + clinvarRecord.observed_refs_list + clinvarRecord.measure_set_refs_list))
 

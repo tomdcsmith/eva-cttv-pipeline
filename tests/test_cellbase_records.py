@@ -27,12 +27,3 @@ class CellbaseRecordsTest(unittest.TestCase):
         self.cb_records.skip = curr_response['numTotalResults'] - len_to_expect
         curr_result_list = self.cb_records._CellbaseRecords__get_curr_result_list()
         self.assertEqual(len(curr_result_list), len_to_expect)
-
-    # def test_get_curr_result_lists(self):
-    #     curr_response = clinvar_to_evidence_strings.get_curr_response(0)
-    #     num_total_results = curr_response['numTotalResults']
-    #     list_counter = 0
-    #     for list in clinvar_to_evidence_strings.get_curr_result_lists():
-    #         list_counter += 1
-    #     pred_num_lists = math.ceil(num_total_results / config.BATCH_SIZE)
-    #     self.assertEqual(pred_num_lists, list_counter)
