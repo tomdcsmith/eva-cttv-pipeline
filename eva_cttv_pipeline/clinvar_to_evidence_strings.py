@@ -67,7 +67,7 @@ class Report:
 
         return '\n'.join(report_strings)
 
-    def add_evidence_string(self, ev_string):
+    def add_evidence_string(self, ev_string, clinvarRecord, trait, ensembl_gene_id):
         try:
             ev_string.validate()
             self.evidence_string_list.append(ev_string)
@@ -76,6 +76,9 @@ class Report:
             # print('ClinVar accession: ' + record.clinvarRecord.accession)
             print(err)
             print(json.dumps(ev_string))
+            print("clinvar record:\n%s" % clinvarRecord)
+            print("trait:\n%s" % trait)
+            print("ensembl gene id: %s" % ensembl_gene_id)
             sys.exit(1)
         except efo_term.EFOTerm.IsObsoleteException as err:
             print('Error: obsolete EFO term.')
@@ -187,7 +190,7 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings):
                                                                              report,
                                                                              trait,
                                                                              ensembl_gene_id)
-            report.add_evidence_string(evidence_string)
+            report.add_evidence_string(evidence_string, clinvarRecord, trait, ensembl_gene_id)
             report.evidence_list.append([clinvarRecord.accession,
                                          clinvarRecord.rs,
                                          ','.join(trait.clinvar_trait_list),
