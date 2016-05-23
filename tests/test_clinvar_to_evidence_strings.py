@@ -11,7 +11,7 @@ from tests import test_clinvar_record, test_evidence_strings
 def _get_mappings():
     efo_mapping_file = os.path.join(os.path.dirname(__file__), 'resources', 'ClinVar_Traits_EFO_090915.xls')
     ignore_file = os.path.join(os.path.dirname(__file__), 'resources', 'ignore_file.txt')
-    snp_2_gene_file = os.path.join(os.path.dirname(__file__), 'resources', 'cttv012_snp2gene_20160222.tsv')
+    snp_2_gene_file = os.path.join(os.path.dirname(__file__), 'resources', 'cttv012_snp2gene_20160222_test_extract.tsv')
     variant_summary_file = os.path.join(os.path.dirname(__file__), 'resources', 'variant_summary_2015-05_test_extract.txt')
 
     mappings = clinvar_to_evidence_strings.get_mappings(efo_mapping_file, ignore_file, None, snp_2_gene_file,
@@ -40,7 +40,7 @@ class GetMappingsTest(unittest.TestCase):
                          ['http://www.orpha.net/ORDO/Orphanet_258'])
 
     def test_consequence_type_dict(self):
-        self.assertEqual(len(self.mappings.consequence_type_dict), 109367)
+        self.assertEqual(len(self.mappings.consequence_type_dict), 54)
 
         self.assertTrue("rs724159824" in self.mappings.consequence_type_dict)
         self.assertTrue("rs34296458" in self.mappings.consequence_type_dict)
