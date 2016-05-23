@@ -20,8 +20,7 @@ class CellbaseRecords:
         curr_response = json.load(reader(answer))['response'][0]
         return curr_response
 
-    @staticmethod
-    def __get_curr_result_list(curr_response):
+    def __get_curr_result_list(self, curr_response):
         curr_result_list = curr_response['result']
         return curr_result_list
 
