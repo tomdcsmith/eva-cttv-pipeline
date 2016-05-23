@@ -19,14 +19,14 @@ class CellbaseRecords:
                 yield record
             self.skip += config.BATCH_SIZE
 
-    def __get_curr_response(self, skip):
+    def __get_curr_response(self):
         reader = codecs.getreader("utf-8")
-        answer = urllib.request.urlopen('http://' + config.HOST + '/cellbase/webservices/rest/v3/hsapiens/feature/clinical/all?source=clinvar&skip=' + str(skip) + '&limit=' + str(self.limit))
+        answer = urllib.request.urlopen('http://' + config.HOST + '/cellbase/webservices/rest/v3/hsapiens/feature/clinical/all?source=clinvar&skip=' + str(self.skip) + '&limit=' + str(self.limit))
         curr_response = json.load(reader(answer))['response'][0]
         return curr_response
 
     def __get_curr_result_list(self):
-        curr_response = self.__get_curr_response(self.skip)
+        curr_response = self.__get_curr_response()
         curr_result_list = curr_response['result']
         if len(curr_result_list) == 0:
             return None
