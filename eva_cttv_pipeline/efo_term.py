@@ -82,14 +82,8 @@ class EFOTerm:
 
     class IsObsoleteException(Exception):
         def __init__(self, value):
-            self.value = value
-
-        def __str__(self):
-            return repr(self.value)
+            super.__init__(value)
 
     class NotCttvAvailableException(Exception):
         def __init__(self, value):
-            self.value = value
-
-        def __str__(self):
-            return repr(self.value)
+            super.__init__(value)

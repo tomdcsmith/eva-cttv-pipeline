@@ -1,4 +1,3 @@
-from collections import UserDict
 import json
 
 import jsonschema
@@ -13,25 +12,25 @@ __author__ = 'Javier Lopez: javild@gmail.com'
 utilities.check_for_local_schema()
 
 
-clin_sig_2_activity = {'other': 'http://identifiers.org/cttv.activity/unknown',
-                       'unknown': 'http://identifiers.org/cttv.activity/unknown',
-                       'protective': 'http://identifiers.org/cttv.activity/tolerated_by_target',
-                       'probable-pathogenic': 'http://identifiers.org/cttv.activity/predicted_damaging',
-                       'non-pathogenic': 'http://identifiers.org/cttv.activity/tolerated_by_target',
-                       'benign': 'http://identifiers.org/cttv.activity/tolerated_by_target',
-                       'likely pathogenic': 'http://identifiers.org/cttv.activity/predicted_damaging',
-                       'probable-non-pathogenic': 'http://identifiers.org/cttv.activity/predicted_tolerated',
-                       'pathogenic': 'http://identifiers.org/cttv.activity/damaging_to_target',
-                       'association': 'http://identifiers.org/cttv.activity/damaging_to_target',
-                       'conflicting data from submitters': 'http://identifiers.org/cttv.activity/unknown',
-                       'uncertain significance': 'http://identifiers.org/cttv.activity/unknown',
-                       'likely benign': 'http://identifiers.org/cttv.activity/predicted_tolerated',
-                       'histocompatibility': 'http://identifiers.org/cttv.activity/unknown',
-                       'not provided': 'http://identifiers.org/cttv.activity/unknown',
-                       'untested': 'http://identifiers.org/cttv.activity/unknown',
-                       'confers sensitivity': 'http://identifiers.org/cttv.activity/predicted_damaging',
-                       'drug-response': 'http://identifiers.org/cttv.activity/unknown',
-                       'risk factor': 'http://identifiers.org/cttv.activity/predicted_damaging'}
+CLIN_SIG_TO_ACTIVITY = {'other': 'http://identifiers.org/cttv.activity/unknown',
+                        'unknown': 'http://identifiers.org/cttv.activity/unknown',
+                        'protective': 'http://identifiers.org/cttv.activity/tolerated_by_target',
+                        'probable-pathogenic': 'http://identifiers.org/cttv.activity/predicted_damaging',
+                        'non-pathogenic': 'http://identifiers.org/cttv.activity/tolerated_by_target',
+                        'benign': 'http://identifiers.org/cttv.activity/tolerated_by_target',
+                        'likely pathogenic': 'http://identifiers.org/cttv.activity/predicted_damaging',
+                        'probable-non-pathogenic': 'http://identifiers.org/cttv.activity/predicted_tolerated',
+                        'pathogenic': 'http://identifiers.org/cttv.activity/damaging_to_target',
+                        'association': 'http://identifiers.org/cttv.activity/damaging_to_target',
+                        'conflicting data from submitters': 'http://identifiers.org/cttv.activity/unknown',
+                        'uncertain significance': 'http://identifiers.org/cttv.activity/unknown',
+                        'likely benign': 'http://identifiers.org/cttv.activity/predicted_tolerated',
+                        'histocompatibility': 'http://identifiers.org/cttv.activity/unknown',
+                        'not provided': 'http://identifiers.org/cttv.activity/unknown',
+                        'untested': 'http://identifiers.org/cttv.activity/unknown',
+                        'confers sensitivity': 'http://identifiers.org/cttv.activity/predicted_damaging',
+                        'drug-response': 'http://identifiers.org/cttv.activity/unknown',
+                        'risk factor': 'http://identifiers.org/cttv.activity/predicted_damaging'}
 
 
 def get_cttv_variant_type(ref, alt):
@@ -60,9 +59,9 @@ class CTTVEvidenceString(dict):
         if ensembl_gene_id:
             ensembl_gene_id_uri = get_ensembl_gene_id_uri(ensembl_gene_id)
             try:
-                self.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clinvarRecord.clinical_significance])
+                self.set_target(ensembl_gene_id_uri, CLIN_SIG_TO_ACTIVITY[clinvarRecord.clinical_significance])
             except KeyError:
-                report.unrecognised_clin_sigs.add(clinvarRecord.clinical_significance)  # TODO fix this
+                report.unrecognised_clin_sigs.add(clinvarRecord.clinical_significance)
                 self.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
 
         if ref_list and len(ref_list) > 0:
@@ -80,8 +79,8 @@ class CTTVEvidenceString(dict):
     def _clear_target(self):
         self['target']['id'] = []
 
-    def set_target(self, id, activity):
-        self['target']['id'].append(id)
+    def set_target(self, target_id, activity):
+        self['target']['id'].append(target_id)
         self['target']['activity'] = activity
 
     @property
@@ -210,9 +209,9 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
     def _clear_variant(self):
         self['variant']['id'] = []
 
-    def set_variant(self, id, type):
-        self['variant']['id'].append(id)
-        self['variant']['type'] = type
+    def set_variant(self, var_id, var_type):
+        self['variant']['id'].append(var_id)
+        self['variant']['type'] = var_type
 
     @property
     def unique_reference(self):
