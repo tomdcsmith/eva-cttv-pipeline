@@ -47,21 +47,21 @@ def get_cttv_variant_type(ref, alt):
 
 
 class CTTVEvidenceString(dict):
-    def __init__(self, a_dictionary, ensembl_gene_id=None, clinvar_record=None, ensembl_gene_id_uri=None, clin_sig=None,
-                 efo_list=None, ref_list=None):
+    def __init__(self, a_dictionary, clinvarRecord=None, efo_list=None, ref_list=None, ensembl_gene_id=None, report=None):
         super().__init__(a_dictionary)
         # dict.__init__(a_dictionary)
 
         if ensembl_gene_id:
             self.add_unique_association_field('gene', ensembl_gene_id)
-        if clinvar_record:
-            self.add_unique_association_field('clinvarAccession', clinvar_record.accession)
+        if clinvarRecord:
+            self.add_unique_association_field('clinvarAccession', clinvarRecord.accession)
 
-        if ensembl_gene_id_uri:
+        if ensembl_gene_id:
+            ensembl_gene_id_uri = get_ensembl_gene_id_uri(ensembl_gene_id)
             try:
-                self.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clin_sig])
+                self.set_target(ensembl_gene_id_uri, clin_sig_2_activity[clinvarRecord.clinical_significance])
             except KeyError:
-                # unrecognised_clin_sigs.add(clin_sig)  # TODO fix this
+                report.unrecognised_clin_sigs.add(clinvarRecord.clinical_significance)  # TODO fix this
                 self.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
 
         if ref_list and len(ref_list) > 0:
@@ -111,27 +111,24 @@ class CTTVEvidenceString(dict):
 class CTTVGeneticsEvidenceString(CTTVEvidenceString):
     schema = json.loads(open(utilities.get_resource_file(__package__, config.GEN_SCHEMA_FILE), 'r').read())
 
-    def __init__(self, efo_list, clin_sig, clinvarRecord, consequenceType, ensembl_gene_id,
-                 ensembl_gene_id_uri, measure_set_refs_list, observed_refs_list, rcv_to_gene_evidence_codes, record, rs,
-                 trait_counter, traits_ref_list, unrecognised_clin_sigs):
+    def __init__(self, clinvarRecord, report, trait, ensembl_gene_id, cellbase_record):
 
         with open(utilities.get_resource_file(__package__, config.GEN_EV_STRING_JSON)) as gen_json_file:
             a_dictionary = json.load(gen_json_file)
 
-        # CTTVEvidenceString.__init__(self, a_dictionary)
+        ref_list = list(set(clinvarRecord.trait_refs_list[trait.trait_counter] + clinvarRecord.observed_refs_list + clinvarRecord.measure_set_refs_list))
 
-        ref_list = list(set(traits_ref_list[trait_counter] + observed_refs_list + measure_set_refs_list))
-
-        super().__init__(a_dictionary, ensembl_gene_id, clinvarRecord, ensembl_gene_id_uri, clin_sig, efo_list, ref_list)
+        super().__init__(a_dictionary, clinvarRecord, trait.efo_list, ref_list, ensembl_gene_id, report)
 
         self.add_unique_association_field('alleleOrigin', 'germline')
-        self.set_variant('http://identifiers.org/dbsnp/' + rs, get_cttv_variant_type(record['reference'], record['alternate']))
+        self.set_variant('http://identifiers.org/dbsnp/' + clinvarRecord.rs, get_cttv_variant_type(cellbase_record['reference'], cellbase_record['alternate']))
         self.date = clinvarRecord.date
         self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.accession
         self.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.accession
-        self.association = clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign'
-        self.gene_2_var_ev_codes = rcv_to_gene_evidence_codes
-        most_severe_so_term = consequenceType.most_severe_so
+        self.association = clinvarRecord.clinical_significance \
+                           not in ('non-pathogenic', 'probable-non-pathogenic', 'likely benign', 'benign')
+        self.gene_2_var_ev_codes = ['http://identifiers.org/eco/cttv_mapping_pipeline']
+        most_severe_so_term = clinvarRecord.consequence_type.most_severe_so
         if most_severe_so_term.accession is None:
             self.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + most_severe_so_term.so_name
         else:
@@ -236,28 +233,26 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 class CTTVSomaticEvidenceString(CTTVEvidenceString):
     schema = json.loads(open(utilities.get_resource_file(__package__, config.SOM_SCHEMA_FILE), 'r').read())
 
-    def __init__(self, efo_list, clin_sig, clinvarRecord,
-                                     ensembl_gene_id, ensembl_gene_id_uri, measure_set_refs_list,
-                                     observed_refs_list, trait_counter, trait_refs_list,
-                                     unrecognised_clin_sigs, consequenceType):
+    def __init__(self, clinvarRecord, report, trait, ensembl_gene_id):
 
         with open(utilities.get_resource_file(__package__, config.SOM_EV_STRING_JSON)) as som_json_file:
             a_dictionary = json.load(som_json_file)
 
         # CTTVEvidenceString.__init__(self,a_dictionary)
 
-        ref_list = list(set(trait_refs_list[trait_counter] + observed_refs_list + measure_set_refs_list))
+        ref_list = list(set(clinvarRecord.trait_refs_list[trait.trait_counter] + clinvarRecord.observed_refs_list + clinvarRecord.measure_set_refs_list))
 
-        super().__init__(a_dictionary, ensembl_gene_id, clinvarRecord, ensembl_gene_id_uri, clin_sig, efo_list, ref_list)
+        super().__init__(a_dictionary, clinvarRecord, trait.efo_list, ref_list, ensembl_gene_id, report)
 
         self.add_unique_association_field('alleleOrigin', 'somatic')
 
         self.date = clinvarRecord.date
         self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.accession
         self.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.accession
-        self.association = (clin_sig != 'non-pathogenic' and clin_sig != 'probable-non-pathogenic' and clin_sig != 'likely benign' and clin_sig != 'benign')
+        self.association = clinvarRecord.clinical_significance \
+                           not in ('non-pathogenic', 'probable-non-pathogenic', 'likely benign', 'benign')
 
-        self.set_known_mutations(consequenceType)
+        self.set_known_mutations(clinvarRecord.consequence_type)
 
         if len(ref_list) > 0:
             self.evidence_literature = ref_list
@@ -322,3 +317,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
             else:
                 new_functional_consequence = 'http://targetvalidation.org/sequence/' + so_term.so_name
             self.add_known_mutation(new_functional_consequence, so_name)
+
+
+def get_ensembl_gene_id_uri(ensembl_gene_id):
+    return 'http://identifiers.org/ensembl/' + ensembl_gene_id
