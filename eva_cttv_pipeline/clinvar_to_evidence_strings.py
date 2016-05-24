@@ -225,24 +225,25 @@ def skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, c
     if clinvarRecord.clinical_significance not in allowed_clinical_significance:
         if clinvarRecord.nsv is not None:
             counters["n_nsv_skipped_clin_sig"] += 1
-        print("Not in allowed")
+        print("Not in allowed. Clinical significance: %s. Allowed clincal significances: %s." %
+              (clinvarRecord.clinical_significance, allowed_clinical_significance))
         return True
 
     if cellbase_record['reference'] == cellbase_record['alternate']:
         counters["n_same_ref_alt"] += 1
         if clinvarRecord.nsv is not None:
             counters["n_nsv_skipped_wrong_ref_alt"] += 1
-            print("ref != alt")
+            print("ref != alt. ref: %s alt: %s" % (cellbase_record['reference'], cellbase_record['alternate']))
         return True
 
     if clinvarRecord.rs is None:
         counters["n_pathogenic_no_rs"] += 1
-        print("rs is none")
+        print("rs is none. clinvar acc: %s" % clinvarRecord.accession)
         return True
 
     if clinvarRecord.consequence_type is None:
         counters["no_variant_to_ensg_mapping"] += 1
-        print("con type is none")
+        print("con type is none. clinvar acc: %s" % clinvarRecord.accession)
         return True
 
     return False

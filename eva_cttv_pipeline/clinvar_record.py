@@ -98,7 +98,7 @@ class ClinvarRecord(UserDict):
                                     except urllib.error.HTTPError as e:
                                         if e.code == 400:
                                             print('WARNING: Bad request code returned from ENSEMBL rest.')
-                                            print(' ClinVar accession: ' + self.get_acc())
+                                            print(' ClinVar accession: ' + self.accession)
                                             print(' Gene symbol: ' + symbol[i]['elementValue']['value'])
                                             print(' Error: ')
                                             print(e)
