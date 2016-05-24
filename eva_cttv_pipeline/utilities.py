@@ -44,17 +44,22 @@ def copy_dir(src, dest):
 
 def change_json_refs(local_schema_dir):
 
-    command = "find " + local_schema_dir + " -type f -exec sed -i -e \"s/https:\/\/raw.githubusercontent.com\/CTTV\/json_schema\/master/file:\/\/" + local_schema_dir.replace("/", "\/") + "/g\" {} \;"
+    command = "find " + local_schema_dir + \
+              " -type f -exec sed -i -e " \
+              "\"s/https:\/\/raw.githubusercontent.com\/CTTV\/json_schema\/master/file:\/\/" + \
+              local_schema_dir.replace("/", "\/") + "/g\" {} \;"
     print("Carrying out command:\n" + command)
     subprocess.check_output(command, shell=True)
 
     evidence_base_json = os.path.join(local_schema_dir, "src/evidence/base.json")
     evidence_base_json_temp = os.path.join(local_schema_dir, "src/evidence/base_temp.json")
-    command = "grep -v '\"id\": \"base_evidence\"' " + evidence_base_json + " > " + evidence_base_json_temp + "; mv " + evidence_base_json_temp + " " + evidence_base_json
+    command = "grep -v '\"id\": \"base_evidence\"' " + evidence_base_json + " > " + evidence_base_json_temp + \
+              "; mv " + evidence_base_json_temp + " " + evidence_base_json
     print("Carrying out command:\n" + command)
     subprocess.check_output(command, shell=True)
 
-    command = "grep -v '\"id\": \"#single_lit_reference\"' " + evidence_base_json + " > " + evidence_base_json_temp + "; mv " + evidence_base_json_temp + " " + evidence_base_json
+    command = "grep -v '\"id\": \"#single_lit_reference\"' " + evidence_base_json + " > " + evidence_base_json_temp + \
+              "; mv " + evidence_base_json_temp + " " + evidence_base_json
     print("Carrying out command:\n" + command)
     subprocess.check_output(command, shell=True)
 
@@ -100,21 +105,39 @@ class ArgParser:
     """
     def __init__(self, argv):
         usage = """
-        ************************************************************************************************************************************************************
+        **************************************************************************************************************
         Task: generate CTTV evidence strings from ClinVar mongo
-        ************************************************************************************************************************************************************
+        **************************************************************************************************************
 
         usage: %prog --clinSig <clinicalSignificanceList> --out <fileout>"""
         parser = argparse.ArgumentParser(usage)
 
-        parser.add_argument("--clinSig", dest="clinical_significance", help="""Optional. String containing a comma-sparated list with the clinical significances that will be allowed to generate evidence-strings. By default all clinical significances will be considered. Possible tags: 'unknown','untested','non-pathogenic','probable-non-pathogenic','probable-pathogenic','pathogenic','drug-response','drug response','histocompatibility','other','benign','protective','not provided','likely benign','confers sensitivity','uncertain significance','likely pathogenic','conflicting data from submitters','risk factor','association' """, default="pathogenic,likely pathogenic")
-        parser.add_argument("--ignore", dest="ignore_terms_file", help="""Optional. String containing full path to a txt file containing a list of term urls which will be ignored during batch processing """, default=None)
-        parser.add_argument("--adapt", dest="adapt_terms_file", help="""Optional. String containing full path to a txt file containing a list of invalid EFO urls which will be adapted to a general valid url during batch processing """, default=None)
-        parser.add_argument("--out", dest="out", help="""String containing the name of the file were results will be stored.""", required=True)
+        parser.add_argument("--clinSig", dest="clinical_significance",
+                            help="""Optional. String containing a comma-sparated list with the clinical significances
+                            that will be allowed to generate evidence-strings. By default all clinical significances
+                            will be considered. Possible tags: 'unknown','untested','non-pathogenic',
+                            'probable-non-pathogenic','probable-pathogenic','pathogenic','drug-response',
+                            'drug response','histocompatibility','other','benign','protective','not provided',
+                            'likely benign','confers sensitivity','uncertain significance','likely pathogenic',
+                            'conflicting data from submitters','risk factor','association' """,
+                            default="pathogenic,likely pathogenic")
+        parser.add_argument("--ignore", dest="ignore_terms_file",
+                            help="""Optional. String containing full path to a txt file containing a list of term urls
+                            which will be ignored during batch processing """, default=None)
+        parser.add_argument("--adapt", dest="adapt_terms_file",
+                            help="""Optional. String containing full path to a txt file containing a list of invalid
+                            EFO urls which will be adapted to a general valid url during batch processing """,
+                            default=None)
+        parser.add_argument("--out", dest="out",
+                            help="""String containing the name of the file were results will be stored.""",
+                            required=True)
 
-        parser.add_argument("-e", "--efoMapFile", dest="efo_mapping_file", help="Path to file with trait name to url mappings", required=True)
-        parser.add_argument("-g", "--snp2GeneFile", dest="snp_2_gene_file", help="Path to file with RS id to ensembl gene ID and consequence mappings", required=True)
-        parser.add_argument("-v", "--variantSummaryFile", dest="variant_summary_file", help="Path to file with RS id to ensembl gene ID and consequence mappings", required=True)
+        parser.add_argument("-e", "--efoMapFile", dest="efo_mapping_file",
+                            help="Path to file with trait name to url mappings", required=True)
+        parser.add_argument("-g", "--snp2GeneFile", dest="snp_2_gene_file",
+                            help="Path to file with RS id to ensembl gene ID and consequence mappings", required=True)
+        parser.add_argument("-v", "--variantSummaryFile", dest="variant_summary_file",
+                            help="Path to file with RS id to ensembl gene ID and consequence mappings", required=True)
 
         args = parser.parse_args(args=argv[1:])
 

@@ -30,7 +30,8 @@ def get_obsolete_terms(sparqlep, user, password):
 
 
 def execute_query(sparqlep, user, password, query):
-    cmd = """curl --post301 -L --data-urlencode "query=""" + query + """" -u """ + user + ":" + password + """ -H "Accept: text/tab-separated-values" """ + sparqlep
+    cmd = "curl --post301 -L --data-urlencode \"query=" + query + " -u " + user + ":" + password + \
+          " -H \"Accept: text/tab-separated-values\" " + sparqlep
     fd = os.popen(cmd)
     print('Loading obsolete terms...')
     terms = {}
@@ -65,14 +66,6 @@ class EFOTerm:
 
     def __repr__(self):
         return "%s(%r)" % (self.__class__, self.__dict__)
-
-    @property
-    def efoid(self):
-        return self.__efoid
-
-    @efoid.setter
-    def efoid(self, value):
-        self.__efoid = value
 
     def is_obsolete(self):
         if self.efoid is not None and self.efoid in EFOTerm.obsolete_terms:

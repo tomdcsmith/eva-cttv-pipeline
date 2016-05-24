@@ -5,7 +5,7 @@ import urllib.request
 from eva_cttv_pipeline import config
 
 
-class CellbaseRecords:
+class CellbaseRecords(object):
     def __init__(self, limit=config.BATCH_SIZE):
         self.skip = 0
         self.limit = limit
@@ -21,7 +21,10 @@ class CellbaseRecords:
 
     def __get_curr_response(self):
         reader = codecs.getreader("utf-8")
-        answer = urllib.request.urlopen('http://' + config.HOST + '/cellbase/webservices/rest/v3/hsapiens/feature/clinical/all?source=clinvar&skip=' + str(self.skip) + '&limit=' + str(self.limit))
+        url = 'http://' + config.HOST + \
+              '/cellbase/webservices/rest/v3/hsapiens/feature/clinical/all?source=clinvar&skip=' + \
+              str(self.skip) + '&limit=' + str(self.limit)
+        answer = urllib.request.urlopen(url)
         curr_response = json.load(reader(answer))['response'][0]
         return curr_response
 

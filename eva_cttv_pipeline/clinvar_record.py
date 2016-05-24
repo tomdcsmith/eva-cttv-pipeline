@@ -91,9 +91,10 @@ class ClinvarRecord(UserDict):
                                 not_solved = True
                                 while not_solved:
                                     try:
-                                        url = 'http://rest.ensembl.org/lookup/symbol/homo_sapiens/' + symbol[i]['elementValue']['value'] + '?content-type=application/json'
-                                        rawreply = urllib.request.urlopen(url).read()
-                                        ensembl_json = json.loads(rawreply.decode())
+                                        url = 'http://rest.ensembl.org/lookup/symbol/homo_sapiens/' + \
+                                              symbol[i]['elementValue']['value'] + '?content-type=application/json'
+                                        raw_reply = urllib.request.urlopen(url).read()
+                                        ensembl_json = json.loads(raw_reply.decode())
                                         not_solved = False
                                     except urllib.error.HTTPError as e:
                                         if e.code == 400:
@@ -117,7 +118,8 @@ class ClinvarRecord(UserDict):
                                             ensembl_json['id']
                                         return ensembl_json['id']
                                     else:
-                                        print("WARNING at clinvar_record.py: ENSEMBL's REST API returned an unexpected json object")
+                                        print("WARNING at clinvar_record.py: " +
+                                              "ENSEMBL's REST API returned an unexpected json object")
                                         print(" Queried gene symbol: " + symbol[i]['elementValue']['value'])
                                         print(" ENSEMBL's API response:")
                                         print(ensembl_json)

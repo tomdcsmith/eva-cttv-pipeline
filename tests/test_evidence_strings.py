@@ -25,7 +25,8 @@ def _get_test_cellbase_record_gene():
 def get_args_CTTVGeneticsEvidenceString_init():
     cellbase_record = _get_test_cellbase_record_gene()
 
-    clinvarRecord = clinvar_record.ClinvarRecord(mappings=test_clinvar_to_evidence_strings.MAPPINGS, a_dictionary=cellbase_record['clinvarSet'])
+    clinvarRecord = clinvar_record.ClinvarRecord(mappings=test_clinvar_to_evidence_strings.MAPPINGS,
+                                                 a_dictionary=cellbase_record['clinvarSet'])
 
     report = clinvar_to_evidence_strings.Report()
 
@@ -57,7 +58,8 @@ class CTTVGeneticsEvidenceStringInitTest(unittest.TestCase):
 
 
 def get_args_CTTVSomaticEvidenceString_init():
-    clinvarRecord = clinvar_record.ClinvarRecord(mappings=test_clinvar_to_evidence_strings.MAPPINGS, a_dictionary={'title': 'NM_031157.2(HNRNPA1):c.1054C>T (p.Arg352Ter) AND Chronic progressive multiple sclerosis', 'clinVarAssertion': [{'measureSet': {'type': 'Variant', 'measure': [{'attributeSet': [{'attribute': {'type': 'HGVS', 'value': 'NM_002136.2:c.898C>T'}}], 'type': 'Variation'}]}, 'id': 286280, 'traitSet': {'type': 'Disease', 'trait': [{'name': [{'elementValue': {'type': 'Preferred', 'value': 'not provided'}}], 'xref': [{'id': 'C10.114.375.500.200', 'db': 'MESH', 'status': 'UNDER_REVIEW'}], 'type': 'Disease'}]}, 'submissionName': 'HNRNPA1_VARIATION', 'clinVarAccession': {'orgID': 504916, 'type': 'SCV', 'dateUpdated': 1409698800000, 'acc': 'SCV000154960', 'version': 1}, 'assertion': {'type': 'variation to disease'}, 'clinVarSubmissionID': {'submitter': 'Demyelinating Disease Laboratories, VA Medical Center and University of Tennessee', 'submitterDate': 1402268400000, 'localKey': 'NP_002127.1:c.898C>T'}, 'clinicalSignificance': {'description': ['probable-pathogenic'], 'reviewStatus': 'CLASSIFIED_BY_SINGLE_SUBMITTER', 'comment': [{'value': 'Converted during submission to Likely pathogenic.'}]}, 'recordStatus': 'current', 'observedIn': [{'observedData': [{'attribute': {'type': 'Description', 'value': 'not provided'}}], 'sample': {'affectedStatus': 'not provided', 'species': {'value': 'human'}, 'origin': 'somatic', 'numberTested': 1}, 'method': [{'methodType': 'NOT_PROVIDED'}]}]}], 'referenceClinVarAssertion': {'measureSet': {'name': [{'elementValue': {'type': 'preferred name', 'value': 'NM_031157.2(HNRNPA1):c.1054C>T (p.Arg352Ter)'}}], 'measure': [{'attributeSet': [{'attribute': {'type': 'HGVS, coding, RefSeq', 'change': 'c.1054C>T', 'value': 'NM_031157.2:c.1054C>T'}}, {'attribute': {'type': 'HGVS, coding, RefSeq', 'change': 'c.898C>T', 'value': 'NM_002136.2:c.898C>T'}}, {'attribute': {'type': 'HGVS, genomic, RefSeqGene', 'change': 'g.8255C>T', 'value': 'NG_033830.1:g.8255C>T'}}, {'attribute': {'type': 'HGVS, genomic, top level', 'integerValue': 38, 'change': 'g.54283958C>T', 'value': 'NC_000012.12:g.54283958C>T'}}, {'attribute': {'type': 'HGVS, genomic, top level, previous', 'integerValue': 37, 'change': 'g.54677742C>T', 'value': 'NC_000012.11:g.54677742C>T'}}, {'attribute': {'type': 'HGVS, protein, RefSeq', 'change': 'p.Arg300Ter', 'value': 'NP_002127.1:p.Arg300Ter'}}, {'attribute': {'type': 'HGVS, protein, RefSeq', 'change': 'p.Arg352Ter', 'value': 'NP_112420.1:p.Arg352Ter'}}, {'xref': [{'id': 'SO:0001587', 'db': 'Sequence Ontology', 'status': 'CURRENT'}, {'id': 'NM_031157.2:c.1054C>T', 'db': 'RefSeq', 'status': 'CURRENT'}], 'attribute': {'type': 'MolecularConsequence', 'value': 'nonsense'}}, {'attribute': {'type': 'ProteinChange1LetterCode', 'value': 'R352*'}}, {'attribute': {'type': 'ProteinChange1LetterCode', 'value': 'R300*'}}], 'cytogeneticLocation': ['12q13.13'], 'sequenceLocation': [{'variantLength': 1, 'chr': '12', 'start': 54677742, 'assembly': 'GRCh37', 'stop': 54677742, 'alternateAllele': 'T', 'referenceAllele': 'C', 'accession': 'NC_000012.11'}, {'variantLength': 1, 'chr': '12', 'start': 54283958, 'assembly': 'GRCh38', 'stop': 54283958, 'alternateAllele': 'T', 'referenceAllele': 'C', 'accession': 'NC_000012.12'}], 'name': [{'elementValue': {'type': 'Preferred', 'value': 'NM_031157.2(HNRNPA1):c.1054C>T (p.Arg352Ter)'}}], 'xref': [{'type': 'rs', 'id': '483353037', 'db': 'dbSNP', 'status': 'CURRENT'}], 'type': 'single nucleotide variant', 'measureRelationship': [{'symbol': [{'elementValue': {'type': 'Preferred', 'value': 'HNRNPA1'}}], 'name': [{'elementValue': {'type': 'Preferred', 'value': 'heterogeneous nuclear ribonucleoprotein A1'}}], 'xref': [{'id': '3178', 'db': 'Gene', 'status': 'CURRENT'}, {'type': 'MIM', 'id': '164017', 'db': 'OMIM', 'status': 'CURRENT'}], 'type': 'variant in gene', 'sequenceLocation': [{'chr': '12', 'start': 54674487, 'assembly': 'GRCh37', 'stop': 54679029, 'strand': '+', 'accession': 'NC_000012.11'}, {'chr': '12', 'start': 54280695, 'assembly': 'GRCh38', 'stop': 54287086, 'strand': '+', 'accession': 'NC_000012.12'}]}], 'id': 139332}], 'type': 'Variant', 'id': 135606}, 'dateCreated': 1402354800000, 'traitSet': {'type': 'Disease', 'trait': [{'name': [{'elementValue': {'type': 'Preferred', 'value': 'Chronic progressive multiple sclerosis'}, 'xref': [{'id': '230373008', 'db': 'SNOMED CT', 'status': 'CURRENT'}]}], 'xref': [{'id': 'C0393665', 'db': 'MedGen', 'status': 'CURRENT'}], 'type': 'Disease', 'id': 18795}], 'id': 13814}, 'dateLastUpdated': DATE_LAST_UPDATED, 'clinVarAccession': {'type': 'RCV', 'dateUpdated': DATE_LAST_UPDATED, 'acc': 'RCV000122455', 'version': 1}, 'assertion': {'type': 'VARIATION_TO_DISEASE'}, 'clinicalSignificance': {'description': 'Likely pathogenic', 'reviewStatus': 'CLASSIFIED_BY_SINGLE_SUBMITTER'}, 'recordStatus': 'current', 'observedIn': [{'observedData': [{'id': 3574852, 'attribute': {'type': 'Description', 'value': 'not provided'}}], 'sample': {'affectedStatus': 'not provided', 'species': {'taxonomyId': 9606, 'value': 'human'}, 'origin': 'somatic', 'numberTested': 1}, 'method': [{'methodType': 'NOT_PROVIDED'}]}], 'id': 286319}, 'id': 3823230, 'recordStatus': 'current'})
+    clinvarRecord = clinvar_record.ClinvarRecord(mappings=test_clinvar_to_evidence_strings.MAPPINGS,
+                                                 a_dictionary={'title': 'NM_031157.2(HNRNPA1):c.1054C>T (p.Arg352Ter) AND Chronic progressive multiple sclerosis', 'clinVarAssertion': [{'measureSet': {'type': 'Variant', 'measure': [{'attributeSet': [{'attribute': {'type': 'HGVS', 'value': 'NM_002136.2:c.898C>T'}}], 'type': 'Variation'}]}, 'id': 286280, 'traitSet': {'type': 'Disease', 'trait': [{'name': [{'elementValue': {'type': 'Preferred', 'value': 'not provided'}}], 'xref': [{'id': 'C10.114.375.500.200', 'db': 'MESH', 'status': 'UNDER_REVIEW'}], 'type': 'Disease'}]}, 'submissionName': 'HNRNPA1_VARIATION', 'clinVarAccession': {'orgID': 504916, 'type': 'SCV', 'dateUpdated': 1409698800000, 'acc': 'SCV000154960', 'version': 1}, 'assertion': {'type': 'variation to disease'}, 'clinVarSubmissionID': {'submitter': 'Demyelinating Disease Laboratories, VA Medical Center and University of Tennessee', 'submitterDate': 1402268400000, 'localKey': 'NP_002127.1:c.898C>T'}, 'clinicalSignificance': {'description': ['probable-pathogenic'], 'reviewStatus': 'CLASSIFIED_BY_SINGLE_SUBMITTER', 'comment': [{'value': 'Converted during submission to Likely pathogenic.'}]}, 'recordStatus': 'current', 'observedIn': [{'observedData': [{'attribute': {'type': 'Description', 'value': 'not provided'}}], 'sample': {'affectedStatus': 'not provided', 'species': {'value': 'human'}, 'origin': 'somatic', 'numberTested': 1}, 'method': [{'methodType': 'NOT_PROVIDED'}]}]}], 'referenceClinVarAssertion': {'measureSet': {'name': [{'elementValue': {'type': 'preferred name', 'value': 'NM_031157.2(HNRNPA1):c.1054C>T (p.Arg352Ter)'}}], 'measure': [{'attributeSet': [{'attribute': {'type': 'HGVS, coding, RefSeq', 'change': 'c.1054C>T', 'value': 'NM_031157.2:c.1054C>T'}}, {'attribute': {'type': 'HGVS, coding, RefSeq', 'change': 'c.898C>T', 'value': 'NM_002136.2:c.898C>T'}}, {'attribute': {'type': 'HGVS, genomic, RefSeqGene', 'change': 'g.8255C>T', 'value': 'NG_033830.1:g.8255C>T'}}, {'attribute': {'type': 'HGVS, genomic, top level', 'integerValue': 38, 'change': 'g.54283958C>T', 'value': 'NC_000012.12:g.54283958C>T'}}, {'attribute': {'type': 'HGVS, genomic, top level, previous', 'integerValue': 37, 'change': 'g.54677742C>T', 'value': 'NC_000012.11:g.54677742C>T'}}, {'attribute': {'type': 'HGVS, protein, RefSeq', 'change': 'p.Arg300Ter', 'value': 'NP_002127.1:p.Arg300Ter'}}, {'attribute': {'type': 'HGVS, protein, RefSeq', 'change': 'p.Arg352Ter', 'value': 'NP_112420.1:p.Arg352Ter'}}, {'xref': [{'id': 'SO:0001587', 'db': 'Sequence Ontology', 'status': 'CURRENT'}, {'id': 'NM_031157.2:c.1054C>T', 'db': 'RefSeq', 'status': 'CURRENT'}], 'attribute': {'type': 'MolecularConsequence', 'value': 'nonsense'}}, {'attribute': {'type': 'ProteinChange1LetterCode', 'value': 'R352*'}}, {'attribute': {'type': 'ProteinChange1LetterCode', 'value': 'R300*'}}], 'cytogeneticLocation': ['12q13.13'], 'sequenceLocation': [{'variantLength': 1, 'chr': '12', 'start': 54677742, 'assembly': 'GRCh37', 'stop': 54677742, 'alternateAllele': 'T', 'referenceAllele': 'C', 'accession': 'NC_000012.11'}, {'variantLength': 1, 'chr': '12', 'start': 54283958, 'assembly': 'GRCh38', 'stop': 54283958, 'alternateAllele': 'T', 'referenceAllele': 'C', 'accession': 'NC_000012.12'}], 'name': [{'elementValue': {'type': 'Preferred', 'value': 'NM_031157.2(HNRNPA1):c.1054C>T (p.Arg352Ter)'}}], 'xref': [{'type': 'rs', 'id': '483353037', 'db': 'dbSNP', 'status': 'CURRENT'}], 'type': 'single nucleotide variant', 'measureRelationship': [{'symbol': [{'elementValue': {'type': 'Preferred', 'value': 'HNRNPA1'}}], 'name': [{'elementValue': {'type': 'Preferred', 'value': 'heterogeneous nuclear ribonucleoprotein A1'}}], 'xref': [{'id': '3178', 'db': 'Gene', 'status': 'CURRENT'}, {'type': 'MIM', 'id': '164017', 'db': 'OMIM', 'status': 'CURRENT'}], 'type': 'variant in gene', 'sequenceLocation': [{'chr': '12', 'start': 54674487, 'assembly': 'GRCh37', 'stop': 54679029, 'strand': '+', 'accession': 'NC_000012.11'}, {'chr': '12', 'start': 54280695, 'assembly': 'GRCh38', 'stop': 54287086, 'strand': '+', 'accession': 'NC_000012.12'}]}], 'id': 139332}], 'type': 'Variant', 'id': 135606}, 'dateCreated': 1402354800000, 'traitSet': {'type': 'Disease', 'trait': [{'name': [{'elementValue': {'type': 'Preferred', 'value': 'Chronic progressive multiple sclerosis'}, 'xref': [{'id': '230373008', 'db': 'SNOMED CT', 'status': 'CURRENT'}]}], 'xref': [{'id': 'C0393665', 'db': 'MedGen', 'status': 'CURRENT'}], 'type': 'Disease', 'id': 18795}], 'id': 13814}, 'dateLastUpdated': DATE_LAST_UPDATED, 'clinVarAccession': {'type': 'RCV', 'dateUpdated': DATE_LAST_UPDATED, 'acc': 'RCV000122455', 'version': 1}, 'assertion': {'type': 'VARIATION_TO_DISEASE'}, 'clinicalSignificance': {'description': 'Likely pathogenic', 'reviewStatus': 'CLASSIFIED_BY_SINGLE_SUBMITTER'}, 'recordStatus': 'current', 'observedIn': [{'observedData': [{'id': 3574852, 'attribute': {'type': 'Description', 'value': 'not provided'}}], 'sample': {'affectedStatus': 'not provided', 'species': {'taxonomyId': 9606, 'value': 'human'}, 'origin': 'somatic', 'numberTested': 1}, 'method': [{'methodType': 'NOT_PROVIDED'}]}], 'id': 286319}, 'id': 3823230, 'recordStatus': 'current'})
 
     report = clinvar_to_evidence_strings.Report()
 
@@ -91,7 +93,8 @@ class GetCTTVVariantTypeTest(unittest.TestCase):
     def setUpClass(cls):
         record_single_a = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "C"}, "snp single")
         record_single_b = ({"reference": "A", "alternate": "C"}, "snp single")
-        record_single_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG"}, "snp single")
+        record_single_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG",
+                            "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG"}, "snp single")
 
         cls.test_records_singles = [record_single_a, record_single_b, record_single_c]
 
@@ -138,7 +141,8 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
         self.assertEqual(self.test_ges['unique_association_fields'][uaf_4[0]], uaf_4[1])
 
     def test_set_target(self):
-        target = ("http://identifiers.org/ensembl/ENSG00000135486", "http://identifiers.org/cttv.activity/predicted_damaging")
+        target = ("http://identifiers.org/ensembl/ENSG00000135486",
+                  "http://identifiers.org/cttv.activity/predicted_damaging")
         self.test_ges._clear_target()
         self.test_ges.set_target(*target)
         self.assertEqual(self.test_ges['target']['id'], [target[0]])
@@ -159,8 +163,10 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
     def test_top_level_literature(self):
         literature = ["http://europepmc.org/abstract/MED/20301537"]
         self.test_ges.top_level_literature = literature
-        self.assertEqual(self.test_ges['literature']['references'], [{"lit_id": literature_id} for literature_id in literature])
-        self.assertEqual(self.test_ges.top_level_literature, [{"lit_id": literature_id} for literature_id in literature])
+        self.assertEqual(self.test_ges['literature']['references'],
+                         [{"lit_id": literature_id} for literature_id in literature])
+        self.assertEqual(self.test_ges.top_level_literature,
+                         [{"lit_id": literature_id} for literature_id in literature])
 
     ###
 
@@ -168,7 +174,8 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
         url = "http://identifiers.org/clinvar.record/RCV000128628"
         self.test_ges.db_xref_url = url
         self.assertEqual(self.test_ges['evidence']['gene2variant']['provenance_type']['database']['dbxref']['url'], url)
-        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url'], url)
+        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url'],
+                         url)
         self.assertEqual(self.test_ges.db_xref_url, url)
 
     def test_url(self):
@@ -195,24 +202,28 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
 
         literature_1 = "PMCID12345"
         self.test_ges.set_var_2_disease_literature([literature_1])
-        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'], [{"lit_id": literature_1}])
+        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'],
+                         [{"lit_id": literature_1}])
 
         literature_2 = "PMCID9876"
         literature_3 = "PMCID7654"
         literature_list = [literature_2, literature_3]
         self.test_ges.set_var_2_disease_literature(literature_list)
-        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'], [{"lit_id": literature_id} for literature_id in literature_list])
+        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'],
+                         [{"lit_id": literature_id} for literature_id in literature_list])
 
     def test_set_var_2_disease_literature_b(self):
         literature_1 = "PMCID12345"
         self.test_ges.set_var_2_disease_literature([literature_1])
-        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'], [{"lit_id": literature_1}])
+        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'],
+                         [{"lit_id": literature_1}])
 
         literature_2 = "PMCID9876"
         literature_3 = "PMCID7654"
         literature_list = [literature_2, literature_3]
         self.test_ges.set_var_2_disease_literature(literature_list)
-        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'], [{"lit_id": literature_id} for literature_id in literature_list])
+        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'],
+                         [{"lit_id": literature_id} for literature_id in literature_list])
 
     def test_association(self):
         self.test_ges.association = True
@@ -276,15 +287,18 @@ class CTTVSomaticEvidenceStringTest(unittest.TestCase):
     def test_evidence_literature(self):
         literature_1 = "PMCID12345"
         self.test_ses.evidence_literature = [literature_1]
-        self.assertEqual(self.test_ses['evidence']['provenance_type']['literature']['references'], [{"lit_id": literature_1}])
+        self.assertEqual(self.test_ses['evidence']['provenance_type']['literature']['references'],
+                         [{"lit_id": literature_1}])
         self.assertEqual(self.test_ses.evidence_literature, [{"lit_id": literature_1}])
 
         literature_2 = "PMCID9876"
         literature_3 = "PMCID7654"
         literature_list = [literature_2, literature_3]
         self.test_ses.evidence_literature = literature_list
-        self.assertEqual(self.test_ses['evidence']['provenance_type']['literature']['references'], [{"lit_id": literature_id} for literature_id in literature_list])
-        self.assertEqual(self.test_ses.evidence_literature, [{"lit_id": literature_id} for literature_id in literature_list])
+        self.assertEqual(self.test_ses['evidence']['provenance_type']['literature']['references'],
+                         [{"lit_id": literature_id} for literature_id in literature_list])
+        self.assertEqual(self.test_ses.evidence_literature,
+                         [{"lit_id": literature_id} for literature_id in literature_list])
 
     def test_association(self):
         self.test_ses.association = True
@@ -306,17 +320,21 @@ class CTTVSomaticEvidenceStringTest(unittest.TestCase):
         preferred_name = "exon_variant"
         self.test_ses._clear_known_mutations()
         self.test_ses.add_known_mutation(functional_consequence, preferred_name)
-        self.assertEqual(self.test_ses['evidence']['known_mutations'], [{'functional_consequence': functional_consequence, 'preferred_name': preferred_name}])
+        self.assertEqual(self.test_ses['evidence']['known_mutations'],
+                         [{'functional_consequence': functional_consequence, 'preferred_name': preferred_name}])
 
     def test_set_known_mutations(self):
-        test_consequence_type = CT.ConsequenceType(ensembl_gene_ids=["ENSG00000008710"], so_names=["3_prime_UTR_variant", "not_in_dict"])
+        test_consequence_type = CT.ConsequenceType(ensembl_gene_ids=["ENSG00000008710"],
+                                                   so_names=["3_prime_UTR_variant", "not_in_dict"])
         self.test_ses._clear_known_mutations()
         self.test_ses.set_known_mutations(test_consequence_type)
-        self.assertEqual(self.test_ses['evidence']['known_mutations'], [{'functional_consequence': 'http://purl.obolibrary.org/obo/SO_0001624', 'preferred_name': '3_prime_UTR_variant'}, {'functional_consequence': 'http://targetvalidation.org/sequence/not_in_dict', 'preferred_name': 'not_in_dict'}])
+        self.assertEqual(self.test_ses['evidence']['known_mutations'],
+                         [{'functional_consequence': 'http://purl.obolibrary.org/obo/SO_0001624',
+                           'preferred_name': '3_prime_UTR_variant'},
+                          {'functional_consequence': 'http://targetvalidation.org/sequence/not_in_dict',
+                           'preferred_name': 'not_in_dict'}])
 
     def test_validate(self):
         test_args = get_args_CTTVSomaticEvidenceString_init()
         test_evidence_string = ES.CTTVSomaticEvidenceString(*test_args)
         self.assertTrue(test_evidence_string.validate())
-
-

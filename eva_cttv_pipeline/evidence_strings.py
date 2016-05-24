@@ -47,7 +47,8 @@ def get_cttv_variant_type(ref, alt):
 
 
 class CTTVEvidenceString(dict):
-    def __init__(self, a_dictionary, clinvarRecord=None, efo_list=None, ref_list=None, ensembl_gene_id=None, report=None):
+    def __init__(self, a_dictionary, clinvarRecord=None,
+                 efo_list=None, ref_list=None, ensembl_gene_id=None, report=None):
         super().__init__(a_dictionary)
         # dict.__init__(a_dictionary)
 
@@ -116,12 +117,14 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         with open(utilities.get_resource_file(__package__, config.GEN_EV_STRING_JSON)) as gen_json_file:
             a_dictionary = json.load(gen_json_file)
 
-        ref_list = list(set(clinvarRecord.trait_refs_list[trait.trait_counter] + clinvarRecord.observed_refs_list + clinvarRecord.measure_set_refs_list))
+        ref_list = list(set(clinvarRecord.trait_refs_list[trait.trait_counter] + clinvarRecord.observed_refs_list +
+                            clinvarRecord.measure_set_refs_list))
 
         super().__init__(a_dictionary, clinvarRecord, trait.efo_list, ref_list, ensembl_gene_id, report)
 
         self.add_unique_association_field('alleleOrigin', 'germline')
-        self.set_variant('http://identifiers.org/dbsnp/' + clinvarRecord.rs, get_cttv_variant_type(cellbase_record['reference'], cellbase_record['alternate']))
+        self.set_variant('http://identifiers.org/dbsnp/' + clinvarRecord.rs,
+                         get_cttv_variant_type(cellbase_record['reference'], cellbase_record['alternate']))
         self.date = clinvarRecord.date
         self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.accession
         self.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.accession
@@ -132,7 +135,8 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         if most_severe_so_term.accession is None:
             self.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + most_severe_so_term.so_name
         else:
-            self.gene_2_var_func_consequence = 'http://purl.obolibrary.org/obo/' + most_severe_so_term.accession.replace(':', '_')
+            self.gene_2_var_func_consequence = 'http://purl.obolibrary.org/obo/' + \
+                                               most_severe_so_term.accession.replace(':', '_')
 
         if len(ref_list) > 0:
             self.set_var_2_disease_literature(ref_list)
@@ -182,7 +186,8 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         self['evidence']['gene2variant']['functional_consequence'] = so_term
 
     def set_var_2_disease_literature(self, ref_list):
-        self['evidence']['variant2disease']['provenance_type']['literature'] = {'references': [{'lit_id': reference} for reference in ref_list]}
+        self['evidence']['variant2disease']['provenance_type']['literature'] = \
+            {'references': [{'lit_id': reference} for reference in ref_list]}
 
     @property
     def association(self):
@@ -240,7 +245,8 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
         # CTTVEvidenceString.__init__(self,a_dictionary)
 
-        ref_list = list(set(clinvarRecord.trait_refs_list[trait.trait_counter] + clinvarRecord.observed_refs_list + clinvarRecord.measure_set_refs_list))
+        ref_list = list(set(clinvarRecord.trait_refs_list[trait.trait_counter] + clinvarRecord.observed_refs_list +
+                            clinvarRecord.measure_set_refs_list))
 
         super().__init__(a_dictionary, clinvarRecord, trait.efo_list, ref_list, ensembl_gene_id, report)
 
@@ -279,7 +285,8 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
     @evidence_literature.setter
     def evidence_literature(self, ref_list):
-        self['evidence']['provenance_type']['literature'] = {'references': [{'lit_id': reference} for reference in ref_list]}
+        self['evidence']['provenance_type']['literature'] = \
+            {'references': [{'lit_id': reference} for reference in ref_list]}
 
     @property
     def association(self):
