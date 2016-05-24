@@ -34,12 +34,12 @@ def copy_and_overwrite(from_path, to_path):
 def copy_dir(src, dest):
     try:
         copy_and_overwrite(src, dest)
-    except OSError as e:
+    except OSError as exception:
         # If the error was caused because the source wasn't a directory
-        if e.errno == errno.ENOTDIR:
+        if exception.errno == errno.ENOTDIR:
             shutil.copy(src, dest)
         else:
-            print('Directory not copied. Error: %s' % e)
+            print('Directory not copied. Error: %s' % exception)
 
 
 def change_json_refs(local_schema_dir):
@@ -150,6 +150,6 @@ class ArgParser:
         self.variant_summary_file = args.variant_summary_file
 
 
-def check_dir_exists_create(dir):
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+def check_dir_exists_create(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)

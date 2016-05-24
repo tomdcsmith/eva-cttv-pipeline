@@ -3,7 +3,7 @@
 __author__ = 'Javier Lopez: javild@gmail.com'
 
 
-def _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term):
+def process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term):
     if rs_id in consequence_type_dict:
         consequence_type_dict[rs_id].ensembl_gene_ids.add(ensembl_gene_id)
         consequence_type_dict[rs_id].add_so_term(so_term)
@@ -11,13 +11,13 @@ def _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term):
         consequence_type_dict[rs_id] = ConsequenceType([ensembl_gene_id], [so_term])
 
 
-def _process_consequence_type_file_tsv(snp_2_gene_file):
+def process_consequence_type_file_tsv(snp_2_gene_filepath):
 
     consequence_type_dict = {}
     one_rs_multiple_genes = set()
 
-    with open(snp_2_gene_file, "rt") as f:
-        for line in f:
+    with open(snp_2_gene_filepath, "rt") as snp_2_gene_file:
+        for line in snp_2_gene_file:
             line = line.rstrip()
             line_list = line.split("\t")
 
@@ -29,7 +29,7 @@ def _process_consequence_type_file_tsv(snp_2_gene_file):
 
             ensembl_gene_ids = ensembl_gene_id.split(",")
             for ensembl_gene_id in ensembl_gene_ids:
-                _process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term)
+                process_gene(consequence_type_dict, rs_id, ensembl_gene_id, so_term)
 
     return consequence_type_dict, one_rs_multiple_genes
 
@@ -41,7 +41,7 @@ def process_consequence_type_file(snp_2_gene_file):
     # if snp_2_gene_file.endswith(".xls"):
     #     consequence_type_dict, one_rs_multiple_genes = _process_consequence_type_file_xls(snp_2_gene_file)
     # else:
-    consequence_type_dict, one_rs_multiple_genes = _process_consequence_type_file_tsv(snp_2_gene_file)
+    consequence_type_dict, one_rs_multiple_genes = process_consequence_type_file_tsv(snp_2_gene_file)
 
     print(str(len(consequence_type_dict)) + ' rs->ENSG/SOterms mappings loaded')
     print(str(len(one_rs_multiple_genes)) + ' rsIds with multiple gene associations')
@@ -142,14 +142,14 @@ class SoTerm(object):
         return hash(self._so_accession)
 
 
-class ConsequenceType(object):
+class ConsequenceType:
 
     def __init__(self, ensembl_gene_ids=None, so_names=None):
         if ensembl_gene_ids:
             self.ensembl_gene_ids = set(ensembl_gene_ids)
         else:
             self.ensembl_gene_ids = set()
-        self._ensemblTranscriptId = None
+        self._ensembl_transcript_id = None
 
         if so_names is not None:
             self.so_terms = set([SoTerm(so_name) for so_name in so_names])
@@ -170,8 +170,8 @@ class ConsequenceType(object):
     def ensembl_gene_ids(self, value):
         self.__ensembl_gene_ids = value
 
-    def add_so_term(self, soName):
-        self.so_terms.add(SoTerm(soName))
+    def add_so_term(self, so_name):
+        self.so_terms.add(SoTerm(so_name))
 
     @property
     def most_severe_so(self):

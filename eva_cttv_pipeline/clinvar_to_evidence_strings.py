@@ -7,7 +7,8 @@ from types import SimpleNamespace
 import jsonschema
 import xlrd
 
-from eva_cttv_pipeline import cellbase_records, efo_term, clinvar_record, consequence_type, config, evidence_strings
+from eva_cttv_pipeline import cellbase_records, efo_term, consequence_type, config, evidence_strings
+from eva_cttv_pipeline import clinvar_record as clinvar_record_module
 
 
 __author__ = 'Javier Lopez: javild@gmail.com'
@@ -85,7 +86,7 @@ class Report:
 
         return '\n'.join(report_strings)
 
-    def add_evidence_string(self, ev_string, clinvarRecord, trait, ensembl_gene_id):
+    def add_evidence_string(self, ev_string, clinvar_record, trait, ensembl_gene_id):
         try:
             ev_string.validate()
             self.evidence_string_list.append(ev_string)
@@ -94,7 +95,7 @@ class Report:
             # print('ClinVar accession: ' + record.clinvarRecord.accession)
             print(err)
             print(json.dumps(ev_string))
-            print("clinvar record:\n%s" % clinvarRecord)
+            print("clinvar record:\n%s" % clinvar_record)
             print("trait:\n%s" % trait)
             print("ensembl gene id: %s" % ensembl_gene_id)
             sys.exit(1)
@@ -125,8 +126,8 @@ class Report:
                 fdw.write(json.dumps(evidence_string) + '\n')
 
         with open(dir_out + '/' + config.EVIDENCE_RECORDS_FILE_NAME, 'w') as fdw:
-            for evidenceRecord in self.evidence_list:
-                fdw.write('\t'.join(evidenceRecord) + '\n')
+            for evidence_record in self.evidence_list:
+                fdw.write('\t'.join(evidence_record) + '\n')
 
     @staticmethod
     def __get_counters():
@@ -152,7 +153,7 @@ def launch_pipeline(dir_out, allowed_clinical_significance, ignore_terms_file, a
                     snp_2_gene_file, variant_summary_file):
 
     allowed_clinical_significance = allowed_clinical_significance.split(',') if allowed_clinical_significance else \
-        get_default_allowed_clincal_significance()
+        get_default_allowed_clinical_significance()
 
     mappings = get_mappings(efo_mapping_file, ignore_terms_file, adapt_terms_file, snp_2_gene_file,
                             variant_summary_file)
@@ -173,26 +174,26 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings):
 
     for cellbase_record in cellbase_records.CellbaseRecords():
         n_ev_strings_per_record = 0
-        clinvarRecord = clinvar_record.ClinvarRecord(mappings=mappings, a_dictionary=cellbase_record['clinvarSet'])
+        clinvar_record = clinvar_record_module.ClinvarRecord(mappings=mappings, a_dictionary=cellbase_record['clinvarSet'])
 
         report.counters["record_counter"] += 1
-        report.counters["n_nsvs"] += (clinvarRecord.nsv is not None)
-        append_nsv(report.nsv_list, clinvarRecord)
+        report.counters["n_nsvs"] += (clinvar_record.nsv is not None)
+        append_nsv(report.nsv_list, clinvar_record)
 
-        if skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, report.counters):
+        if skip_record(clinvar_record, cellbase_record, allowed_clinical_significance, report.counters):
             continue
 
-        report.counters["n_multiple_allele_origin"] += (len(clinvarRecord.allele_origins) > 1)
-        report.counters["n_germline_somatic"] += (('germline' in clinvarRecord.allele_origins) and (
-            'somatic' in clinvarRecord.allele_origins))
+        report.counters["n_multiple_allele_origin"] += (len(clinvar_record.allele_origins) > 1)
+        report.counters["n_germline_somatic"] += (('germline' in clinvar_record.allele_origins) and (
+            'somatic' in clinvar_record.allele_origins))
         report.counters["n_records_no_recognised_allele_origin"] += (
-            ('germline' not in clinvarRecord.allele_origins) and
-            ('somatic' not in clinvarRecord.allele_origins))
+            ('germline' not in clinvar_record.allele_origins) and
+            ('somatic' not in clinvar_record.allele_origins))
 
-        traits = create_traits(clinvarRecord.traits, mappings.trait_2_efo, report)
+        traits = create_traits(clinvar_record.traits, mappings.trait_2_efo, report)
 
         for ensembl_gene_id, trait, allele_origin \
-                in itertools.product(traits, clinvarRecord.allele_origins):
+                in itertools.product(traits, clinvar_record.allele_origins):
 
             if allele_origin not in ('germline', 'somatic'):
                 report.n_unrecognised_allele_origin[allele_origin] += 1
@@ -200,22 +201,22 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings):
 
             if allele_origin == 'germline':
                 # todo look into if any of these arguments to ev strings can be removed and their use extracted out
-                evidence_string = evidence_strings.CTTVGeneticsEvidenceString(clinvarRecord,
+                evidence_string = evidence_strings.CTTVGeneticsEvidenceString(clinvar_record,
                                                                               report,
                                                                               trait,
                                                                               ensembl_gene_id,
                                                                               cellbase_record)
             elif allele_origin == 'somatic':
-                evidence_string = evidence_strings.CTTVSomaticEvidenceString(clinvarRecord,
+                evidence_string = evidence_strings.CTTVSomaticEvidenceString(clinvar_record,
                                                                              report,
                                                                              trait,
                                                                              ensembl_gene_id)
-            report.add_evidence_string(evidence_string, clinvarRecord, trait, ensembl_gene_id)
-            report.evidence_list.append([clinvarRecord.accession,
-                                         clinvarRecord.rs,
+            report.add_evidence_string(evidence_string, clinvar_record, trait, ensembl_gene_id)
+            report.evidence_list.append([clinvar_record.accession,
+                                         clinvar_record.rs,
                                          ','.join(trait.clinvar_trait_list),
                                          ','.join(trait.efo_list)])
-            report.counters["n_valid_rs_and_nsv"] += (clinvarRecord.nsv is not None)
+            report.counters["n_valid_rs_and_nsv"] += (clinvar_record.nsv is not None)
             report.counters["n_more_than_one_efo_term"] += (len(trait.efo_list) > 1)
             report.traits.update(set(trait.efo_list))
             report.ensembl_gene_id_uris.add(evidence_strings.get_ensembl_gene_id_uri(ensembl_gene_id))
@@ -236,34 +237,34 @@ def get_mappings(efo_mapping_file, ignore_terms_file, adapt_terms_file, snp_2_ge
                                                                            adapt_terms_file)
 
     mappings.consequence_type_dict = consequence_type.process_consequence_type_file(snp_2_gene_file)
-    mappings.rcv_to_rs, mappings.rcv_to_nsv = clinvar_record.get_rcv_to_rsnsv_mapping(variant_summary_file)
+    mappings.rcv_to_rs, mappings.rcv_to_nsv = clinvar_record_module.get_rcv_to_rsnsv_mapping(variant_summary_file)
 
     return mappings
 
 
-def skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, counters):
-    if clinvarRecord.clinical_significance not in allowed_clinical_significance:
-        if clinvarRecord.nsv is not None:
+def skip_record(clinvar_record, cellbase_record, allowed_clinical_significance, counters):
+    if clinvar_record.clinical_significance not in allowed_clinical_significance:
+        if clinvar_record.nsv is not None:
             counters["n_nsv_skipped_clin_sig"] += 1
         print("Not in allowed. Clinical significance: %s. Allowed clincal significances: %s." %
-              (clinvarRecord.clinical_significance, allowed_clinical_significance))
+              (clinvar_record.clinical_significance, allowed_clinical_significance))
         return True
 
     if cellbase_record['reference'] == cellbase_record['alternate']:
         counters["n_same_ref_alt"] += 1
-        if clinvarRecord.nsv is not None:
+        if clinvar_record.nsv is not None:
             counters["n_nsv_skipped_wrong_ref_alt"] += 1
             print("ref != alt. ref: %s alt: %s" % (cellbase_record['reference'], cellbase_record['alternate']))
         return True
 
-    if clinvarRecord.rs is None:
+    if clinvar_record.rs is None:
         counters["n_pathogenic_no_rs"] += 1
-        print("rs is none. clinvar acc: %s" % clinvarRecord.accession)
+        print("rs is none. clinvar acc: %s" % clinvar_record.accession)
         return True
 
-    if clinvarRecord.consequence_type is None:
+    if clinvar_record.consequence_type is None:
         counters["no_variant_to_ensg_mapping"] += 1
-        print("con type is none. clinvar acc: %s" % clinvarRecord.accession)
+        print("con type is none. clinvar acc: %s" % clinvar_record.accession)
         return True
 
     return False
@@ -292,13 +293,12 @@ def create_trait(trait_counter, trait_list, trait_2_efo):
 
 
 def write_string_list_to_file(string_list, filename):
-    fd = open(filename, 'w')
-    fd.write('\n'.join(string_list))
-    fd.close()
+    with open(filename, 'w') as out_file:
+        out_file.write('\n'.join(string_list))
 
 
-def append_nsv(nsv_list, clinvarRecord):
-    nsv = clinvarRecord.nsv
+def append_nsv(nsv_list, clinvar_record):
+    nsv = clinvar_record.nsv
     if nsv is not None:
         nsv_list.append(nsv)
     return nsv_list
@@ -388,20 +388,19 @@ def get_urls(url_list, ignore_terms, adapt_terms):
     return valid_efo, urls_to_adapt
 
 
-def get_terms_from_file(terms_file):
-    if terms_file is not None:
+def get_terms_from_file(terms_file_path):
+    if terms_file_path is not None:
         print('Loading list of terms...')
-        fd = open(terms_file, 'r')
-        terms_list = [line.rstrip() for line in fd]
-        fd.close()
-        print(str(len(terms_file)) + ' terms found at ' + terms_file)
+        with open(terms_file_path, 'r') as terms_file:
+            terms_list = [line.rstrip() for line in terms_file]
+        print(str(len(terms_file_path)) + ' terms found at ' + terms_file_path)
     else:
         terms_list = []
 
     return terms_list
 
 
-def get_default_allowed_clincal_significance():
+def get_default_allowed_clinical_significance():
     return ['unknown', 'untested', 'non-pathogenic', 'probable-non-pathogenic',
             'probable-pathogenic', 'pathogenic', 'drug-response', 'drug response',
             'histocompatibility', 'other', 'benign', 'protective', 'not provided',

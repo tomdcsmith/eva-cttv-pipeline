@@ -174,16 +174,16 @@ class ClinvarRecord(UserDict):
 
     @property
     def observed_pubmed_refs(self):
-        pubmedrefsList = []
+        pubmed_refs_list = []
         if 'observedIn' in self.data['referenceClinVarAssertion']:
-            for observedInRecord in self.data['referenceClinVarAssertion']['observedIn']:
-                for observedDataRecord in observedInRecord['observedData']:
-                    if 'citation' in observedDataRecord:
-                        for citationRecord in observedDataRecord['citation']:
-                            if ('id' in citationRecord) and citationRecord['id'] is not None:
-                                if citationRecord['id']['source'] == 'PubMed':
-                                    pubmedrefsList.append(int(citationRecord['id']['value']))
-        return pubmedrefsList
+            for observed_in_record in self.data['referenceClinVarAssertion']['observedIn']:
+                for observed_data_record in observed_in_record['observedData']:
+                    if 'citation' in observed_data_record:
+                        for citation_record in observed_data_record['citation']:
+                            if ('id' in citation_record) and citation_record['id'] is not None:
+                                if citation_record['id']['source'] == 'PubMed':
+                                    pubmed_refs_list.append(int(citation_record['id']['value']))
+        return pubmed_refs_list
 
     @property
     def measure_set_pubmed_refs(self):
@@ -198,8 +198,8 @@ class ClinvarRecord(UserDict):
 
     @property
     def trait_refs_list(self):
-        return [ ['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList]
-                 for refList in self.trait_pubmed_refs]
+        return [['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList]
+                for refList in self.trait_pubmed_refs]
 
     @property
     def observed_refs_list(self):

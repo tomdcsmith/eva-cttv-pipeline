@@ -162,4 +162,4 @@ class TestGetDefaultAllowedClincalSignificance(unittest.TestCase):
          'likely benign', 'confers sensitivity', 'uncertain significance',
          'likely pathogenic', 'conflicting data from submitters', 'risk factor',
          'association']
-        self.assertEqual(clinvar_to_evidence_strings.get_default_allowed_clincal_significance(), correct_list)
+        self.assertEqual(clinvar_to_evidence_strings.get_default_allowed_clinical_significance(), correct_list)
