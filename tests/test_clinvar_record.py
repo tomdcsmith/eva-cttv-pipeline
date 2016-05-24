@@ -6,6 +6,7 @@ from eva_cttv_pipeline import clinvar_record as CR
 from eva_cttv_pipeline import consequence_type as CT
 
 import tests.test_config as test_config
+from tests import test_clinvar_to_evidence_strings
 
 
 class TestClinvarRecord(unittest.TestCase):
@@ -49,18 +50,15 @@ class TestClinvarRecord(unittest.TestCase):
         self.assertEqual(self.test_clinvar_record.clinical_significance, "not provided")
 
     def test_get_rs(self):
-        self.assertEqual(self.test_clinvar_record.get_rs(self.rcv_to_rs), "rs397514891")
-        self.assertEqual(self.test_clinvar_record.get_rs({}), None)
+        self.assertEqual(self.test_clinvar_record.rs, "rs397514891")
 
     def test_get_nsv(self):
-        self.assertEqual(self.test_clinvar_record.get_nsv(self.rcv_to_nsv), None)
-        self.assertEqual(self.test_clinvar_record.get_nsv({"RCV000055062": "nsv123test"}), "nsv123test")
+        self.assertEqual(self.test_clinvar_record.nsv, None)
 
     def test_get_main_consequence_types(self):
         test_consequence_type = CT.ConsequenceType(ensembl_gene_ids=["ENSG00000008710"], so_names=["3_prime_UTR_variant"])
 
-        self.assertEqual(self.test_clinvar_record.get_main_consequence_types(self.consequence_type_dict, self.rcv_to_rs), test_consequence_type)
-        self.assertEqual(self.test_clinvar_record.get_main_consequence_types({}, {}), None)
+        self.assertEqual(self.test_clinvar_record.consequence_type, test_consequence_type)
 
     def test_variant_type(self):
         self.assertEqual(self.test_clinvar_record.variant_type, "Duplication")
@@ -85,7 +83,8 @@ class TestGetRcvToRSNSVMapping(unittest.TestCase):
 
 
 def get_test_record():
-    test_record = CR.ClinvarRecord(
+    test_record = CR.ClinvarRecord(mappings=test_clinvar_to_evidence_strings.MAPPINGS,
+                                   a_dictionary=
         {"recordStatus": "current", "title": "NM_000548.3(TSC2):c.*154dup AND Tuberous sclerosis syndrome",
          "referenceClinVarAssertion": {
              "clinVarAccession": {"acc": "RCV000055062", "version": 1, "type": "RCV", "dateUpdated": 1412982000000},

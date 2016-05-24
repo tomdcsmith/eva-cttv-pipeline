@@ -6,6 +6,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime
 import http.client
+from collections import UserDict
 
 
 __author__ = 'Javier Lopez: javild@gmail.com'
@@ -34,7 +35,7 @@ def get_rcv_to_rsnsv_mapping(variant_summary_file):
     return rcv_to_rs, rcv_to_nsv
 
 
-class ClinvarRecord(dict):
+class ClinvarRecord(UserDict):
 
     cached_symbol_2_ensembl = {}
 
@@ -46,16 +47,16 @@ class ClinvarRecord(dict):
         "REVIEWED_BY_PROFESSIONAL_SOCIETY": 4
     }
 
-    def __init__(self, a_dictionary=None):
-        if a_dictionary is None:
-            dict.__init__(self)
-        else:
-            dict.__init__(self, a_dictionary)
+    def __init__(self, mappings=None, a_dictionary=None):
+        UserDict.__init__(self, dict=a_dictionary)
+        self.rs = self.__get_rs(mappings.rcv_to_rs)
+        self.nsv = self.__get_nsv(mappings.rcv_to_nsv)
+        self.consequence_type = self.__get_main_consequence_types(mappings.consequence_type_dict, mappings.rcv_to_rs)
 
     @property
     def gene_id(self):
         j = 0
-        measure = self['referenceClinVarAssertion']['measureSet']['measure']
+        measure = self.data['referenceClinVarAssertion']['measureSet']['measure']
         found = False
         while j < len(measure) and not found:
             attribute_set = measure[j]['attributeSet']
@@ -68,13 +69,13 @@ class ClinvarRecord(dict):
         if found:
             return attribute_set[i]['attribute']['value'][:9]
         else:
-            return self['referenceClinVarAssertion']['measureSet']['measure'][0]['name'][0]['elementValue']['value']
+            return self.data['referenceClinVarAssertion']['measureSet']['measure'][0]['name'][0]['elementValue']['value']
 
     @property
     def ensembl_id(self):
         global ensembl_json
         j = 0
-        measure = self['referenceClinVarAssertion']['measureSet']['measure']
+        measure = self.data['referenceClinVarAssertion']['measureSet']['measure']
         while j < len(measure):
             if 'measureRelationship' in measure[j]:
                 measureRelationship = measure[j]['measureRelationship']
@@ -97,7 +98,7 @@ class ClinvarRecord(dict):
                                     except urllib.error.HTTPError as e:
                                         if e.code == 400:
                                             print('WARNING: Bad request code returned from ENSEMBL rest.')
-                                            print(' ClinVar accession: ' + self.get_acc())
+                                            print(' ClinVar accession: ' + self.accession)
                                             print(' Gene symbol: ' + symbol[i]['elementValue']['value'])
                                             print(' Error: ')
                                             print(e)
@@ -132,20 +133,20 @@ class ClinvarRecord(dict):
 
     @property
     def date(self):
-        return datetime.fromtimestamp(self['referenceClinVarAssertion']['dateLastUpdated'] / 1000).isoformat()
+        return datetime.fromtimestamp(self.data['referenceClinVarAssertion']['dateLastUpdated'] / 1000).isoformat()
 
     @property
     def score(self):
-        return self.score_map[self['referenceClinVarAssertion']['clinicalSignificance']['reviewStatus']]
+        return self.score_map[self.data['referenceClinVarAssertion']['clinicalSignificance']['reviewStatus']]
 
     @property
     def accession(self):
-        return self['referenceClinVarAssertion']['clinVarAccession']['acc']
+        return self.data['referenceClinVarAssertion']['clinVarAccession']['acc']
 
     @property
     def traits(self):
         trait_list = []
-        for trait_record in self['referenceClinVarAssertion']['traitSet']['trait']:
+        for trait_record in self.data['referenceClinVarAssertion']['traitSet']['trait']:
             trait_list.append([])
             for name_record in trait_record['name']:
                 if (name_record['elementValue'][
@@ -159,7 +160,7 @@ class ClinvarRecord(dict):
     @property
     def trait_pubmed_refs(self):
         pubmed_refs_list = []
-        for trait_record in self['referenceClinVarAssertion']['traitSet']['trait']:
+        for trait_record in self.data['referenceClinVarAssertion']['traitSet']['trait']:
             pubmed_refs_list.append([])
             if 'citation' in trait_record:
                 for citation_record in trait_record['citation']:
@@ -172,8 +173,8 @@ class ClinvarRecord(dict):
     @property
     def observed_pubmed_refs(self):
         pubmedrefsList = []
-        if 'observedIn' in self['referenceClinVarAssertion']:
-            for observedInRecord in self['referenceClinVarAssertion']['observedIn']:
+        if 'observedIn' in self.data['referenceClinVarAssertion']:
+            for observedInRecord in self.data['referenceClinVarAssertion']['observedIn']:
                 for observedDataRecord in observedInRecord['observedData']:
                     if 'citation' in observedDataRecord:
                         for citationRecord in observedDataRecord['citation']:
@@ -185,7 +186,7 @@ class ClinvarRecord(dict):
     @property
     def measure_set_pubmed_refs(self):
         pubmed_refs_list = []
-        for measure_record in self['referenceClinVarAssertion']['measureSet']['measure']:
+        for measure_record in self.data['referenceClinVarAssertion']['measureSet']['measure']:
             if 'citation' in measure_record:
                 for ciration_record in measure_record['citation']:
                     if ('id' in ciration_record) and ciration_record['id'] is not None:
@@ -194,9 +195,22 @@ class ClinvarRecord(dict):
         return pubmed_refs_list
 
     @property
+    def trait_refs_list(self):
+        return [ ['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList]
+                 for refList in self.trait_pubmed_refs]
+
+    @property
+    def observed_refs_list(self):
+        return ['http://europepmc.org/abstract/MED/' + str(ref) for ref in self.observed_pubmed_refs]
+
+    @property
+    def measure_set_refs_list(self):
+        return ['http://europepmc.org/abstract/MED/' + str(ref) for ref in self.measure_set_pubmed_refs]
+
+    @property
     def hgvs(self):
         hgvs_list = []
-        for measure_record in self['referenceClinVarAssertion']['measureSet']['measure']:
+        for measure_record in self.data['referenceClinVarAssertion']['measureSet']['measure']:
             for attribute_set_record in measure_record['attributeSet']:
                 if attribute_set_record['attribute']['type'].startswith('HGVS'):
                     hgvs_list.append(attribute_set_record['attribute']['value'])
@@ -205,23 +219,23 @@ class ClinvarRecord(dict):
 
     @property
     def clinical_significance(self):
-        return self['referenceClinVarAssertion']['clinicalSignificance']['description']
+        return self.data['referenceClinVarAssertion']['clinicalSignificance']['description'].lower()
 
-    def get_rs(self, rcv_to_rs):
+    def __get_rs(self, rcv_to_rs):
         try:
             return rcv_to_rs[self.accession]
         except KeyError:
             return None
 
-    def get_nsv(self, rcv_to_nsv):
+    def __get_nsv(self, rcv_to_nsv):
         try:
             return rcv_to_nsv[self.accession]
         except KeyError:
             return None
 
-    def get_main_consequence_types(self, consequence_type_dict, rcv_to_rs):
+    def __get_main_consequence_types(self, consequence_type_dict, rcv_to_rs):
 
-        new_rs_id = self.get_rs(rcv_to_rs)
+        new_rs_id = self.__get_rs(rcv_to_rs)
         if new_rs_id is not None and (new_rs_id in consequence_type_dict):
             return consequence_type_dict[new_rs_id]
         else:
@@ -229,12 +243,12 @@ class ClinvarRecord(dict):
 
     @property
     def variant_type(self):
-        return self['referenceClinVarAssertion']['measureSet']['measure'][0]['type']
+        return self.data['referenceClinVarAssertion']['measureSet']['measure'][0]['type']
 
     @property
     def allele_origins(self):
         allele_origins = set()
-        for clinvar_assetion_document in self['clinVarAssertion']:
+        for clinvar_assetion_document in self.data['clinVarAssertion']:
             for observed_in_document in clinvar_assetion_document['observedIn']:
                 allele_origins.add(observed_in_document['sample']['origin'])
 

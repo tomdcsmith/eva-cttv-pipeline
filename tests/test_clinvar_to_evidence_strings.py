@@ -1,13 +1,108 @@
 from datetime import datetime
 import json
+import math
 import os
 import unittest
 
-from eva_cttv_pipeline import clinvar_to_evidence_strings
-from eva_cttv_pipeline import utilities
-from eva_cttv_pipeline import consequence_type
-from eva_cttv_pipeline import clinvar_record
-from eva_cttv_pipeline import evidence_strings as ES
+from eva_cttv_pipeline import clinvar_to_evidence_strings, config, consequence_type, clinvar_record
+from tests import test_clinvar_record, test_evidence_strings
+
+
+def _get_mappings():
+    efo_mapping_file = os.path.join(os.path.dirname(__file__), 'resources', 'ClinVar_Traits_EFO_090915.xls')
+    ignore_file = os.path.join(os.path.dirname(__file__), 'resources', 'ignore_file.txt')
+    snp_2_gene_file = os.path.join(os.path.dirname(__file__), 'resources', 'cttv012_snp2gene_20160222_test_extract.tsv')
+    variant_summary_file = os.path.join(os.path.dirname(__file__), 'resources', 'variant_summary_2015-05_test_extract.txt')
+
+    mappings = clinvar_to_evidence_strings.get_mappings(efo_mapping_file, ignore_file, None, snp_2_gene_file,
+                                                        variant_summary_file)
+
+    return mappings
+
+
+MAPPINGS = _get_mappings()
+
+
+class GetMappingsTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.mappings = MAPPINGS
+
+    def test_efo_mapping(self):
+        self.assertEqual(len(self.mappings.trait_2_efo), 3528)
+        self.assertEqual(len(self.mappings.unavailable_efo_dict), 0)
+
+        self.assertEqual(self.mappings.trait_2_efo["deafness, autosomal recessive 22"],
+                         ['http://www.ebi.ac.uk/efo/EFO_0001063'])
+        self.assertEqual(self.mappings.trait_2_efo["oculocutaneous albinism type 1b"],
+                         ['http://www.orpha.net/ORDO/Orphanet_79434'])
+        self.assertEqual(self.mappings.trait_2_efo["merosin deficient congenital muscular dystrophy"],
+                         ['http://www.orpha.net/ORDO/Orphanet_258'])
+
+    def test_consequence_type_dict(self):
+        self.assertEqual(len(self.mappings.consequence_type_dict), 54)
+
+        self.assertTrue("rs724159824" in self.mappings.consequence_type_dict)
+        self.assertTrue("rs34296458" in self.mappings.consequence_type_dict)
+        self.assertTrue("rs199476100" in self.mappings.consequence_type_dict)
+        self.assertTrue("rs80360485" in self.mappings.consequence_type_dict)
+
+        self.assertFalse("rs0" in self.mappings.consequence_type_dict)
+        self.assertFalse("rs5" in self.mappings.consequence_type_dict)
+        self.assertFalse("rs9" in self.mappings.consequence_type_dict)
+
+    def test_rcv_to_rs_nsv(self):
+        self.assertEqual(len(self.mappings.rcv_to_rs), 18)
+        self.assertEqual(len(self.mappings.rcv_to_nsv), 5)
+
+        self.assertEqual(self.mappings.rcv_to_nsv["RCV000020147"], "nsv1067916")
+        self.assertEqual(self.mappings.rcv_to_nsv["RCV000004182"], "nsv1067860")
+        self.assertEqual(self.mappings.rcv_to_nsv["RCV000004183"], "nsv1067861")
+
+        self.assertEqual(self.mappings.rcv_to_rs["RCV000061038"], "rs140870493")
+        self.assertEqual(self.mappings.rcv_to_rs["RCV000038449"], "rs397517136")
+        self.assertEqual(self.mappings.rcv_to_rs["RCV000126020"], "rs75686037")
+
+
+class CreateTraitTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.trait = clinvar_to_evidence_strings.create_trait(9, ["Ciliary dyskinesia, primary, 7"], MAPPINGS.trait_2_efo)
+
+    def test_clinvar_trait_list(self):
+        self.assertEqual(self.trait.clinvar_trait_list, ['Ciliary dyskinesia, primary, 7'])
+
+    def test_efo_list(self):
+        self.assertEqual(self.trait.efo_list, ['http://www.ebi.ac.uk/efo/EFO_0003900'])
+
+    def test_return_none(self):
+        none_trait = clinvar_to_evidence_strings.create_trait(9, ["not a real trait"], MAPPINGS.trait_2_efo)
+        self.assertIsNone(none_trait)
+
+
+class SkipRecordTest(unittest.TestCase):
+
+    def setUp(self):
+        self.clinvar_record = test_clinvar_record.get_test_record()
+        report = clinvar_to_evidence_strings.Report()
+        # skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, counters)
+        self.args = [self.clinvar_record, {"reference": "A", "alternate": "T"},
+                     ["not provided"], report.counters]  # allowed clin sig changed to just "non provided" to match that in the test record
+
+    def test_return_false(self):
+        self.assertFalse(clinvar_to_evidence_strings.skip_record(*self.args))
+
+    def test_ref_eq_alt(self):
+        self.args[1] = {"reference": "A", "alternate": "A"}
+        self.assertTrue(clinvar_to_evidence_strings.skip_record(*self.args))
+
+    def test_rs_is_none(self):
+        self.clinvar_record.rs = None
+        self.assertTrue(clinvar_to_evidence_strings.skip_record(*self.args))
+
+    def test_con_type_is_none(self):
+        self.clinvar_record.consequence_type = None
+        self.assertTrue(clinvar_to_evidence_strings.skip_record(*self.args))
 
 
 class LoadEfoMappingTest(unittest.TestCase):
@@ -56,3 +151,13 @@ class GetTermsFromFileTest(unittest.TestCase):
     def test_no_file(self):
         self.assertEqual(clinvar_to_evidence_strings.get_terms_from_file(None), [])
 
+
+class TestGetDefaultAllowedClincalSignificance(unittest.TestCase):
+    def test_get_default_allowed_clincal_significance(self):
+        correct_list = ['unknown', 'untested', 'non-pathogenic', 'probable-non-pathogenic',
+         'probable-pathogenic', 'pathogenic', 'drug-response', 'drug response',
+         'histocompatibility', 'other', 'benign', 'protective', 'not provided',
+         'likely benign', 'confers sensitivity', 'uncertain significance',
+         'likely pathogenic', 'conflicting data from submitters', 'risk factor',
+         'association']
+        self.assertEqual(clinvar_to_evidence_strings.get_default_allowed_clincal_significance(), correct_list)

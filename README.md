@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/EBIvariation/eva-cttv-pipeline/badge.svg?branch=master)](https://coveralls.io/github/EBIvariation/eva-cttv-pipeline?branch=master)
 
 
-Minimum Python version needed: 3.4
+Minimum Python version needed: 3.5
 
 
 Building and (optional) Setting up virtual environment
