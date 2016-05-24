@@ -1,18 +1,16 @@
-from datetime import datetime
-import json
-import math
 import os
 import unittest
 
-from eva_cttv_pipeline import clinvar_to_evidence_strings, config, consequence_type, clinvar_record
-from tests import test_clinvar_record, test_evidence_strings
+from eva_cttv_pipeline import clinvar_to_evidence_strings
+from tests import test_clinvar_record
 
 
 def _get_mappings():
     efo_mapping_file = os.path.join(os.path.dirname(__file__), 'resources', 'ClinVar_Traits_EFO_090915.xls')
     ignore_file = os.path.join(os.path.dirname(__file__), 'resources', 'ignore_file.txt')
     snp_2_gene_file = os.path.join(os.path.dirname(__file__), 'resources', 'cttv012_snp2gene_20160222_test_extract.tsv')
-    variant_summary_file = os.path.join(os.path.dirname(__file__), 'resources', 'variant_summary_2015-05_test_extract.txt')
+    variant_summary_file = os.path.join(os.path.dirname(__file__), 'resources',
+                                        'variant_summary_2015-05_test_extract.txt')
 
     mappings = clinvar_to_evidence_strings.get_mappings(efo_mapping_file, ignore_file, None, snp_2_gene_file,
                                                         variant_summary_file)
@@ -67,7 +65,8 @@ class GetMappingsTest(unittest.TestCase):
 class CreateTraitTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.trait = clinvar_to_evidence_strings.create_trait(9, ["Ciliary dyskinesia, primary, 7"], MAPPINGS.trait_2_efo)
+        cls.trait = clinvar_to_evidence_strings.create_trait(9, ["Ciliary dyskinesia, primary, 7"],
+                                                             MAPPINGS.trait_2_efo)
 
     def test_clinvar_trait_list(self):
         self.assertEqual(self.trait.clinvar_trait_list, ['Ciliary dyskinesia, primary, 7'])
@@ -87,7 +86,8 @@ class SkipRecordTest(unittest.TestCase):
         report = clinvar_to_evidence_strings.Report()
         # skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, counters)
         self.args = [self.clinvar_record, {"reference": "A", "alternate": "T"},
-                     ["not provided"], report.counters]  # allowed clin sig changed to just "non provided" to match that in the test record
+                     ["not provided"], report.counters]
+        # allowed clin sig changed to just "non provided" to match that in the test record
 
     def test_return_false(self):
         self.assertFalse(clinvar_to_evidence_strings.skip_record(*self.args))
@@ -106,14 +106,14 @@ class SkipRecordTest(unittest.TestCase):
 
 
 class LoadEfoMappingTest(unittest.TestCase):
-    # TODO Make smaller files for testing, extracts from larger file. Ensure to create a smaller ignore file too, that matches a subset of the efo mapping file.
     @classmethod
     def setUpClass(cls):
         ignore_file = os.path.join(os.path.dirname(__file__), 'resources', 'ignore_file.txt')
         efo_file = os.path.join(os.path.dirname(__file__), 'resources', 'ClinVar_Traits_EFO_090915.xls')
 
         cls.trait_2_efo, cls.unavailable_efo = clinvar_to_evidence_strings.load_efo_mapping(efo_file)
-        cls.trait_2_efo_w_ignore, cls.unavailable_efo_w_ignore = clinvar_to_evidence_strings.load_efo_mapping(efo_file, ignore_terms_file=ignore_file)
+        cls.trait_2_efo_w_ignore, cls.unavailable_efo_w_ignore = \
+            clinvar_to_evidence_strings.load_efo_mapping(efo_file, ignore_terms_file=ignore_file)
 
     def test_just_mapping_trait_2_efo(self):
         self.assertEqual(len(self.trait_2_efo), 3819)
@@ -125,11 +125,13 @@ class LoadEfoMappingTest(unittest.TestCase):
 class GetUnmappedUrlTest(unittest.TestCase):
     def test_orphanet(self):
         url = "http://www.orpha.net/ORDO/Orphanet_2670"
-        self.assertEqual(clinvar_to_evidence_strings.get_unmapped_url(url), "http://purl.bioontology.org/ORDO/Orphanet_2670")
+        self.assertEqual(clinvar_to_evidence_strings.get_unmapped_url(url),
+                         "http://purl.bioontology.org/ORDO/Orphanet_2670")
 
     def test_hp(self):
         url = "http://purl.obolibrary.org/obo/HP_0000545"
-        self.assertEqual(clinvar_to_evidence_strings.get_unmapped_url(url), "http://purl.bioontology.org/obo/HP_0000545")
+        self.assertEqual(clinvar_to_evidence_strings.get_unmapped_url(url),
+                         "http://purl.bioontology.org/obo/HP_0000545")
 
     def test_bad_url(self):
         #TODO currently the function exits execution with bad urls
