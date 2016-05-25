@@ -25,8 +25,9 @@ def _get_test_cellbase_record_gene():
 def get_args_CTTVGeneticsEvidenceString_init():
     cellbase_record = _get_test_cellbase_record_gene()
 
-    clinvarRecord = clinvar_record.ClinvarRecord(mappings=test_clinvar_to_evidence_strings.MAPPINGS,
-                                                 a_dictionary=cellbase_record['clinvarSet'])
+    clinvarRecord = \
+        clinvar_record.ClinvarRecord(mappings=test_clinvar_to_evidence_strings.MAPPINGS,
+                                     a_dictionary=cellbase_record['clinvarSet'])
 
     report = clinvar_to_evidence_strings.Report()
 
@@ -91,30 +92,42 @@ class CTTVSomaticEvidenceStringInitTest(unittest.TestCase):
 class GetCTTVVariantTypeTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        record_single_a = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "C"}, "snp single")
+        record_single_a = \
+            ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "C"},
+             "snp single")
         record_single_b = ({"reference": "A", "alternate": "C"}, "snp single")
         record_single_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG",
                             "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG"}, "snp single")
 
         cls.test_records_singles = [record_single_a, record_single_b, record_single_c]
 
-        record_structurals_a = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT", "alternate": "C"},
-                                "structural variant")
-        record_structurals_b = ({"reference": "A", "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
-                                "structural variant")
-        record_structurals_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT",
-                                 "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
-                                "structural variant")
+        record_structurals_a = \
+            ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT",
+              "alternate": "C"},
+             "structural variant")
+        record_structurals_b = \
+            ({"reference": "A",
+              "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
+             "structural variant")
+        record_structurals_c = \
+            ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT",
+              "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
+             "structural variant")
 
-        cls.test_records_structurals = [record_structurals_a, record_structurals_b, record_structurals_c]
+        cls.test_records_structurals = \
+            [record_structurals_a, record_structurals_b, record_structurals_c]
 
     def test_get_cttv_variant_type_singles(self):
         for record in self.test_records_singles:
-            self.assertEqual(ES.get_cttv_variant_type(record[0]["reference"], record[0]["alternate"]), record[1])
+            self.assertEqual(ES.get_cttv_variant_type(record[0]["reference"],
+                                                      record[0]["alternate"]),
+                             record[1])
 
     def test_get_cttv_variant_type_structurals(self):
         for record in self.test_records_structurals:
-            self.assertEqual(ES.get_cttv_variant_type(record[0]["reference"], record[0]["alternate"]), record[1])
+            self.assertEqual(ES.get_cttv_variant_type(record[0]["reference"],
+                                                      record[0]["alternate"]),
+                             record[1])
 
 
 class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
@@ -173,9 +186,12 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
     def test_db_xref_url(self):
         url = "http://identifiers.org/clinvar.record/RCV000128628"
         self.test_ges.db_xref_url = url
-        self.assertEqual(self.test_ges['evidence']['gene2variant']['provenance_type']['database']['dbxref']['url'], url)
-        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url'],
-                         url)
+        self.assertEqual(
+            self.test_ges['evidence']['gene2variant']['provenance_type']['database']['dbxref']['url'],
+            url)
+        self.assertEqual(
+            self.test_ges['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url'],
+            url)
         self.assertEqual(self.test_ges.db_xref_url, url)
 
     def test_url(self):
@@ -194,7 +210,8 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
     def test_gene_2_var_func_consequence(self):
         functional_consequence = 'http://purl.obolibrary.org/obo/SO_0001583'
         self.test_ges.gene_2_var_func_consequence = functional_consequence
-        self.assertEqual(self.test_ges['evidence']['gene2variant']['functional_consequence'], functional_consequence)
+        self.assertEqual(self.test_ges['evidence']['gene2variant']['functional_consequence'],
+                         functional_consequence)
         self.assertEqual(self.test_ges.gene_2_var_func_consequence, functional_consequence)
 
     def test_set_var_2_disease_literature_a(self):
@@ -202,28 +219,32 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
 
         literature_1 = "PMCID12345"
         self.test_ges.set_var_2_disease_literature([literature_1])
-        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'],
-                         [{"lit_id": literature_1}])
+        self.assertEqual(
+            self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'],
+            [{"lit_id": literature_1}])
 
         literature_2 = "PMCID9876"
         literature_3 = "PMCID7654"
         literature_list = [literature_2, literature_3]
         self.test_ges.set_var_2_disease_literature(literature_list)
-        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'],
-                         [{"lit_id": literature_id} for literature_id in literature_list])
+        self.assertEqual(
+            self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'],
+            [{"lit_id": literature_id} for literature_id in literature_list])
 
     def test_set_var_2_disease_literature_b(self):
         literature_1 = "PMCID12345"
         self.test_ges.set_var_2_disease_literature([literature_1])
-        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'],
-                         [{"lit_id": literature_1}])
+        self.assertEqual(
+            self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'],
+            [{"lit_id": literature_1}])
 
         literature_2 = "PMCID9876"
         literature_3 = "PMCID7654"
         literature_list = [literature_2, literature_3]
         self.test_ges.set_var_2_disease_literature(literature_list)
-        self.assertEqual(self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'],
-                         [{"lit_id": literature_id} for literature_id in literature_list])
+        self.assertEqual(
+            self.test_ges['evidence']['variant2disease']['provenance_type']['literature']['references'],
+            [{"lit_id": literature_id} for literature_id in literature_list])
 
     def test_association(self):
         self.test_ges.association = True
@@ -247,14 +268,17 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
     def test_unique_reference(self):
         unique_reference = "http://europepmc.org/abstract/MED/0"
         self.test_ges.unique_reference = unique_reference
-        self.assertEqual(self.test_ges['evidence']['variant2disease']['unique_experiment_reference'], unique_reference)
+        self.assertEqual(
+            self.test_ges['evidence']['variant2disease']['unique_experiment_reference'],
+            unique_reference)
         self.assertEqual(self.test_ges.unique_reference, unique_reference)
 
     def test_date(self):
         date_string = datetime.fromtimestamp(1412982000000 / 1000).isoformat()
         self.test_ges.date = date_string
         self.assertEqual(self.test_ges['evidence']['gene2variant']['date_asserted'], date_string)
-        self.assertEqual(self.test_ges['evidence']['variant2disease']['date_asserted'], date_string)
+        self.assertEqual(self.test_ges['evidence']['variant2disease']['date_asserted'],
+                         date_string)
         self.assertEqual(self.test_ges.date, date_string)
 
     def test_validate(self):
@@ -275,7 +299,8 @@ class CTTVSomaticEvidenceStringTest(unittest.TestCase):
     def test_db_xref_url(self):
         url = "http://identifiers.org/clinvar.record/RCV000128628"
         self.test_ses.db_xref_url = url
-        self.assertEqual(self.test_ses['evidence']['provenance_type']['database']['dbxref']['url'], url)
+        self.assertEqual(self.test_ses['evidence']['provenance_type']['database']['dbxref']['url'],
+                         url)
         self.assertEqual(self.test_ses.db_xref_url, url)
 
     def test_url(self):
@@ -320,19 +345,21 @@ class CTTVSomaticEvidenceStringTest(unittest.TestCase):
         preferred_name = "exon_variant"
         self.test_ses._clear_known_mutations()
         self.test_ses.add_known_mutation(functional_consequence, preferred_name)
-        self.assertEqual(self.test_ses['evidence']['known_mutations'],
-                         [{'functional_consequence': functional_consequence, 'preferred_name': preferred_name}])
+        self.assertEqual(
+            self.test_ses['evidence']['known_mutations'],
+            [{'functional_consequence': functional_consequence, 'preferred_name': preferred_name}])
 
     def test_set_known_mutations(self):
         test_consequence_type = CT.ConsequenceType(ensembl_gene_ids=["ENSG00000008710"],
                                                    so_names=["3_prime_UTR_variant", "not_in_dict"])
         self.test_ses._clear_known_mutations()
         self.test_ses.set_known_mutations(test_consequence_type)
-        self.assertEqual(self.test_ses['evidence']['known_mutations'],
-                         [{'functional_consequence': 'http://purl.obolibrary.org/obo/SO_0001624',
-                           'preferred_name': '3_prime_UTR_variant'},
-                          {'functional_consequence': 'http://targetvalidation.org/sequence/not_in_dict',
-                           'preferred_name': 'not_in_dict'}])
+        self.assertEqual(
+            self.test_ses['evidence']['known_mutations'],
+            [{'functional_consequence': 'http://purl.obolibrary.org/obo/SO_0001624',
+              'preferred_name': '3_prime_UTR_variant'},
+             {'functional_consequence': 'http://targetvalidation.org/sequence/not_in_dict',
+              'preferred_name': 'not_in_dict'}])
 
     def test_validate(self):
         test_args = get_args_CTTVSomaticEvidenceString_init()
