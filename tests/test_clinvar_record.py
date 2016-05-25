@@ -4,6 +4,7 @@ import unittest
 
 from eva_cttv_pipeline import clinvar_record as CR
 from eva_cttv_pipeline import consequence_type as CT
+from tests import test_clinvar_to_evidence_strings
 
 import tests.test_config as test_config
 
@@ -54,12 +55,12 @@ class TestClinvarRecord(unittest.TestCase):
         self.assertEqual(self.test_clinvar_record.clinical_significance, "not provided")
 
     def test_get_rs(self):
-        self.assertEqual(self.test_clinvar_record.get_rs(self.rcv_to_rs), "rs397514891")
-        self.assertEqual(self.test_clinvar_record.get_rs({}), None)
+        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_rs(self.rcv_to_rs), "rs397514891")
+        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_rs({}), None)
 
     def test_get_nsv(self):
-        self.assertEqual(self.test_clinvar_record.get_nsv(self.rcv_to_nsv), None)
-        self.assertEqual(self.test_clinvar_record.get_nsv({"RCV000055062": "nsv123test"}),
+        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_nsv(self.rcv_to_nsv), None)
+        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_nsv({"RCV000055062": "nsv123test"}),
                          "nsv123test")
 
     def test___get_main_consequence_types(self):
@@ -98,7 +99,7 @@ class TestGetRcvToRSNSVMapping(unittest.TestCase):
 
 
 def get_test_record():
-    test_record = CR.ClinvarRecord(
+    test_record = CR.ClinvarRecord(test_clinvar_to_evidence_strings.MAPPINGS,
         {"recordStatus": "current",
          "title": "NM_000548.3(TSC2):c.*154dup AND Tuberous sclerosis syndrome",
          "referenceClinVarAssertion": {
