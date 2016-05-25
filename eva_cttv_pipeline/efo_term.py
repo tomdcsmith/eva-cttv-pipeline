@@ -30,8 +30,8 @@ def get_obsolete_terms(sparqlep, user, password):
 
 
 def execute_query(sparqlep, user, password, query):
-    cmd = "curl --post301 -L --data-urlencode \"query=" + query + " -u " + user + ":" + password + \
-          " -H \"Accept: text/tab-separated-values\" " + sparqlep
+    cmd = "curl --post301 -L --data-urlencode \"query=" + query + " -u " + user + ":" + \
+          password + " -H \"Accept: text/tab-separated-values\" " + sparqlep
     fd = os.popen(cmd)
     print('Loading obsolete terms...')
     terms = {}
@@ -70,7 +70,8 @@ class EFOTerm:
     def is_obsolete(self):
         if self.efoid is not None and self.efoid in EFOTerm.obsolete_terms:
             raise EFOTerm.IsObsoleteException(
-                "Term " + self.efoid + " is obsolete. Cause/Description/Action: " + EFOTerm.obsolete_terms[self.efoid])
+                "Term " + self.efoid + " is obsolete. Cause/Description/Action: " +
+                EFOTerm.obsolete_terms[self.efoid])
         else:
             return False
 
@@ -78,7 +79,8 @@ class EFOTerm:
         if self.efoid is not None and self.efoid in EFOTerm.cttv_available_terms:
             return True
         else:
-            raise EFOTerm.NotCttvAvailableException("Term " + self.efoid + " is not currently available at EFO.")
+            raise EFOTerm.NotCttvAvailableException("Term " + self.efoid +
+                                                    " is not currently available at EFO.")
 
     class IsObsoleteException(Exception):
         def __init__(self, value):

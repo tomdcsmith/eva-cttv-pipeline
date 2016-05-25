@@ -51,7 +51,8 @@ class ClinvarRecord(UserDict):
         UserDict.__init__(self, dict=a_dictionary)
         self.rs = self.__get_rs(mappings.rcv_to_rs)
         self.nsv = self.__get_nsv(mappings.rcv_to_nsv)
-        self.consequence_type = self.__get_main_consequence_types(mappings.consequence_type_dict, mappings.rcv_to_rs)
+        self.consequence_type = self.__get_main_consequence_types(mappings.consequence_type_dict,
+                                                                  mappings.rcv_to_rs)
 
     @property
     def gene_id(self):
@@ -61,7 +62,8 @@ class ClinvarRecord(UserDict):
         while j < len(measure) and not found:
             attribute_set = measure[j]['attributeSet']
             i = 0
-            while i < len(attribute_set) and not attribute_set[i]['attribute']['type'].startswith('HGVS'):
+            while i < len(attribute_set) and \
+                    not attribute_set[i]['attribute']['type'].startswith('HGVS'):
                 i += 1
             found = (i < len(attribute_set))
             j += 1
@@ -86,21 +88,27 @@ class ClinvarRecord(UserDict):
                         i = 0
                         while i < len(symbol):
                             try:
-                                return ClinvarRecord.cached_symbol_2_ensembl[symbol[i]['elementValue']['value']]
+                                return ClinvarRecord.cached_symbol_2_ensembl[
+                                    symbol[i]['elementValue']['value']
+                                ]
                             except KeyError:
                                 not_solved = True
                                 while not_solved:
                                     try:
-                                        url = 'http://rest.ensembl.org/lookup/symbol/homo_sapiens/' + \
-                                              symbol[i]['elementValue']['value'] + '?content-type=application/json'
+                                        url = 'http://rest.ensembl.org/' + \
+                                              'lookup/symbol/homo_sapiens/' + \
+                                              symbol[i]['elementValue']['value'] + \
+                                              '?content-type=application/json'
                                         raw_reply = urllib.request.urlopen(url).read()
                                         ensembl_json = json.loads(raw_reply.decode())
                                         not_solved = False
                                     except urllib.error.HTTPError as e:
                                         if e.code == 400:
-                                            print('WARNING: Bad request code returned from ENSEMBL rest.')
+                                            print('WARNING: Bad request code returned +' +
+                                                  'from ENSEMBL rest.')
                                             print(' ClinVar accession: ' + self.accession)
-                                            print(' Gene symbol: ' + symbol[i]['elementValue']['value'])
+                                            print(' Gene symbol: ' +
+                                                  symbol[i]['elementValue']['value'])
                                             print(' Error: ')
                                             print(e)
                                             print(' Returning None.')
@@ -113,20 +121,23 @@ class ClinvarRecord(UserDict):
                                         time.sleep(3)
 
                                 if len(ensembl_json) > 0:
-                                    if ensembl_json['id'] and (ensembl_json['object_type'] == 'Gene'):
+                                    if ensembl_json['id'] and \
+                                            (ensembl_json['object_type'] == 'Gene'):
                                         ClinvarRecord.cached_symbol_2_ensembl[symbol[i]['elementValue']['value']] = \
                                             ensembl_json['id']
                                         return ensembl_json['id']
                                     else:
-                                        print("WARNING at clinvar_record.py: " +
-                                              "ENSEMBL's REST API returned an unexpected json object")
-                                        print(" Queried gene symbol: " + symbol[i]['elementValue']['value'])
+                                        print("WARNING at clinvar_record.py: ENSEMBL's REST API " +
+                                              "returned an unexpected json object")
+                                        print(" Queried gene symbol: " +
+                                              symbol[i]['elementValue']['value'])
                                         print(" ENSEMBL's API response:")
                                         print(ensembl_json)
                                         print("Exiting.")
                                         sys.exit(1)
                                 else:
-                                    ClinvarRecord.cached_symbol_2_ensembl[symbol[i]['elementValue']['value']] = None
+                                    ClinvarRecord.cached_symbol_2_ensembl[symbol[i]['elementValue']['value']] = \
+                                        None
                             i += 1
                     l += 1
             j += 1
@@ -135,11 +146,14 @@ class ClinvarRecord(UserDict):
 
     @property
     def date(self):
-        return datetime.fromtimestamp(self.data['referenceClinVarAssertion']['dateLastUpdated'] / 1000).isoformat()
+        return datetime.fromtimestamp(
+            self.data['referenceClinVarAssertion']['dateLastUpdated'] / 1000).isoformat()
 
     @property
     def score(self):
-        return self.score_map[self.data['referenceClinVarAssertion']['clinicalSignificance']['reviewStatus']]
+        return self.score_map[
+            self.data['referenceClinVarAssertion']['clinicalSignificance']['reviewStatus']
+        ]
 
     @property
     def accession(self):
@@ -151,8 +165,8 @@ class ClinvarRecord(UserDict):
         for trait_record in self.data['referenceClinVarAssertion']['traitSet']['trait']:
             trait_list.append([])
             for name_record in trait_record['name']:
-                if (name_record['elementValue'][
-                        'type'] == 'Preferred'):  # First trait name in the list will always be the "Preferred" one
+                # First trait name in the list will always be the "Preferred" one
+                if name_record['elementValue']['type'] == 'Preferred':
                     trait_list[-1] = [name_record['elementValue']['value']] + trait_list[-1]
                 else:
                     trait_list[-1].append(name_record['elementValue']['value'])
@@ -203,11 +217,13 @@ class ClinvarRecord(UserDict):
 
     @property
     def observed_refs_list(self):
-        return ['http://europepmc.org/abstract/MED/' + str(ref) for ref in self.observed_pubmed_refs]
+        return ['http://europepmc.org/abstract/MED/' + str(ref)
+                for ref in self.observed_pubmed_refs]
 
     @property
     def measure_set_refs_list(self):
-        return ['http://europepmc.org/abstract/MED/' + str(ref) for ref in self.measure_set_pubmed_refs]
+        return ['http://europepmc.org/abstract/MED/' + str(ref)
+                for ref in self.measure_set_pubmed_refs]
 
     @property
     def hgvs(self):
@@ -221,7 +237,8 @@ class ClinvarRecord(UserDict):
 
     @property
     def clinical_significance(self):
-        return self.data['referenceClinVarAssertion']['clinicalSignificance']['description'].lower()
+        return \
+            self.data['referenceClinVarAssertion']['clinicalSignificance']['description'].lower()
 
     def __get_rs(self, rcv_to_rs):
         try:

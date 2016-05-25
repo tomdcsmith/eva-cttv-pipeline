@@ -15,20 +15,27 @@ utilities.check_for_local_schema()
 CLIN_SIG_TO_ACTIVITY = {'other': 'http://identifiers.org/cttv.activity/unknown',
                         'unknown': 'http://identifiers.org/cttv.activity/unknown',
                         'protective': 'http://identifiers.org/cttv.activity/tolerated_by_target',
-                        'probable-pathogenic': 'http://identifiers.org/cttv.activity/predicted_damaging',
-                        'non-pathogenic': 'http://identifiers.org/cttv.activity/tolerated_by_target',
+                        'probable-pathogenic':
+                            'http://identifiers.org/cttv.activity/predicted_damaging',
+                        'non-pathogenic':
+                            'http://identifiers.org/cttv.activity/tolerated_by_target',
                         'benign': 'http://identifiers.org/cttv.activity/tolerated_by_target',
-                        'likely pathogenic': 'http://identifiers.org/cttv.activity/predicted_damaging',
-                        'probable-non-pathogenic': 'http://identifiers.org/cttv.activity/predicted_tolerated',
+                        'likely pathogenic':
+                            'http://identifiers.org/cttv.activity/predicted_damaging',
+                        'probable-non-pathogenic':
+                            'http://identifiers.org/cttv.activity/predicted_tolerated',
                         'pathogenic': 'http://identifiers.org/cttv.activity/damaging_to_target',
                         'association': 'http://identifiers.org/cttv.activity/damaging_to_target',
-                        'conflicting data from submitters': 'http://identifiers.org/cttv.activity/unknown',
+                        'conflicting data from submitters':
+                            'http://identifiers.org/cttv.activity/unknown',
                         'uncertain significance': 'http://identifiers.org/cttv.activity/unknown',
-                        'likely benign': 'http://identifiers.org/cttv.activity/predicted_tolerated',
+                        'likely benign':
+                            'http://identifiers.org/cttv.activity/predicted_tolerated',
                         'histocompatibility': 'http://identifiers.org/cttv.activity/unknown',
                         'not provided': 'http://identifiers.org/cttv.activity/unknown',
                         'untested': 'http://identifiers.org/cttv.activity/unknown',
-                        'confers sensitivity': 'http://identifiers.org/cttv.activity/predicted_damaging',
+                        'confers sensitivity':
+                            'http://identifiers.org/cttv.activity/predicted_damaging',
                         'drug-response': 'http://identifiers.org/cttv.activity/unknown',
                         'risk factor': 'http://identifiers.org/cttv.activity/predicted_damaging'}
 
@@ -59,17 +66,20 @@ class CTTVEvidenceString(dict):
         if ensembl_gene_id:
             ensembl_gene_id_uri = get_ensembl_gene_id_uri(ensembl_gene_id)
             try:
-                self.set_target(ensembl_gene_id_uri, CLIN_SIG_TO_ACTIVITY[clinvarRecord.clinical_significance])
+                self.set_target(ensembl_gene_id_uri,
+                                CLIN_SIG_TO_ACTIVITY[clinvarRecord.clinical_significance])
             except KeyError:
                 report.unrecognised_clin_sigs.add(clinvarRecord.clinical_significance)
-                self.set_target(ensembl_gene_id_uri, 'http://identifiers.org/cttv.activity/unknown')
+                self.set_target(ensembl_gene_id_uri,
+                                'http://identifiers.org/cttv.activity/unknown')
 
         if ref_list and len(ref_list) > 0:
             self.top_level_literature = ref_list
 
         if efo_list:
             efo_list.sort()
-            # Just (arbitrarily) adding one of the potentially multiple EFO terms because of schema constraints
+            # Just (arbitrarily) adding one of the
+            # potentially multiple EFO terms because of schema constraints
             self.disease = efo_list[0]
             self.add_unique_association_field('phenotype', efo_list[0])
 
@@ -105,34 +115,41 @@ class CTTVEvidenceString(dict):
 
     @top_level_literature.setter
     def top_level_literature(self, reference_list):
-        self['literature'] = {'references': [{'lit_id': reference} for reference in reference_list]}
+        self['literature'] = \
+            {'references': [{'lit_id': reference} for reference in reference_list]}
 
 
 class CTTVGeneticsEvidenceString(CTTVEvidenceString):
-    schema = json.loads(open(utilities.get_resource_file(__package__, config.GEN_SCHEMA_FILE), 'r').read())
+    schema = json.loads(
+        open(utilities.get_resource_file(__package__, config.GEN_SCHEMA_FILE), 'r').read())
 
     def __init__(self, clinvarRecord, report, trait, ensembl_gene_id, cellbase_record):
 
-        with open(utilities.get_resource_file(__package__, config.GEN_EV_STRING_JSON)) as gen_json_file:
+        with open(utilities.get_resource_file(__package__,
+                                              config.GEN_EV_STRING_JSON)) as gen_json_file:
             a_dictionary = json.load(gen_json_file)
 
-        ref_list = list(set(clinvarRecord.trait_refs_list[trait.trait_counter] + clinvarRecord.observed_refs_list +
+        ref_list = list(set(clinvarRecord.trait_refs_list[trait.trait_counter] +
+                            clinvarRecord.observed_refs_list +
                             clinvarRecord.measure_set_refs_list))
 
-        super().__init__(a_dictionary, clinvarRecord, trait.efo_list, ref_list, ensembl_gene_id, report)
+        super().__init__(a_dictionary, clinvarRecord,
+                         trait.efo_list, ref_list, ensembl_gene_id, report)
 
         self.add_unique_association_field('alleleOrigin', 'germline')
         self.set_variant('http://identifiers.org/dbsnp/' + clinvarRecord.rs,
-                         get_cttv_variant_type(cellbase_record['reference'], cellbase_record['alternate']))
+                         get_cttv_variant_type(cellbase_record['reference'],
+                                               cellbase_record['alternate']))
         self.date = clinvarRecord.date
         self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.accession
         self.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.accession
-        self.association = clinvarRecord.clinical_significance \
-                           not in ('non-pathogenic', 'probable-non-pathogenic', 'likely benign', 'benign')
+        self.association = clinvarRecord.clinical_significance not in \
+                           ('non-pathogenic', 'probable-non-pathogenic', 'likely benign', 'benign')
         self.gene_2_var_ev_codes = ['http://identifiers.org/eco/cttv_mapping_pipeline']
         most_severe_so_term = clinvarRecord.consequence_type.most_severe_so
         if most_severe_so_term.accession is None:
-            self.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + most_severe_so_term.so_name
+            self.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + \
+                                               most_severe_so_term.so_name
         else:
             self.gene_2_var_func_consequence = 'http://purl.obolibrary.org/obo/' + \
                                                most_severe_so_term.accession.replace(':', '_')
@@ -146,7 +163,8 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
     def db_xref_url(self):
         if self['evidence']['gene2variant']['provenance_type']['database']['dbxref']['url'] \
                 == self['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url']:
-            return self['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url']
+            return \
+                self['evidence']['variant2disease']['provenance_type']['database']['dbxref']['url']
         else:
             raise Exception("db_xref_url attributes different")
 
@@ -202,7 +220,8 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         self['evidence']['variant2disease']['is_associated'] = is_associated
 
     def validate(self):
-        jsonschema.validate(self, CTTVGeneticsEvidenceString.schema, format_checker=jsonschema.FormatChecker())
+        jsonschema.validate(self, CTTVGeneticsEvidenceString.schema,
+                            format_checker=jsonschema.FormatChecker())
         self.disease.is_obsolete()
         return True
 
@@ -223,7 +242,8 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 
     @property
     def date(self):
-        if self['evidence']['gene2variant']['date_asserted'] == self['evidence']['variant2disease']['date_asserted']:
+        if self['evidence']['gene2variant']['date_asserted'] == \
+                self['evidence']['variant2disease']['date_asserted']:
             return self['evidence']['gene2variant']['date_asserted']
         else:
             raise Exception("date attributes have different values")
@@ -235,27 +255,29 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 
 
 class CTTVSomaticEvidenceString(CTTVEvidenceString):
-    schema = json.loads(open(utilities.get_resource_file(__package__, config.SOM_SCHEMA_FILE), 'r').read())
+    schema = json.loads(open(utilities.get_resource_file(__package__,
+                                                         config.SOM_SCHEMA_FILE), 'r').read())
 
     def __init__(self, clinvarRecord, report, trait, ensembl_gene_id):
 
-        with open(utilities.get_resource_file(__package__, config.SOM_EV_STRING_JSON)) as som_json_file:
+        with open(utilities.get_resource_file(__package__, config.SOM_EV_STRING_JSON)) \
+                as som_json_file:
             a_dictionary = json.load(som_json_file)
 
-        # CTTVEvidenceString.__init__(self,a_dictionary)
-
-        ref_list = list(set(clinvarRecord.trait_refs_list[trait.trait_counter] + clinvarRecord.observed_refs_list +
+        ref_list = list(set(clinvarRecord.trait_refs_list[trait.trait_counter] +
+                            clinvarRecord.observed_refs_list +
                             clinvarRecord.measure_set_refs_list))
 
-        super().__init__(a_dictionary, clinvarRecord, trait.efo_list, ref_list, ensembl_gene_id, report)
+        super().__init__(a_dictionary, clinvarRecord,
+                         trait.efo_list, ref_list, ensembl_gene_id, report)
 
         self.add_unique_association_field('alleleOrigin', 'somatic')
 
         self.date = clinvarRecord.date
         self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvarRecord.accession
         self.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvarRecord.accession
-        self.association = clinvarRecord.clinical_significance \
-                           not in ('non-pathogenic', 'probable-non-pathogenic', 'likely benign', 'benign')
+        self.association = clinvarRecord.clinical_significance not in \
+                           ('non-pathogenic', 'probable-non-pathogenic', 'likely benign', 'benign')
 
         self.set_known_mutations(clinvarRecord.consequence_type)
 
@@ -296,7 +318,8 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
         self['evidence']['is_associated'] = is_associated
 
     def validate(self):
-        jsonschema.validate(self, CTTVSomaticEvidenceString.schema, format_checker=jsonschema.FormatChecker())
+        jsonschema.validate(self, CTTVSomaticEvidenceString.schema,
+                            format_checker=jsonschema.FormatChecker())
         self.disease.is_obsolete()
         return True
 
@@ -312,16 +335,19 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
         self['evidence']['known_mutations'] = []
 
     def add_known_mutation(self, new_functional_consequence, so_name):
-        new_known_mutation = {'functional_consequence': new_functional_consequence, 'preferred_name': so_name}
+        new_known_mutation = \
+            {'functional_consequence': new_functional_consequence, 'preferred_name': so_name}
         self['evidence']['known_mutations'].append(new_known_mutation)
 
     def set_known_mutations(self, consequence_type):
         for so_term in consequence_type.so_terms:
             so_name = so_term.so_name
             if so_term.accession:
-                new_functional_consequence = "http://purl.obolibrary.org/obo/" + so_term.accession.replace(':', '_')
+                new_functional_consequence = \
+                    "http://purl.obolibrary.org/obo/" + so_term.accession.replace(':', '_')
             else:
-                new_functional_consequence = 'http://targetvalidation.org/sequence/' + so_term.so_name
+                new_functional_consequence = \
+                    'http://targetvalidation.org/sequence/' + so_term.so_name
             self.add_known_mutation(new_functional_consequence, so_name)
 
 
