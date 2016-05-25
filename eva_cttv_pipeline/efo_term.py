@@ -91,8 +91,8 @@ class EFOTerm:
 
     class IsObsoleteException(Exception):
         def __init__(self, value):
-            super.__init__(value)
+            Exception.__init__(self, value)
 
     class NotCttvAvailableException(Exception):
         def __init__(self, value):
-            super.__init__(value)
+            Exception.__init__(self, value)
