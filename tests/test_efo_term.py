@@ -10,7 +10,8 @@ class EFOTermTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         EFOT.EFOTerm.obsolete_terms = {"ob_id_1": "ob_term_1", "ob_id_2": "ob_term_2"}
-        EFOT.EFOTerm.cttv_available_terms = {"cttv_id_1": "cttv_av_term_1", "cttv_id_2": "cttv_av_term_2"}
+        EFOT.EFOTerm.cttv_available_terms = \
+            {"cttv_id_1": "cttv_av_term_1", "cttv_id_2": "cttv_av_term_2"}
 
         cls.test_efoterm_id = EFOT.EFOTerm("test_id")
 
@@ -31,5 +32,6 @@ class EFOTermTest(unittest.TestCase):
         self.assertFalse(self.test_efoterm_ob_b.is_obsolete())
 
     def test_is_cttv_available(self):
-        self.assertRaises(EFOT.EFOTerm.NotCttvAvailableException, self.test_efoterm_cttv_b.is_cttv_available)
+        self.assertRaises(EFOT.EFOTerm.NotCttvAvailableException,
+                          self.test_efoterm_cttv_b.is_cttv_available)
         self.assertTrue(self.test_efoterm_cttv_a.is_cttv_available())

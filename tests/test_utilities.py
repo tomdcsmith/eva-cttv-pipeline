@@ -10,7 +10,8 @@ class GetResourceFileTest(unittest.TestCase):
         self.assertTrue(util.get_resource_file("eva_cttv_pipeline", "resources/json_schema"))
 
     def test_get_resource_file_nonexistent(self):
-        self.assertEqual(util.get_resource_file("not_a_real_package_39146", "not_a_real_file"), None)
+        self.assertEqual(util.get_resource_file("not_a_real_package_39146", "not_a_real_file"),
+                         None)
 
 
 class CopyAndOverwriteTest(unittest.TestCase):
@@ -86,8 +87,9 @@ class ArgParserTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        argv = ['clinvar_to_evidence_strings.py', '--clinSig', cls.clin_sig, '--ignore', cls.ignore,
-                '--out', cls.out, '-e', cls.efo_map_file, '-g', cls.snp_2_gene_file, '-v', cls.variant_summary_file]
+        argv = ['clinvar_to_evidence_strings.py', '--clinSig', cls.clin_sig, '--ignore',
+                cls.ignore, '--out', cls.out, '-e', cls.efo_map_file, '-g', cls.snp_2_gene_file,
+                '-v', cls.variant_summary_file]
         cls.argparser = util.ArgParser(argv)
 
     def test_clin_sig(self):
