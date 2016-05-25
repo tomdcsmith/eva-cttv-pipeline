@@ -46,6 +46,13 @@ def execute_query(sparqlep, user, password, query):
 
 
 class EFOTerm:
+
+    """
+    Experimental factor ontology term.
+    Includes methods to check for obsoleteness and if it is available for Open Targets.
+    Used in pipeline by mapping from a trait to the corresponding EFO term.
+    """
+
     print('Querying EFO  web services for valid terms...')
     # CONNECTION PARAMETERS
     sparqlep = config.SPARQLEP

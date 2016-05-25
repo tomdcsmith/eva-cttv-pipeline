@@ -50,6 +50,11 @@ def process_consequence_type_file(snp_2_gene_file):
 
 class SoTerm(object):
 
+    """
+    Represents a sequence ontology term belonging to a consequence type object.
+    Holds information on accession and rank.
+    """
+
     so_accession_name_dict = {'transcript_ablation': 1893,
                               'splice_donor_variant': 1575,
                               'splice_acceptor_variant': 1574,
@@ -145,6 +150,11 @@ class SoTerm(object):
 
 
 class ConsequenceType:
+
+    """
+    Holds information on the type of consequence related to a variation
+    with relationship to ensembl gene IDs and SO terms
+    """
 
     def __init__(self, ensembl_gene_ids=None, so_names=None):
         if ensembl_gene_ids:

@@ -1,3 +1,4 @@
+import copy
 import json
 
 import jsonschema
@@ -53,6 +54,13 @@ def get_cttv_variant_type(ref, alt):
 
 
 class CTTVEvidenceString(dict):
+
+    """
+    Base evidence string class. Holds variables and methods common between somatic and genetic
+    evidence strings.
+    Subclass of dict to use indexing.
+    """
+
     def __init__(self, a_dictionary, clinvarRecord=None,
                  efo_list=None, ref_list=None, ensembl_gene_id=None, report=None):
         super().__init__(a_dictionary)
@@ -120,14 +128,21 @@ class CTTVEvidenceString(dict):
 
 
 class CTTVGeneticsEvidenceString(CTTVEvidenceString):
+
+    """
+    Class for genetics evidence string specifically.
+    Holds information required for Open Target's evidence strings for genetic information.
+    """
+
     schema = json.loads(
         open(utilities.get_resource_file(__package__, config.GEN_SCHEMA_FILE), 'r').read())
 
+    with open(utilities.get_resource_file(__package__, config.GEN_EV_STRING_JSON)) as gen_json_file:
+        base_json = json.load(gen_json_file)
+
     def __init__(self, clinvarRecord, report, trait, ensembl_gene_id, cellbase_record):
 
-        with open(utilities.get_resource_file(__package__,
-                                              config.GEN_EV_STRING_JSON)) as gen_json_file:
-            a_dictionary = json.load(gen_json_file)
+        a_dictionary = copy.deepcopy(self.base_json)
 
         ref_list = list(set(clinvarRecord.trait_refs_list[trait.trait_counter] +
                             clinvarRecord.observed_refs_list +
@@ -255,14 +270,22 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 
 
 class CTTVSomaticEvidenceString(CTTVEvidenceString):
+
+    """
+    Class for somatic evidence string specifically.
+    Holds information required for Open Target's evidence strings for somatic information.
+    """
+
     schema = json.loads(open(utilities.get_resource_file(__package__,
                                                          config.SOM_SCHEMA_FILE), 'r').read())
 
+    with open(utilities.get_resource_file(__package__, config.SOM_EV_STRING_JSON)) \
+            as som_json_file:
+        base_json = json.load(som_json_file)
+
     def __init__(self, clinvarRecord, report, trait, ensembl_gene_id):
 
-        with open(utilities.get_resource_file(__package__, config.SOM_EV_STRING_JSON)) \
-                as som_json_file:
-            a_dictionary = json.load(som_json_file)
+        a_dictionary = copy.deepcopy(self.base_json)
 
         ref_list = list(set(clinvarRecord.trait_refs_list[trait.trait_counter] +
                             clinvarRecord.observed_refs_list +

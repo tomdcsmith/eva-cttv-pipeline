@@ -6,6 +6,9 @@ from eva_cttv_pipeline import config
 
 
 class CellbaseRecords(object):
+
+    """Assists in the requesting and iteration of clinvar cellbase records"""
+
     def __init__(self, limit=config.BATCH_SIZE):
         self.skip = 0
         self.limit = limit

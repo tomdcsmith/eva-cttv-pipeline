@@ -36,6 +36,10 @@ def get_rcv_to_rsnsv_mapping(variant_summary_file):
 
 
 class ClinvarRecord(UserDict):
+    """
+    Class of which instances hold data on individual clinvar records. Subclass of UserDict rather
+    than dict in order to use attributes
+    """
 
     cached_symbol_2_ensembl = {}
 

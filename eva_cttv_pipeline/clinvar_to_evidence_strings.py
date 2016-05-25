@@ -16,6 +16,14 @@ __author__ = 'Javier Lopez: javild@gmail.com'
 
 
 class Report:
+
+    """
+    Holds counters and other records of a pipeline run. Includes the list of evidence strings
+    generated in the running of the pipeline.
+    Includes method to write to output files, and __str__ shows the summary of the report.
+    One instance of this class is instantiated in the running of the pipeline.
+    """
+
     def __init__(self, unavailable_efo_dict=None):
         if unavailable_efo_dict is None:
             self.unavailable_efo_dict = {}

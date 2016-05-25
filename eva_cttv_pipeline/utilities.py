@@ -109,16 +109,20 @@ def check_for_local_schema():
 
 
 class ArgParser:
+
     """
-    For parsing command line arguments
+    Uses argparse module to parse command line arguments.
+    Arguments are used in the pipeline, including input file paths, output path, path to files to
+    specify EFO urls to either ignore or alter, and clinical significances that will be allowed to
+    generate evidence strings.
     """
+
     def __init__(self, argv):
         usage = """
         *******************************************************************************************
         Task: generate CTTV evidence strings from ClinVar mongo
         *******************************************************************************************
-
-        usage: %prog --clinSig <clinicalSignificanceList> --out <fileout>"""
+        """
         parser = argparse.ArgumentParser(usage)
 
         parser.add_argument("--clinSig", dest="clinical_significance",
