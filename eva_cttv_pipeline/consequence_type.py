@@ -38,10 +38,8 @@ def process_consequence_type_file(snp_2_gene_file):
 
     print('Loading mapping rs->ENSG/SOterms')
 
-    # if snp_2_gene_file.endswith(".xls"):
-    #     consequence_type_dict, one_rs_multiple_genes = _process_consequence_type_file_xls(snp_2_gene_file)
-    # else:
-    consequence_type_dict, one_rs_multiple_genes = process_consequence_type_file_tsv(snp_2_gene_file)
+    consequence_type_dict, one_rs_multiple_genes = \
+        process_consequence_type_file_tsv(snp_2_gene_file)
 
     print(str(len(consequence_type_dict)) + ' rs->ENSG/SOterms mappings loaded')
     print(str(len(one_rs_multiple_genes)) + ' rsIds with multiple gene associations')
@@ -100,16 +98,20 @@ class SoTerm(object):
                               'start_lost': 2012,
                               'protein_altering_variant': 1818}
 
-    ranked_so_names_list = ['transcript_ablation', 'splice_acceptor_variant', 'splice_donor_variant', 'stop_gained',
-                         'frameshift_variant', 'stop_lost', 'initiator_codon_variant', 'transcript_amplification',
-                         'inframe_insertion', 'inframe_deletion', 'missense_variant', 'splice_region_variant',
-                         'incomplete_terminal_codon_variant', 'stop_retained_variant', 'synonymous_variant',
-                         'coding_sequence_variant', 'mature_miRNA_variant', '5_prime_UTR_variant',
-                            '3_prime_UTR_variant', 'non_coding_transcript_exon_variant', 'intron_variant',
-                            'NMD_transcript_variant', 'non_coding_transcript_variant', 'upstream_gene_variant',
-                            'downstream_gene_variant', 'TFBS_ablation', 'TFBS_amplification',
-                            'TF_binding_site_variant', 'regulatory_region_ablation',
-                            'regulatory_region_amplification', 'regulatory_region_variant', 'feature_elongation',
+    ranked_so_names_list = ['transcript_ablation', 'splice_acceptor_variant',
+                            'splice_donor_variant', 'stop_gained', 'frameshift_variant',
+                            'stop_lost', 'initiator_codon_variant', 'transcript_amplification',
+                            'inframe_insertion', 'inframe_deletion', 'missense_variant',
+                            'splice_region_variant', 'incomplete_terminal_codon_variant',
+                            'stop_retained_variant', 'synonymous_variant',
+                            'coding_sequence_variant', 'mature_miRNA_variant',
+                            '5_prime_UTR_variant', '3_prime_UTR_variant',
+                            'non_coding_transcript_exon_variant', 'intron_variant',
+                            'NMD_transcript_variant', 'non_coding_transcript_variant',
+                            'upstream_gene_variant', 'downstream_gene_variant', 'TFBS_ablation',
+                            'TFBS_amplification', 'TF_binding_site_variant',
+                            'regulatory_region_ablation', 'regulatory_region_amplification',
+                            'regulatory_region_variant', 'feature_elongation',
                             'feature_truncation', 'intergenic_variant']
 
     def __init__(self, so_name):

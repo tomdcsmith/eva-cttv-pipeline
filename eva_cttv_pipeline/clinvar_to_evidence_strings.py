@@ -7,7 +7,8 @@ from types import SimpleNamespace
 import jsonschema
 import xlrd
 
-from eva_cttv_pipeline import cellbase_records, efo_term, consequence_type, config, evidence_strings
+from eva_cttv_pipeline import cellbase_records, efo_term, consequence_type, config, \
+    evidence_strings
 from eva_cttv_pipeline import clinvar_record as clinvar_record_module
 
 
@@ -39,11 +40,14 @@ class Report:
             str(self.counters["n_processed_clinvar_records"]) +
             ' ClinVar records generated at least one evidence string',
             str(len(self.unrecognised_clin_sigs)) +
-            " Clinical significance string(s) not found among those described in ClinVar documentation:",
+            " Clinical significance string(s) not found " +
+            "among those described in ClinVar documentation:",
             str(self.unrecognised_clin_sigs),
-            str(self.counters["n_same_ref_alt"]) + ' ClinVar records with allowed clinical significance ' +
+            str(self.counters["n_same_ref_alt"]) +
+            ' ClinVar records with allowed clinical significance ' +
             'did present the same reference and alternate and were skipped',
-            'Activities of those ClinVar records with unrecognized clinical significances were set to "unknown".',
+            'Activities of those ClinVar records with ' +
+            'unrecognized clinical significances were set to "unknown".',
             str(len(self.ensembl_gene_id_uris)) +
             ' distinct ensembl gene ids appear in generated evidence string json objects',
             str(len(self.traits)) +
@@ -52,14 +56,17 @@ class Report:
             ' ClinVar records with allowed clinical significance DO NOT have an rs id',
             str(self.counters["n_multiple_evidence_strings"]) +
             ' ClinVar records generated more than one evidence_string',
-            str(self.counters["n_germline_somatic"]) + ' ClinVar records with germline and somatic origins',
-            str(self.counters["n_multiple_allele_origin"]) + ' ClinVar records with more than one allele origin',
+            str(self.counters["n_germline_somatic"]) +
+            ' ClinVar records with germline and somatic origins',
+            str(self.counters["n_multiple_allele_origin"]) +
+            ' ClinVar records with more than one allele origin',
             'Number valid ClinVar records with unprocessed allele origins:'
         ]
 
         report_strings.extend(
-            [' ' + alleleOrigin + ': ' + str(self.n_unrecognised_allele_origin[alleleOrigin]) for alleleOrigin in
-             self.n_unrecognised_allele_origin])
+            [' ' + alleleOrigin + ': ' +
+             str(self.n_unrecognised_allele_origin[alleleOrigin])
+             for alleleOrigin in self.n_unrecognised_allele_origin])
 
         report_strings.extend([
             str(self.counters["no_variant_to_ensg_mapping"]) +
@@ -70,8 +77,9 @@ class Report:
             'Variant->ENSG mapping were skipped due to a lack of EFO mapping (see ' +
             config.UNMAPPED_TRAITS_FILE_NAME + ').',
             str(self.counters["n_records_no_recognised_allele_origin"]) +
-            ' ClinVar records with allowed clinical significance, valid rs id, valid Variant->ENSG mapping and ' +
-            'valid EFO mapping were skipped due to a lack of a valid alleleOrigin.',
+            ' ClinVar records with allowed clinical significance, ' +
+            'valid rs id, valid Variant->ENSG' +
+            ' mapping and valid EFO mapping were skipped due to a lack of a valid alleleOrigin.',
             str(self.counters["n_more_than_one_efo_term"]) +
             ' evidence strings with more than one trait mapped to EFO terms',
             str(len(self.unavailable_efo_dict)) +
@@ -81,7 +89,8 @@ class Report:
             str(self.counters["n_nsvs"]) + ' total nsvs found',
             str(self.counters["n_nsv_skipped_clin_sig"]) +
             ' ClinVar nsvs were skipped because of a different clinical significance',
-            str(self.counters["n_nsv_skipped_wrong_ref_alt"]) + ' ClinVar nsvs were skipped because of same ref and alt'
+            str(self.counters["n_nsv_skipped_wrong_ref_alt"]) +
+            ' ClinVar nsvs were skipped because of same ref and alt'
         ])
 
         return '\n'.join(report_strings)
@@ -113,7 +122,8 @@ class Report:
         with open(dir_out + '/' + config.UNMAPPED_TRAITS_FILE_NAME, 'w') as fdw:
             fdw.write('Trait\tCount\n')
             for trait_list in self.unmapped_traits:
-                fdw.write(str(trait_list.encode('utf8')) + '\t' + str(self.unmapped_traits[trait_list]) + '\n')
+                fdw.write(str(trait_list.encode('utf8')) + '\t' +
+                          str(self.unmapped_traits[trait_list]) + '\n')
 
         # Contains urls provided by Gary which are not yet included within EFO
         with open(dir_out + '/' + config.UNAVAILABLE_EFO_FILE_NAME, 'w') as fdw:
@@ -149,11 +159,11 @@ class Report:
                 "n_total_clinvar_records": 0}
 
 
-def launch_pipeline(dir_out, allowed_clinical_significance, ignore_terms_file, adapt_terms_file, efo_mapping_file,
-                    snp_2_gene_file, variant_summary_file):
+def launch_pipeline(dir_out, allowed_clinical_significance, ignore_terms_file, adapt_terms_file,
+                    efo_mapping_file, snp_2_gene_file, variant_summary_file):
 
-    allowed_clinical_significance = allowed_clinical_significance.split(',') if allowed_clinical_significance else \
-        get_default_allowed_clinical_significance()
+    allowed_clinical_significance = allowed_clinical_significance.split(',') if \
+        allowed_clinical_significance else get_default_allowed_clinical_significance()
 
     mappings = get_mappings(efo_mapping_file, ignore_terms_file, adapt_terms_file, snp_2_gene_file,
                             variant_summary_file)
@@ -174,18 +184,22 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings):
 
     for cellbase_record in cellbase_records.CellbaseRecords():
         n_ev_strings_per_record = 0
-        clinvar_record = clinvar_record_module.ClinvarRecord(mappings=mappings, a_dictionary=cellbase_record['clinvarSet'])
+        clinvar_record = \
+            clinvar_record_module.ClinvarRecord(mappings=mappings,
+                                                a_dictionary=cellbase_record['clinvarSet'])
 
         report.counters["record_counter"] += 1
         report.counters["n_nsvs"] += (clinvar_record.nsv is not None)
         append_nsv(report.nsv_list, clinvar_record)
 
-        if skip_record(clinvar_record, cellbase_record, allowed_clinical_significance, report.counters):
+        if skip_record(clinvar_record,
+                       cellbase_record, allowed_clinical_significance, report.counters):
             continue
 
         report.counters["n_multiple_allele_origin"] += (len(clinvar_record.allele_origins) > 1)
-        report.counters["n_germline_somatic"] += (('germline' in clinvar_record.allele_origins) and (
-            'somatic' in clinvar_record.allele_origins))
+        report.counters["n_germline_somatic"] += (
+            ('germline' in clinvar_record.allele_origins) and
+             ('somatic' in clinvar_record.allele_origins))
         report.counters["n_records_no_recognised_allele_origin"] += (
             ('germline' not in clinvar_record.allele_origins) and
             ('somatic' not in clinvar_record.allele_origins))
@@ -200,7 +214,6 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings):
                 continue
 
             if allele_origin == 'germline':
-                # todo look into if any of these arguments to ev strings can be removed and their use extracted out
                 evidence_string = evidence_strings.CTTVGeneticsEvidenceString(clinvar_record,
                                                                               report,
                                                                               trait,
@@ -219,7 +232,8 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings):
             report.counters["n_valid_rs_and_nsv"] += (clinvar_record.nsv is not None)
             report.counters["n_more_than_one_efo_term"] += (len(trait.efo_list) > 1)
             report.traits.update(set(trait.efo_list))
-            report.ensembl_gene_id_uris.add(evidence_strings.get_ensembl_gene_id_uri(ensembl_gene_id))
+            report.ensembl_gene_id_uris.add(evidence_strings.get_ensembl_gene_id_uri(
+                ensembl_gene_id))
 
             n_ev_strings_per_record += 1
 
@@ -231,13 +245,16 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings):
     return report
 
 
-def get_mappings(efo_mapping_file, ignore_terms_file, adapt_terms_file, snp_2_gene_file, variant_summary_file):
+def get_mappings(efo_mapping_file, ignore_terms_file,
+                 adapt_terms_file, snp_2_gene_file, variant_summary_file):
     mappings = SimpleNamespace()
-    mappings.trait_2_efo, mappings.unavailable_efo_dict = load_efo_mapping(efo_mapping_file, ignore_terms_file,
-                                                                           adapt_terms_file)
+    mappings.trait_2_efo, mappings.unavailable_efo_dict = \
+        load_efo_mapping(efo_mapping_file, ignore_terms_file, adapt_terms_file)
 
-    mappings.consequence_type_dict = consequence_type.process_consequence_type_file(snp_2_gene_file)
-    mappings.rcv_to_rs, mappings.rcv_to_nsv = clinvar_record_module.get_rcv_to_rsnsv_mapping(variant_summary_file)
+    mappings.consequence_type_dict = \
+        consequence_type.process_consequence_type_file(snp_2_gene_file)
+    mappings.rcv_to_rs, mappings.rcv_to_nsv = \
+        clinvar_record_module.get_rcv_to_rsnsv_mapping(variant_summary_file)
 
     return mappings
 
@@ -254,7 +271,8 @@ def skip_record(clinvar_record, cellbase_record, allowed_clinical_significance, 
         counters["n_same_ref_alt"] += 1
         if clinvar_record.nsv is not None:
             counters["n_nsv_skipped_wrong_ref_alt"] += 1
-            print("ref != alt. ref: %s alt: %s" % (cellbase_record['reference'], cellbase_record['alternate']))
+            print("ref != alt. ref: %s alt: %s" % (cellbase_record['reference'],
+                                                   cellbase_record['alternate']))
         return True
 
     if clinvar_record.rs is None:
@@ -286,7 +304,8 @@ def create_trait(trait_counter, trait_list, trait_2_efo):
     trait = SimpleNamespace()
     trait.trait_counter = trait_counter
     trait.clinvar_trait_list, trait.efo_list = map_efo(trait_2_efo, trait_list)
-    # Only ClinVar records associated to a trait with mapped EFO term will generate evidence_strings
+    # Only ClinVar records associated to a
+    # trait with mapped EFO term will generate evidence_strings
     if len(trait.efo_list) == 0:
         return None
     return trait
@@ -310,7 +329,8 @@ def map_efo(trait_2_efo, trait_list):
     trait_string = trait_list[0].lower()
     if trait_string in trait_2_efo:
         for efo_trait in trait_2_efo[trait_string]:
-            if efo_trait not in efo_list:  # First element in trait_list mus always be the "Preferred" trait name
+            # First element in trait_list mus always be the "Preferred" trait name
+            if efo_trait not in efo_list:
                 trait_list_to_return.append(trait_list[0])
                 efo_list.append(efo_trait)
     else:
@@ -338,8 +358,10 @@ def load_efo_mapping(efo_mapping_file, ignore_terms_file=None, adapt_terms_file=
     n_efo_mappings = 0
     for i in range(1, efo_mapping_read_sheet.nrows):
         if efo_mapping_read_sheet.cell_value(rowx=i, colx=1) != '':
-            valid_efo, urls_to_adapt = get_urls(efo_mapping_read_sheet.cell_value(rowx=i, colx=1).split(', '),
-                                                ignore_terms, adapt_terms)
+            valid_efo, urls_to_adapt = get_urls(
+                efo_mapping_read_sheet.cell_value(rowx=i, colx=1).split(', '),
+                ignore_terms, adapt_terms
+            )
             clinvar_trait = efo_mapping_read_sheet.cell_value(rowx=i, colx=0).lower()
             if len(valid_efo) > 0:
                 trait_2_efo[clinvar_trait] = valid_efo
