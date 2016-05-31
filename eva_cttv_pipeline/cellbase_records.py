@@ -5,7 +5,7 @@ import urllib.request
 from eva_cttv_pipeline import config
 
 
-class CellbaseRecords(object):
+class CellbaseRecords:
 
     """Assists in the requesting and iteration of clinvar cellbase records"""
 
