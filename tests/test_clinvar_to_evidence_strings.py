@@ -2,7 +2,7 @@ import os
 import unittest
 
 from eva_cttv_pipeline import clinvar_to_evidence_strings
-from tests import test_clinvar_record
+from tests import test_clinvar
 
 
 def _get_mappings():
