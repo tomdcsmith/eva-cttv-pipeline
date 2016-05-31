@@ -79,72 +79,67 @@ class ClinvarRecord(UserDict):
 
     @property
     def ensembl_id(self):
-        j = 0
         measure = self.data['referenceClinVarAssertion']['measureSet']['measure']
-        while j < len(measure):
-            if 'measureRelationship' in measure[j]:
-                measureRelationship = measure[j]['measureRelationship']
-                l = 0
-                while l < len(measureRelationship):
-                    if 'symbol' in measureRelationship[l]:
-                        symbol = measureRelationship[l]['symbol']
-                        i = 0
-                        while i < len(symbol):
+        for j in range(len(measure)):
+            if 'measureRelationship' not in measure[j]:
+                continue
+            measure_relationship = measure[j]['measureRelationship']
+            for l in range(len(measure_relationship)):
+                if 'symbol' not in measure_relationship[l]:
+                    continue
+                symbol = measure_relationship[l]['symbol']
+                for i in range(len(symbol)):
+                    try:
+                        return ClinvarRecord.cached_symbol_2_ensembl[
+                            symbol[i]['elementValue']['value']
+                        ]
+                    except KeyError:
+                        not_solved = True
+                        while not_solved:
                             try:
-                                return ClinvarRecord.cached_symbol_2_ensembl[
-                                    symbol[i]['elementValue']['value']
-                                ]
-                            except KeyError:
-                                not_solved = True
-                                while not_solved:
-                                    try:
-                                        url = 'http://rest.ensembl.org/' + \
-                                              'lookup/symbol/homo_sapiens/' + \
-                                              symbol[i]['elementValue']['value'] + \
-                                              '?content-type=application/json'
-                                        raw_reply = urllib.request.urlopen(url).read()
-                                        ensembl_json = json.loads(raw_reply.decode())
-                                        not_solved = False
-                                    except urllib.error.HTTPError as e:
-                                        if e.code == 400:
-                                            print('WARNING: Bad request code returned +' +
-                                                  'from ENSEMBL rest.')
-                                            print(' ClinVar accession: ' + self.accession)
-                                            print(' Gene symbol: ' +
-                                                  symbol[i]['elementValue']['value'])
-                                            print(' Error: ')
-                                            print(e)
-                                            print(' Returning None.')
-                                            ClinvarRecord.cached_symbol_2_ensembl[
-                                                symbol[i]['elementValue']['value']] = None
-                                            return None
-                                        else:
-                                            time.sleep(0.05)
-                                    except http.client.BadStatusLine:
-                                        time.sleep(3)
-
-                                if len(ensembl_json) > 0:
-                                    if ensembl_json['id'] and \
-                                            (ensembl_json['object_type'] == 'Gene'):
-                                        ClinvarRecord.cached_symbol_2_ensembl[symbol[i]['elementValue']['value']] = \
-                                            ensembl_json['id']
-                                        return ensembl_json['id']
-                                    else:
-                                        print("WARNING at clinvar_record.py: ENSEMBL's REST API " +
-                                              "returned an unexpected json object")
-                                        print(" Queried gene symbol: " +
-                                              symbol[i]['elementValue']['value'])
-                                        print(" ENSEMBL's API response:")
-                                        print(ensembl_json)
-                                        print("Exiting.")
-                                        sys.exit(1)
+                                url = 'http://rest.ensembl.org/' + \
+                                      'lookup/symbol/homo_sapiens/' + \
+                                      symbol[i]['elementValue']['value'] + \
+                                      '?content-type=application/json'
+                                raw_reply = urllib.request.urlopen(url).read()
+                                ensembl_json = json.loads(raw_reply.decode())
+                                not_solved = False
+                            except urllib.error.HTTPError as e:
+                                if e.code == 400:
+                                    print('WARNING: Bad request code returned +' +
+                                          'from ENSEMBL rest.')
+                                    print(' ClinVar accession: ' + self.accession)
+                                    print(' Gene symbol: ' +
+                                          symbol[i]['elementValue']['value'])
+                                    print(' Error: ')
+                                    print(e)
+                                    print(' Returning None.')
+                                    ClinvarRecord.cached_symbol_2_ensembl[
+                                        symbol[i]['elementValue']['value']] = None
+                                    return None
                                 else:
-                                    ClinvarRecord.cached_symbol_2_ensembl[symbol[i]['elementValue']['value']] = \
-                                        None
-                            i += 1
-                    l += 1
-            j += 1
+                                    time.sleep(0.05)
+                            except http.client.BadStatusLine:
+                                time.sleep(3)
 
+                        if len(ensembl_json) > 0:
+                            if ensembl_json['id'] and \
+                                    (ensembl_json['object_type'] == 'Gene'):
+                                ClinvarRecord.cached_symbol_2_ensembl[symbol[i]['elementValue']['value']] = \
+                                    ensembl_json['id']
+                                return ensembl_json['id']
+                            else:
+                                print("WARNING at clinvar_record.py: ENSEMBL's REST API " +
+                                      "returned an unexpected json object")
+                                print(" Queried gene symbol: " +
+                                      symbol[i]['elementValue']['value'])
+                                print(" ENSEMBL's API response:")
+                                print(ensembl_json)
+                                print("Exiting.")
+                                sys.exit(1)
+                        else:
+                            ClinvarRecord.cached_symbol_2_ensembl[symbol[i]['elementValue']['value']] = \
+                                None
         return None
 
     @property
