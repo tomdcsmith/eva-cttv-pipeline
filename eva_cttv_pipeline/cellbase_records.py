@@ -24,10 +24,8 @@ class CellbaseRecords(object):
 
     def __get_curr_response(self):
         reader = codecs.getreader("utf-8")
-        url = 'http://' + config.HOST + \
-              '/cellbase/webservices/rest/v3/hsapiens/' + \
-              'feature/clinical/all?source=clinvar&skip=' + \
-              str(self.skip) + '&limit=' + str(self.limit)
+        url = 'http://{}/cellbase/webservices/rest/v3/hsapiens/feature/clinical/' \
+              'all?source=clinvar&skip={}&limit={}'.format(config.HOST, self.skip, self.limit)
         answer = urllib.request.urlopen(url)
         curr_response = json.load(reader(answer))['response'][0]
         return curr_response

@@ -79,7 +79,6 @@ class ClinvarRecord(UserDict):
 
     @property
     def ensembl_id(self):
-        global ensembl_json
         j = 0
         measure = self.data['referenceClinVarAssertion']['measureSet']['measure']
         while j < len(measure):
@@ -194,10 +193,10 @@ class ClinvarRecord(UserDict):
     def observed_pubmed_refs(self):
         pubmed_refs_list = []
         if 'observedIn' in self.data['referenceClinVarAssertion']:
-            for observed_in_record in self.data['referenceClinVarAssertion']['observedIn']:
-                for observed_data_record in observed_in_record['observedData']:
-                    if 'citation' in observed_data_record:
-                        for citation_record in observed_data_record['citation']:
+            for observed_in in self.data['referenceClinVarAssertion']['observedIn']:
+                for observed_data in observed_in['observedData']:
+                    if 'citation' in observed_data:
+                        for citation_record in observed_data['citation']:
                             if ('id' in citation_record) and citation_record['id'] is not None:
                                 if citation_record['id']['source'] == 'PubMed':
                                     pubmed_refs_list.append(int(citation_record['id']['value']))
@@ -209,15 +208,15 @@ class ClinvarRecord(UserDict):
         for measure_record in self.data['referenceClinVarAssertion']['measureSet']['measure']:
             if 'citation' in measure_record:
                 for ciration_record in measure_record['citation']:
-                    if ('id' in ciration_record) and ciration_record['id'] is not None:
+                    if 'id' in ciration_record and ciration_record['id'] is not None:
                         if ciration_record['id']['source'] == 'PubMed':
                             pubmed_refs_list.append(int(ciration_record['id']['value']))
         return pubmed_refs_list
 
     @property
     def trait_refs_list(self):
-        return [['http://europepmc.org/abstract/MED/' + str(ref) for ref in refList]
-                for refList in self.trait_pubmed_refs]
+        return [['http://europepmc.org/abstract/MED/' + str(ref) for ref in ref_list]
+                for ref_list in self.trait_pubmed_refs]
 
     @property
     def observed_refs_list(self):

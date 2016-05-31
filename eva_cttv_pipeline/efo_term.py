@@ -86,13 +86,13 @@ class EFOTerm:
         if self.efoid is not None and self.efoid in EFOTerm.cttv_available_terms:
             return True
         else:
-            raise EFOTerm.NotCttvAvailableException("Term " + self.efoid +
+            raise EFOTerm.TermUnavailableException("Term " + self.efoid +
                                                     " is not currently available at EFO.")
 
     class IsObsoleteException(Exception):
         def __init__(self, value):
             Exception.__init__(self, value)
 
-    class NotCttvAvailableException(Exception):
+    class TermUnavailableException(Exception):
         def __init__(self, value):
             Exception.__init__(self, value)

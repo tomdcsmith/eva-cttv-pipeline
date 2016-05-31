@@ -8,8 +8,7 @@ import jsonschema
 import xlrd
 
 from eva_cttv_pipeline import cellbase_records, efo_term, consequence_type, config, \
-    evidence_strings
-from eva_cttv_pipeline import clinvar_record as clinvar_record_module
+    evidence_strings, clinvar
 
 
 __author__ = 'Javier Lopez: javild@gmail.com'
@@ -193,7 +192,7 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings):
     for cellbase_record in cellbase_records.CellbaseRecords():
         n_ev_strings_per_record = 0
         clinvar_record = \
-            clinvar_record_module.ClinvarRecord(mappings=mappings,
+            clinvar.ClinvarRecord(mappings=mappings,
                                                 a_dictionary=cellbase_record['clinvarSet'])
 
         report.counters["record_counter"] += 1
@@ -262,7 +261,7 @@ def get_mappings(efo_mapping_file, ignore_terms_file,
     mappings.consequence_type_dict = \
         consequence_type.process_consequence_type_file(snp_2_gene_file)
     mappings.rcv_to_rs, mappings.rcv_to_nsv = \
-        clinvar_record_module.get_rcv_to_rsnsv_mapping(variant_summary_file)
+        clinvar.get_rcv_to_rsnsv_mapping(variant_summary_file)
 
     return mappings
 

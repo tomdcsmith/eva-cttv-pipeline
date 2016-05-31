@@ -2,11 +2,8 @@ from datetime import datetime
 import unittest
 from types import SimpleNamespace
 
-import eva_cttv_pipeline.evidence_strings as ES
-import eva_cttv_pipeline.efo_term as EFOT
-from eva_cttv_pipeline import consequence_type as CT
-from eva_cttv_pipeline import clinvar_record
-from eva_cttv_pipeline import clinvar_to_evidence_strings
+from eva_cttv_pipeline import clinvar, efo_term, clinvar_to_evidence_strings, \
+    evidence_strings, consequence_type
 
 import tests.test_config as test_config
 from tests import test_clinvar_to_evidence_strings
@@ -26,7 +23,7 @@ def get_args_CTTVGeneticsEvidenceString_init():
     cellbase_record = _get_test_cellbase_record_gene()
 
     clinvarRecord = \
-        clinvar_record.ClinvarRecord(mappings=test_clinvar_to_evidence_strings.MAPPINGS,
+        clinvar.ClinvarRecord(mappings=test_clinvar_to_evidence_strings.MAPPINGS,
                                      a_dictionary=cellbase_record['clinvarSet'])
 
     report = clinvar_to_evidence_strings.Report()
@@ -48,18 +45,18 @@ class CTTVGeneticsEvidenceStringInitTest(unittest.TestCase):
     maxDiff = None
     def setUp(self):
         test_args = get_args_CTTVGeneticsEvidenceString_init()
-        self.evidence_string = ES.CTTVGeneticsEvidenceString(*test_args)
+        self.evidence_string = evidence_strings.CTTVGeneticsEvidenceString(*test_args)
 
     def test_evidence_string(self):
         test_dict = {'validated_against_schema_version': '1.2.2', 'variant': {'type': 'snp single', 'id': ['http://identifiers.org/dbsnp/rs515726230']}, 'type': 'genetic_association', 'unique_association_fields': {'clinvarAccession': 'RCV000128628', 'alleleOrigin': 'germline', 'gene': 'ENSG00000197616', 'phenotype': 'http://www.orpha.net/ORDO/Orphanet_88991'}, 'evidence': {'variant2disease': {'provenance_type': {'database': {'dbxref': {'id': 'http://identifiers.org/clinvar', 'url': 'http://identifiers.org/clinvar.record/RCV000128628', 'version': '2015-04'}, 'id': 'EVA', 'version': '1.0'}, 'expert': {'status': True, 'statement': 'Primary submitter of data'}}, 'unique_experiment_reference': 'http://europepmc.org/abstract/MED/0', 'is_associated': True, 'evidence_codes': ['http://purl.obolibrary.org/obo/ECO_0000205'], 'urls': [{'url': 'http://www.ncbi.nlm.nih.gov/clinvar/RCV000128628', 'nice_name': 'Further details in ClinVar database'}], 'resource_score': {'type': 'pvalue', 'value': 1e-07, 'method': {'description': 'Not provided by data supplier', 'url': ''}}, 'date_asserted': DATE_ASSERTED}, 'gene2variant': {'provenance_type': {'database': {'dbxref': {'id': 'http://identifiers.org/clinvar', 'url': 'http://identifiers.org/clinvar.record/RCV000128628', 'version': '2015-04'}, 'id': 'EVA', 'version': '1.0'}, 'expert': {'status': True, 'statement': 'Primary submitter of data'}}, 'is_associated': True, 'evidence_codes': ['http://identifiers.org/eco/cttv_mapping_pipeline'], 'functional_consequence': 'http://purl.obolibrary.org/obo/SO_0001583', 'urls': [{'url': 'http://www.ncbi.nlm.nih.gov/clinvar/RCV000128628', 'nice_name': 'Further details in ClinVar database'}], 'date_asserted': DATE_ASSERTED}}, 'access_level': 'public', 'disease': {'id': ['http://www.orpha.net/ORDO/Orphanet_88991']}, 'target': {'id': ['http://identifiers.org/ensembl/ENSG00000197616'], 'target_type': 'http://identifiers.org/cttv.target/gene_variant', 'activity': 'http://identifiers.org/cttv.activity/predicted_damaging'}, 'sourceID': 'eva'}
 
-        test_ev_string = ES.CTTVEvidenceString(test_dict)
+        test_ev_string = evidence_strings.CTTVEvidenceString(test_dict)
 
         self.assertEqual(self.evidence_string, test_ev_string)
 
 
 def get_args_CTTVSomaticEvidenceString_init():
-    clinvarRecord = clinvar_record.ClinvarRecord(mappings=test_clinvar_to_evidence_strings.MAPPINGS,
+    clinvarRecord = clinvar.ClinvarRecord(mappings=test_clinvar_to_evidence_strings.MAPPINGS,
                                                  a_dictionary={'title': 'NM_031157.2(HNRNPA1):c.1054C>T (p.Arg352Ter) AND Chronic progressive multiple sclerosis', 'clinVarAssertion': [{'measureSet': {'type': 'Variant', 'measure': [{'attributeSet': [{'attribute': {'type': 'HGVS', 'value': 'NM_002136.2:c.898C>T'}}], 'type': 'Variation'}]}, 'id': 286280, 'traitSet': {'type': 'Disease', 'trait': [{'name': [{'elementValue': {'type': 'Preferred', 'value': 'not provided'}}], 'xref': [{'id': 'C10.114.375.500.200', 'db': 'MESH', 'status': 'UNDER_REVIEW'}], 'type': 'Disease'}]}, 'submissionName': 'HNRNPA1_VARIATION', 'clinVarAccession': {'orgID': 504916, 'type': 'SCV', 'dateUpdated': 1409698800000, 'acc': 'SCV000154960', 'version': 1}, 'assertion': {'type': 'variation to disease'}, 'clinVarSubmissionID': {'submitter': 'Demyelinating Disease Laboratories, VA Medical Center and University of Tennessee', 'submitterDate': 1402268400000, 'localKey': 'NP_002127.1:c.898C>T'}, 'clinicalSignificance': {'description': ['probable-pathogenic'], 'reviewStatus': 'CLASSIFIED_BY_SINGLE_SUBMITTER', 'comment': [{'value': 'Converted during submission to Likely pathogenic.'}]}, 'recordStatus': 'current', 'observedIn': [{'observedData': [{'attribute': {'type': 'Description', 'value': 'not provided'}}], 'sample': {'affectedStatus': 'not provided', 'species': {'value': 'human'}, 'origin': 'somatic', 'numberTested': 1}, 'method': [{'methodType': 'NOT_PROVIDED'}]}]}], 'referenceClinVarAssertion': {'measureSet': {'name': [{'elementValue': {'type': 'preferred name', 'value': 'NM_031157.2(HNRNPA1):c.1054C>T (p.Arg352Ter)'}}], 'measure': [{'attributeSet': [{'attribute': {'type': 'HGVS, coding, RefSeq', 'change': 'c.1054C>T', 'value': 'NM_031157.2:c.1054C>T'}}, {'attribute': {'type': 'HGVS, coding, RefSeq', 'change': 'c.898C>T', 'value': 'NM_002136.2:c.898C>T'}}, {'attribute': {'type': 'HGVS, genomic, RefSeqGene', 'change': 'g.8255C>T', 'value': 'NG_033830.1:g.8255C>T'}}, {'attribute': {'type': 'HGVS, genomic, top level', 'integerValue': 38, 'change': 'g.54283958C>T', 'value': 'NC_000012.12:g.54283958C>T'}}, {'attribute': {'type': 'HGVS, genomic, top level, previous', 'integerValue': 37, 'change': 'g.54677742C>T', 'value': 'NC_000012.11:g.54677742C>T'}}, {'attribute': {'type': 'HGVS, protein, RefSeq', 'change': 'p.Arg300Ter', 'value': 'NP_002127.1:p.Arg300Ter'}}, {'attribute': {'type': 'HGVS, protein, RefSeq', 'change': 'p.Arg352Ter', 'value': 'NP_112420.1:p.Arg352Ter'}}, {'xref': [{'id': 'SO:0001587', 'db': 'Sequence Ontology', 'status': 'CURRENT'}, {'id': 'NM_031157.2:c.1054C>T', 'db': 'RefSeq', 'status': 'CURRENT'}], 'attribute': {'type': 'MolecularConsequence', 'value': 'nonsense'}}, {'attribute': {'type': 'ProteinChange1LetterCode', 'value': 'R352*'}}, {'attribute': {'type': 'ProteinChange1LetterCode', 'value': 'R300*'}}], 'cytogeneticLocation': ['12q13.13'], 'sequenceLocation': [{'variantLength': 1, 'chr': '12', 'start': 54677742, 'assembly': 'GRCh37', 'stop': 54677742, 'alternateAllele': 'T', 'referenceAllele': 'C', 'accession': 'NC_000012.11'}, {'variantLength': 1, 'chr': '12', 'start': 54283958, 'assembly': 'GRCh38', 'stop': 54283958, 'alternateAllele': 'T', 'referenceAllele': 'C', 'accession': 'NC_000012.12'}], 'name': [{'elementValue': {'type': 'Preferred', 'value': 'NM_031157.2(HNRNPA1):c.1054C>T (p.Arg352Ter)'}}], 'xref': [{'type': 'rs', 'id': '483353037', 'db': 'dbSNP', 'status': 'CURRENT'}], 'type': 'single nucleotide variant', 'measureRelationship': [{'symbol': [{'elementValue': {'type': 'Preferred', 'value': 'HNRNPA1'}}], 'name': [{'elementValue': {'type': 'Preferred', 'value': 'heterogeneous nuclear ribonucleoprotein A1'}}], 'xref': [{'id': '3178', 'db': 'Gene', 'status': 'CURRENT'}, {'type': 'MIM', 'id': '164017', 'db': 'OMIM', 'status': 'CURRENT'}], 'type': 'variant in gene', 'sequenceLocation': [{'chr': '12', 'start': 54674487, 'assembly': 'GRCh37', 'stop': 54679029, 'strand': '+', 'accession': 'NC_000012.11'}, {'chr': '12', 'start': 54280695, 'assembly': 'GRCh38', 'stop': 54287086, 'strand': '+', 'accession': 'NC_000012.12'}]}], 'id': 139332}], 'type': 'Variant', 'id': 135606}, 'dateCreated': 1402354800000, 'traitSet': {'type': 'Disease', 'trait': [{'name': [{'elementValue': {'type': 'Preferred', 'value': 'Chronic progressive multiple sclerosis'}, 'xref': [{'id': '230373008', 'db': 'SNOMED CT', 'status': 'CURRENT'}]}], 'xref': [{'id': 'C0393665', 'db': 'MedGen', 'status': 'CURRENT'}], 'type': 'Disease', 'id': 18795}], 'id': 13814}, 'dateLastUpdated': DATE_LAST_UPDATED, 'clinVarAccession': {'type': 'RCV', 'dateUpdated': DATE_LAST_UPDATED, 'acc': 'RCV000122455', 'version': 1}, 'assertion': {'type': 'VARIATION_TO_DISEASE'}, 'clinicalSignificance': {'description': 'Likely pathogenic', 'reviewStatus': 'CLASSIFIED_BY_SINGLE_SUBMITTER'}, 'recordStatus': 'current', 'observedIn': [{'observedData': [{'id': 3574852, 'attribute': {'type': 'Description', 'value': 'not provided'}}], 'sample': {'affectedStatus': 'not provided', 'species': {'taxonomyId': 9606, 'value': 'human'}, 'origin': 'somatic', 'numberTested': 1}, 'method': [{'methodType': 'NOT_PROVIDED'}]}], 'id': 286319}, 'id': 3823230, 'recordStatus': 'current'})
 
     report = clinvar_to_evidence_strings.Report()
@@ -79,12 +76,12 @@ def get_args_CTTVSomaticEvidenceString_init():
 class CTTVSomaticEvidenceStringInitTest(unittest.TestCase):
     def setUp(self):
         test_args = get_args_CTTVSomaticEvidenceString_init()
-        self.evidence_string = ES.CTTVSomaticEvidenceString(*test_args)
+        self.evidence_string = evidence_strings.CTTVSomaticEvidenceString(*test_args)
 
     def test_evidence_string(self):
         test_dict = {'evidence': {'provenance_type': {'expert': {'status': True, 'statement': 'Primary submitter of data'}, 'database': {'dbxref': {'id': 'http://identifiers.org/clinvar', 'url': 'http://identifiers.org/clinvar.record/RCV000122455', 'version': '2015-04'}, 'id': 'EVA', 'version': '1.0'}}, 'resource_score': {'value': 1, 'type': 'probability'}, 'date_asserted': DATE_ASSERTED, 'is_associated': True, 'known_mutations': [{'functional_consequence': 'http://purl.obolibrary.org/obo/SO_0001587', 'preferred_name': 'stop_gained'}], 'urls': [{'url': 'http://www.ncbi.nlm.nih.gov/clinvar/RCV000122455', 'nice_name': 'Further details in ClinVar database'}], 'evidence_codes': ['http://purl.obolibrary.org/obo/ECO_0000205']}, 'type': 'somatic_mutation', 'sourceID': 'eva_somatic', 'access_level': 'public', 'disease': {'id': ['http://www.ebi.ac.uk/efo/EFO_0003840']}, 'validated_against_schema_version': '1.2.2', 'target': {'activity': 'http://identifiers.org/cttv.activity/predicted_damaging', 'id': ['http://identifiers.org/ensembl/ENSG00000135486'], 'target_type': 'http://identifiers.org/cttv.target/gene_variant'}, 'unique_association_fields': {'phenotype': 'http://www.ebi.ac.uk/efo/EFO_0003840', 'alleleOrigin': 'somatic', 'gene': 'ENSG00000135486', 'clinvarAccession': 'RCV000122455'}}
 
-        test_ev_string = ES.CTTVEvidenceString(test_dict)
+        test_ev_string = evidence_strings.CTTVEvidenceString(test_dict)
 
         self.assertEqual(self.evidence_string, test_ev_string)
 
@@ -119,13 +116,13 @@ class GetCTTVVariantTypeTest(unittest.TestCase):
 
     def test_get_cttv_variant_type_singles(self):
         for record in self.test_records_singles:
-            self.assertEqual(ES.get_cttv_variant_type(record[0]["reference"],
+            self.assertEqual(evidence_strings.get_cttv_variant_type(record[0]["reference"],
                                                       record[0]["alternate"]),
                              record[1])
 
     def test_get_cttv_variant_type_structurals(self):
         for record in self.test_records_structurals:
-            self.assertEqual(ES.get_cttv_variant_type(record[0]["reference"],
+            self.assertEqual(evidence_strings.get_cttv_variant_type(record[0]["reference"],
                                                       record[0]["alternate"]),
                              record[1])
 
@@ -133,7 +130,7 @@ class GetCTTVVariantTypeTest(unittest.TestCase):
 class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
     def setUp(self):
         self.test_args = get_args_CTTVGeneticsEvidenceString_init()
-        self.test_ges = ES.CTTVGeneticsEvidenceString(*self.test_args)
+        self.test_ges = evidence_strings.CTTVGeneticsEvidenceString(*self.test_args)
 
     # CTTVEvidenceString tests
 
@@ -165,7 +162,7 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
         disease_id = "Ciliary dyskinesia, primary, 26"
 
         self.test_ges.disease = disease_id
-        self.assertEqual(self.test_ges.disease, EFOT.EFOTerm(disease_id))
+        self.assertEqual(self.test_ges.disease, efo_term.EFOTerm(disease_id))
 
     def test_evidence_codes(self):
         evidence_codes = ["http://purl.obolibrary.org/obo/ECO_0000205"]
@@ -283,18 +280,18 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
 
     def test_validate(self):
         test_args = get_args_CTTVGeneticsEvidenceString_init()
-        test_evidence_string = ES.CTTVGeneticsEvidenceString(*test_args)
+        test_evidence_string = evidence_strings.CTTVGeneticsEvidenceString(*test_args)
         self.assertTrue(test_evidence_string.validate())
 
 
 class CTTVSomaticEvidenceStringTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.consequence_type_dict = CT.process_consequence_type_file(test_config.snp_2_gene_file)
+        cls.consequence_type_dict = consequence_type.process_consequence_type_file(test_config.snp_2_gene_file)
 
     def setUp(self):
         test_args = get_args_CTTVSomaticEvidenceString_init()
-        self.test_ses = ES.CTTVSomaticEvidenceString(*test_args)
+        self.test_ses = evidence_strings.CTTVSomaticEvidenceString(*test_args)
 
     def test_db_xref_url(self):
         url = "http://identifiers.org/clinvar.record/RCV000128628"
@@ -350,7 +347,7 @@ class CTTVSomaticEvidenceStringTest(unittest.TestCase):
             [{'functional_consequence': functional_consequence, 'preferred_name': preferred_name}])
 
     def test_set_known_mutations(self):
-        test_consequence_type = CT.ConsequenceType(ensembl_gene_ids=["ENSG00000008710"],
+        test_consequence_type = consequence_type.ConsequenceType(ensembl_gene_ids=["ENSG00000008710"],
                                                    so_names=["3_prime_UTR_variant", "not_in_dict"])
         self.test_ses._clear_known_mutations()
         self.test_ses.set_known_mutations(test_consequence_type)
@@ -363,5 +360,5 @@ class CTTVSomaticEvidenceStringTest(unittest.TestCase):
 
     def test_validate(self):
         test_args = get_args_CTTVSomaticEvidenceString_init()
-        test_evidence_string = ES.CTTVSomaticEvidenceString(*test_args)
+        test_evidence_string = evidence_strings.CTTVSomaticEvidenceString(*test_args)
         self.assertTrue(test_evidence_string.validate())
