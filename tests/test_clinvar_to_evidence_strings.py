@@ -86,7 +86,7 @@ class CreateTraitTest(unittest.TestCase):
 class SkipRecordTest(unittest.TestCase):
 
     def setUp(self):
-        self.clinvar_record = test_clinvar_record.get_test_record()
+        self.clinvar_record = test_clinvar.get_test_record()
         report = clinvar_to_evidence_strings.Report()
         # skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, counters)
         self.args = [self.clinvar_record, {"reference": "A", "alternate": "T"},
