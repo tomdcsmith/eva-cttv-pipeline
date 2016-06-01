@@ -15,8 +15,8 @@ def get_package_data():
 
 def get_requires():
     requires = []
-    with open("requirements.txt", "rt") as f:
-        for line in f:
+    with open("requirements.txt", "rt") as req_file:
+        for line in req_file:
             requires.append(line.rstrip())
     return requires
 
