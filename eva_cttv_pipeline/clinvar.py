@@ -160,27 +160,27 @@ class ClinvarRecord(UserDict):
     @property
     def traits(self):
         trait_list = []
-        for trait_record in self.data['referenceClinVarAssertion']['traitSet']['trait']:
+        for trait in self.data['referenceClinVarAssertion']['traitSet']['trait']:
             trait_list.append([])
-            for name_record in trait_record['name']:
+            for name in trait['name']:
                 # First trait name in the list will always be the "Preferred" one
-                if name_record['elementValue']['type'] == 'Preferred':
-                    trait_list[-1] = [name_record['elementValue']['value']] + trait_list[-1]
+                if name['elementValue']['type'] == 'Preferred':
+                    trait_list[-1] = [name['elementValue']['value']] + trait_list[-1]
                 else:
-                    trait_list[-1].append(name_record['elementValue']['value'])
+                    trait_list[-1].append(name['elementValue']['value'])
 
         return trait_list
 
     @property
     def trait_pubmed_refs(self):
         pubmed_refs_list = []
-        for trait_record in self.data['referenceClinVarAssertion']['traitSet']['trait']:
+        for trait in self.data['referenceClinVarAssertion']['traitSet']['trait']:
             pubmed_refs_list.append([])
-            if 'citation' in trait_record:
-                for citation_record in trait_record['citation']:
-                    if ('id' in citation_record) and citation_record['id'] is not None:
-                        if citation_record['id']['source'] == 'PubMed':
-                            pubmed_refs_list[-1].append(int(citation_record['id']['value']))
+            if 'citation' in trait:
+                for citation in trait['citation']:
+                    if ('id' in citation) and citation['id'] is not None:
+                        if citation['id']['source'] == 'PubMed':
+                            pubmed_refs_list[-1].append(int(citation['id']['value']))
 
         return pubmed_refs_list
 
@@ -191,21 +191,21 @@ class ClinvarRecord(UserDict):
             for observed_in in self.data['referenceClinVarAssertion']['observedIn']:
                 for observed_data in observed_in['observedData']:
                     if 'citation' in observed_data:
-                        for citation_record in observed_data['citation']:
-                            if ('id' in citation_record) and citation_record['id'] is not None:
-                                if citation_record['id']['source'] == 'PubMed':
-                                    pubmed_refs_list.append(int(citation_record['id']['value']))
+                        for citation in observed_data['citation']:
+                            if ('id' in citation) and citation['id'] is not None:
+                                if citation['id']['source'] == 'PubMed':
+                                    pubmed_refs_list.append(int(citation['id']['value']))
         return pubmed_refs_list
 
     @property
     def measure_set_pubmed_refs(self):
         pubmed_refs_list = []
-        for measure_record in self.data['referenceClinVarAssertion']['measureSet']['measure']:
-            if 'citation' in measure_record:
-                for ciration_record in measure_record['citation']:
-                    if 'id' in ciration_record and ciration_record['id'] is not None:
-                        if ciration_record['id']['source'] == 'PubMed':
-                            pubmed_refs_list.append(int(ciration_record['id']['value']))
+        for measure in self.data['referenceClinVarAssertion']['measureSet']['measure']:
+            if 'citation' in measure:
+                for citation in measure['citation']:
+                    if 'id' in citation and citation['id'] is not None:
+                        if citation['id']['source'] == 'PubMed':
+                            pubmed_refs_list.append(int(citation['id']['value']))
         return pubmed_refs_list
 
     @property
@@ -226,10 +226,10 @@ class ClinvarRecord(UserDict):
     @property
     def hgvs(self):
         hgvs_list = []
-        for measure_record in self.data['referenceClinVarAssertion']['measureSet']['measure']:
-            for attribute_set_record in measure_record['attributeSet']:
-                if attribute_set_record['attribute']['type'].startswith('HGVS'):
-                    hgvs_list.append(attribute_set_record['attribute']['value'])
+        for measure in self.data['referenceClinVarAssertion']['measureSet']['measure']:
+            for attribute_set in measure['attributeSet']:
+                if attribute_set['attribute']['type'].startswith('HGVS'):
+                    hgvs_list.append(attribute_set['attribute']['value'])
 
         return hgvs_list
 
