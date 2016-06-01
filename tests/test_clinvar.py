@@ -2,18 +2,19 @@ from datetime import datetime
 import os
 import unittest
 
-from eva_cttv_pipeline import clinvar_record as CR
+from eva_cttv_pipeline import clinvar
 from eva_cttv_pipeline import consequence_type as CT
+from tests import test_clinvar_to_evidence_strings
 
 import tests.test_config as test_config
-from tests import test_clinvar_to_evidence_strings
 
 
 class TestClinvarRecord(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.test_clinvar_record = get_test_record()
-        cls.rcv_to_rs, cls.rcv_to_nsv = CR.get_rcv_to_rsnsv_mapping(test_config.variant_summary_file)
+        cls.rcv_to_rs, cls.rcv_to_nsv = \
+            clinvar.get_rcv_to_rsnsv_mapping(test_config.variant_summary_file)
         cls.consequence_type_dict = CT.process_consequence_type_file(test_config.snp_2_gene_file)
 
     def test_gene_id(self):
@@ -23,7 +24,8 @@ class TestClinvarRecord(unittest.TestCase):
         self.assertEqual(self.test_clinvar_record.ensembl_id, "ENSG00000008710")
 
     def test_date(self):
-        self.assertEqual(self.test_clinvar_record.date, datetime.fromtimestamp(1412982000000/1000).isoformat())
+        self.assertEqual(self.test_clinvar_record.date,
+                         datetime.fromtimestamp(1412982000000/1000).isoformat())
 
     def test_score(self):
         self.assertEqual(self.test_clinvar_record.score, None)
@@ -44,21 +46,34 @@ class TestClinvarRecord(unittest.TestCase):
         self.assertEqual(self.test_clinvar_record.measure_set_pubmed_refs, [])
 
     def test_hgvs(self):
-        self.assertEqual(self.test_clinvar_record.hgvs, ['NM_000548.3:c.*154dup', 'NM_001009944.2:c.*963dupC', 'NG_005895.1:g.44459dupG', 'NC_000016.10:g.2088764dupG', 'NC_000016.9:g.2138765dupG', 'p.(=)'])
+        self.assertEqual(self.test_clinvar_record.hgvs,
+                         ['NM_000548.3:c.*154dup', 'NM_001009944.2:c.*963dupC',
+                          'NG_005895.1:g.44459dupG', 'NC_000016.10:g.2088764dupG',
+                          'NC_000016.9:g.2138765dupG', 'p.(=)'])
 
     def test_clinical_significance(self):
         self.assertEqual(self.test_clinvar_record.clinical_significance, "not provided")
 
     def test_get_rs(self):
-        self.assertEqual(self.test_clinvar_record.rs, "rs397514891")
+        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_rs(self.rcv_to_rs), "rs397514891")
+        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_rs({}), None)
 
     def test_get_nsv(self):
-        self.assertEqual(self.test_clinvar_record.nsv, None)
+        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_nsv(self.rcv_to_nsv), None)
+        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_nsv({"RCV000055062": "nsv123test"}),
+                         "nsv123test")
 
-    def test_get_main_consequence_types(self):
-        test_consequence_type = CT.ConsequenceType(ensembl_gene_ids=["ENSG00000008710"], so_names=["3_prime_UTR_variant"])
+    def test___get_main_consequence_types(self):
+        test_consequence_type = CT.ConsequenceType(ensembl_gene_ids=["ENSG00000008710"],
+                                                   so_names=["3_prime_UTR_variant"])
 
-        self.assertEqual(self.test_clinvar_record.consequence_type, test_consequence_type)
+        self.assertEqual(
+            self.test_clinvar_record._ClinvarRecord__get_main_consequence_types(
+                self.consequence_type_dict, self.rcv_to_rs),
+            test_consequence_type)
+        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_main_consequence_types(
+            {}, {}),
+            None)
 
     def test_variant_type(self):
         self.assertEqual(self.test_clinvar_record.variant_type, "Duplication")
@@ -68,8 +83,9 @@ class TestClinvarRecord(unittest.TestCase):
 
 
 class TestGetRcvToRSNSVMapping(unittest.TestCase):
-    variant_summary_file_path = os.path.join(os.path.dirname(__file__), 'resources', 'variant_summary_2015-05_test_extract.txt')
-    rcv_to_rs, rcv_to_nsv = CR.get_rcv_to_rsnsv_mapping(variant_summary_file_path)
+    variant_summary_file_path = os.path.join(os.path.dirname(__file__), 'resources',
+                                             'variant_summary_2015-05_test_extract.txt')
+    rcv_to_rs, rcv_to_nsv = clinvar.get_rcv_to_rsnsv_mapping(variant_summary_file_path)
 
     def test_rcv_to_rs(self):
         self.assertEqual(self.rcv_to_rs["RCV000000012"], "rs397704705")
@@ -83,16 +99,17 @@ class TestGetRcvToRSNSVMapping(unittest.TestCase):
 
 
 def get_test_record():
-    test_record = CR.ClinvarRecord(mappings=test_clinvar_to_evidence_strings.MAPPINGS,
-                                   a_dictionary=
-        {"recordStatus": "current", "title": "NM_000548.3(TSC2):c.*154dup AND Tuberous sclerosis syndrome",
+    test_record = clinvar.ClinvarRecord(test_clinvar_to_evidence_strings.MAPPINGS,
+        {"recordStatus": "current",
+         "title": "NM_000548.3(TSC2):c.*154dup AND Tuberous sclerosis syndrome",
          "referenceClinVarAssertion": {
-             "clinVarAccession": {"acc": "RCV000055062", "version": 1, "type": "RCV", "dateUpdated": 1412982000000},
-             "recordStatus": "current",
-             "clinicalSignificance": {"reviewStatus": "NOT_CLASSIFIED_BY_SUBMITTER", "description": "not provided"},
-             "assertion": {"type": "VARIATION_TO_DISEASE"}, "observedIn": [{"sample": {"origin": "germline",
-                                                                                       "species": {"value": "human",
-                                                                                                   "taxonomyId": 9606},
+             "clinVarAccession": {"acc": "RCV000055062", "version": 1, "type": "RCV",
+                                  "dateUpdated": 1412982000000}, "recordStatus": "current",
+             "clinicalSignificance": {"reviewStatus": "NOT_CLASSIFIED_BY_SUBMITTER",
+                                      "description": "not provided"},
+             "assertion": {"type": "VARIATION_TO_DISEASE"}, "observedIn":
+                 [{"sample": {"origin": "germline", "species": {"value": "human",
+                                                                "taxonomyId": 9606},
                                                                                        "affectedStatus": "yes"},
                                                                             "method": [
                                                                                 {"methodType": "LITERATURE_ONLY"}],

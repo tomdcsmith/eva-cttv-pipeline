@@ -2,15 +2,16 @@ import os
 import unittest
 import shutil
 
-import eva_cttv_pipeline.utilities as util
+from eva_cttv_pipeline import utilities
 
 
 class GetResourceFileTest(unittest.TestCase):
     def test_get_resource_file_existent(self):
-        self.assertTrue(util.get_resource_file("eva_cttv_pipeline", "resources/json_schema"))
+        self.assertTrue(utilities.get_resource_file("eva_cttv_pipeline", "resources/json_schema"))
 
     def test_get_resource_file_nonexistent(self):
-        self.assertEqual(util.get_resource_file("not_a_real_package_39146", "not_a_real_file"), None)
+        self.assertEqual(utilities.get_resource_file("not_a_real_package_39146", "not_a_real_file"),
+                         None)
 
 
 class CopyAndOverwriteTest(unittest.TestCase):
@@ -34,7 +35,7 @@ class CopyAndOverwriteTest(unittest.TestCase):
         test_file_b = os.path.join(self.test_dir_b, "test.txt")
         with open(test_file_b, "wt") as f:
             f.write("hello world")
-        util.copy_and_overwrite(self.test_dir_a, self.test_dir_b)
+        utilities.copy_and_overwrite(self.test_dir_a, self.test_dir_b)
         with open(test_file_b, "rt") as f:
             contents = f.read()
         self.assertEqual(contents, self.test_string)
@@ -60,13 +61,13 @@ class CopyDirTest(unittest.TestCase):
         test_file_b = os.path.join(self.test_dir_b, "test.txt")
         with open(test_file_b, "wt") as f:
             f.write("hello world")
-        util.copy_dir(self.test_dir_a, self.test_dir_b)
+        utilities.copy_dir(self.test_dir_a, self.test_dir_b)
         with open(test_file_b, "rt") as f:
             contents = f.read()
         self.assertEqual(contents, self.test_string)
 
     def test_nonexisting(self):
-        util.copy_dir(self.test_dir_a, self.test_dir_c)
+        utilities.copy_dir(self.test_dir_a, self.test_dir_c)
         with open(os.path.join(self.test_dir_c, "test.txt"), "rt") as f:
             contents = f.read()
         self.assertEqual(contents, self.test_string)
@@ -86,9 +87,10 @@ class ArgParserTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        argv = ['clinvar_to_evidence_strings.py', '--clinSig', cls.clin_sig, '--ignore', cls.ignore,
-                '--out', cls.out, '-e', cls.efo_map_file, '-g', cls.snp_2_gene_file, '-v', cls.variant_summary_file]
-        cls.argparser = util.ArgParser(argv)
+        argv = ['clinvar_to_evidence_strings.py', '--clinSig', cls.clin_sig, '--ignore',
+                cls.ignore, '--out', cls.out, '-e', cls.efo_map_file, '-g', cls.snp_2_gene_file,
+                '-v', cls.variant_summary_file]
+        cls.argparser = utilities.ArgParser(argv)
 
     def test_clin_sig(self):
         self.assertEquals(self.argparser.clinical_significance, self.clin_sig)
@@ -112,6 +114,6 @@ class ArgParserTest(unittest.TestCase):
 class CheckDirExistsCreateTest(unittest.TestCase):
     def test_create(self):
         directory = "./test_tmp"
-        util.check_dir_exists_create(directory)
+        utilities.check_dir_exists_create(directory)
         self.assertTrue(os.path.exists(directory))
         os.rmdir(directory)
