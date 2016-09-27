@@ -35,7 +35,6 @@ def get_trait_name_tuples_from_file(filepath):
     return trait_name_tuples
 
 
-# def form_zooma_query(property_value, ontologies, required, preferred):
 def form_zooma_query(trait_name, filters):
     url_filters = []
     url = "http://snarf.ebi.ac.uk:8580/spot/zooma/v2/api/services/annotate?propertyValue={}".format(trait_name)
@@ -47,7 +46,6 @@ def form_zooma_query(trait_name, filters):
     return url
 
 
-# def query_zooma(property_value, ontologies=None, required=None, preferred=None):
 def query_zooma(trait_name, filters):
     url = form_zooma_query(trait_name, filters)
     r = requests.get(url)
@@ -85,11 +83,11 @@ class ArgParser:
     def __init__(self, argv):
         parser = argparse.ArgumentParser()
 
-        parser.add_argument("-i", dest="input_filepath", required=True)
-        parser.add_argument("-o", dest="output_filepath", required=True)
-        parser.add_argument("-n", dest="ontologies", default="efo,hp,ordo")
-        parser.add_argument("-r", dest="required", default="bmb-wp7,cttv,eva-clinvar,sysmicro,atlas,uniprot,gwas,ebisc")
-        parser.add_argument("-p", dest="preferred", default="efo,hp,ordo,cttv,eva-clinvar,gwas,atlas")
+        parser.add_argument("-i", dest="input_filepath", required=True, help="path to input file, with trait names in first column, number of variants the trait name appears in in the second column. delimeted using tab")
+        parser.add_argument("-o", dest="output_filepath", required=True, help="path to output file (not just the directory). outputs a file with a header (line starting with \"#\") which shows the filters used. then the first column is trait name, then number of variants for the trait, then zooma label, uri(s), confidence, source. these zooma columns repeat when there are multiple mappings.")
+        parser.add_argument("-n", dest="ontologies", default="efo,hp,ordo", help="ontologies to use in query")
+        parser.add_argument("-r", dest="required", default="bmb-wp7,cttv,eva-clinvar,sysmicro,atlas,uniprot,gwas,ebisc", help="data sources to use in query.")
+        parser.add_argument("-p", dest="preferred", default="efo,hp,ordo,cttv,eva-clinvar,gwas,atlas", help="preference for data sources, with preferred data source first.")
 
         args = parser.parse_args(args=argv[1:])
 
