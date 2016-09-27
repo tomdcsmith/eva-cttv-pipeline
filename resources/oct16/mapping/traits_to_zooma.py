@@ -12,6 +12,7 @@ def main():
 
 def parse_and_write_output(trait_name_tuples, output_filepath, filters):
     with open(output_filepath, "wt") as output_file:
+        output_file.write("#{}\n".format(filters))
         for trait_name_tuple in trait_name_tuples:
             trait_name = trait_name_tuple[0]
             zooma_response = query_zooma(trait_name, filters)
