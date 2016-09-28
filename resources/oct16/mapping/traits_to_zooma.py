@@ -58,7 +58,7 @@ def query_zooma(trait_name, filters):
 
 
 def result_to_tuple(result):
-    label = result["annotatedProperty"]["propertyValue"]
+    label = result["derivedFrom"]["annotatedProperty"]["propertyValue"]
     uri = ",".join(result["semanticTags"])
     confidence = result["confidence"]
     source_name = result["derivedFrom"]["provenance"]["source"]["name"]
