@@ -74,21 +74,25 @@ def get_ontology_mappings(trait, filters):
     mappings = get_mappings_for_trait(json_response_1, trait)
     
     for mapping in mappings:
-        label = get_ontology_label_from_ols(mapping.uri)
-        # If no label is returned (shouldn't really happen) keep the existing one
-        if label:
-            mapping.label = label
+        try:
+            label = get_ontology_label_from_ols(mapping.uri)
+            # If no label is returned (shouldn't really happen) keep the existing one
+            if label:
+                mapping.label = label
+        except:
+            print("Couldn't retrieve ontology label from OLS for trait '{}', will use the one from Zooma".format(trait.name))
     
     return mappings
 
 
 def build_zooma_query(trait_name, filters):
     url_filters = []
-    url = "http://snarf.ebi.ac.uk:8580/spot/zooma/v2/api/services/annotate?propertyValue={}".format(trait_name)
-    url_filters.append("required:[{}]".format(filters["required"]))
-    url_filters.append("ontologies:[{}]".format(filters["ontologies"]))
-    url_filters.append("preferred:[{}]".format(filters["preferred"]))
-    url += "&filter={}".format(",".join(url_filters))
+    url_filters.append("required={}".format(filters["required"]))
+    url_filters.append("ontologies={}".format(filters["ontologies"]))
+    url_filters.append("preferred={}".format(filters["preferred"]))
+    
+    url = "http://snarf.ebi.ac.uk:8580/spot/zooma/v2/api/services/annotate?propertyValue={}&".format(trait_name)
+    url += "&".join(url_filters)
     return url
 
 
@@ -115,7 +119,6 @@ def get_ontology_label_from_ols(uri_mapping):
 
 def build_ols_query(ontology_uri):
     url = "http://www.ebi.ac.uk/ols/api/terms?iri={}".format(ontology_uri)
-    #print(url)
     return url
 
 
