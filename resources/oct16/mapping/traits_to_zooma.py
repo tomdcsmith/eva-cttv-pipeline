@@ -86,13 +86,13 @@ def get_ontology_mappings(trait, filters):
 
 
 def build_zooma_query(trait_name, filters):
-    url_filters = []
-    url_filters.append("required={}".format(filters["required"]))
-    url_filters.append("ontologies={}".format(filters["ontologies"]))
-    url_filters.append("preferred={}".format(filters["preferred"]))
-    
-    url = "http://snarf.ebi.ac.uk:8580/spot/zooma/v2/api/services/annotate?propertyValue={}&".format(trait_name)
-    url += "&".join(url_filters)
+    url = "http://snarf.ebi.ac.uk:8580/spot/zooma/v2/api/services/annotate?propertyValue={}".format(trait_name)
+    url_filters = [
+                    "required:[{}]".format(filters["required"]),
+                    "ontologies:[{}]".format(filters["ontologies"]),
+                    "preferred:[{}]".format(filters["preferred"])
+                  ]
+    url += "&filter={}".format(",".join(url_filters))
     return url
 
 
