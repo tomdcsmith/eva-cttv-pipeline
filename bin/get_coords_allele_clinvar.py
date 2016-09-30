@@ -67,7 +67,7 @@ def get_variant_summary_record(line):
     line_list = line.split("\t")
     record = SimpleNamespace()
 
-    record.assembly = record[12]
+    record.assembly = line_list[12]
     record.chrom = line_list[13]
     record.start = line_list[14]
     record.end = line_list[15]
