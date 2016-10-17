@@ -1,5 +1,8 @@
+import itertools
 import os
 import unittest
+
+import sys
 
 from eva_cttv_pipeline import clinvar_to_evidence_strings
 from tests import test_clinvar
@@ -158,6 +161,101 @@ class GetTermsFromFileTest(unittest.TestCase):
 
     def test_no_file(self):
         self.assertEqual(clinvar_to_evidence_strings.get_terms_from_file(None), [])
+
+
+# class Clinvar2OTAlleleOrigin(unittest.TestCase):
+#     @classmethod
+#     def setUpClass(cls):
+#         cls.germline_allele_origins = ["germline", "inherited", "maternal", "paternal",
+#                                        "biparental", "uniparental"]
+#         cls.somatic_allele_origins = ["somatic", "de novo"]
+#         cls.unused_allele_origins = ["unknown", "not provided", "tested-inconclusive",
+#                                      "not applicable"]
+#
+#         cls.germline_combinations = []
+#         cls.somatic_combinations = []
+#         cls.unused_combinations = []
+#         cls.populated_germline_combinations = []
+#         cls.populated_somatic_combinations = []
+#         cls.populated_unused_combinations = []
+#
+#         for L in range(0, len(cls.germline_allele_origins) + 1):
+#             combinations = list(itertools.combinations(cls.germline_allele_origins, L))
+#             cls.germline_combinations += combinations
+#             if len(combinations) > 1:
+#                 cls.populated_germline_combinations += combinations
+#         #
+#         # print(cls.germline_combinations)
+#         # print()
+#         # print(cls.populated_germline_combinations)
+#         # sys.exit(1)
+#
+#         for L in range(0, len(cls.somatic_allele_origins) + 1):
+#             combinations = list(itertools.combinations(cls.somatic_allele_origins, L))
+#             cls.somatic_combinations += combinations
+#             if len(combinations) > 1:
+#                 cls.populated_somatic_combinations += combinations
+#
+#         for L in range(0, len(cls.unused_allele_origins) + 1):
+#             combinations = list(itertools.combinations(cls.unused_allele_origins, L))
+#             cls.unused_combinations += combinations
+#             if len(combinations) > 1:
+#                 cls.populated_unused_combinations += combinations
+#
+#     def test_just_germline(self):
+#         output_test_list = ["germline"]
+#
+#         input_test_lists = []
+#         for germ in self.populated_germline_combinations:
+#             for unu in self.unused_combinations:
+#                 input_test_lists.append([list(germ) + list(unu)])
+#
+#         # input_test_lists = [germ + unu
+#         #                     for germ in self.populated_germline_combinations
+#         #                     for unu in self.unused_combinations]
+#
+#         for test_list in input_test_lists:
+#             self.assertEqual(clinvar_to_evidence_strings.clinvar_2_ot_allele_origin(test_list), output_test_list)
+#
+#     def test_just_somatic(self):
+#         output_test_list = ["somatic"]
+#
+#         input_test_lists = []
+#         for som in self.populated_somatic_combinations:
+#             for unu in self.unused_combinations:
+#                 input_test_lists.append([list(som) + list(unu)])
+#
+#         # input_test_lists = [som + unu
+#         #                     for som in self.populated_somatic_combinations
+#         #                     for unu in self.unused_combinations]
+#
+#         for test_list in input_test_lists:
+#             self.assertEqual(clinvar_to_evidence_strings.clinvar_2_ot_allele_origin(test_list), output_test_list)
+#
+#     def test_just_unused(self):
+#         output_test_list = []
+#
+#         input_test_lists = self.unused_combinations
+#
+#         for test_list in input_test_lists:
+#             self.assertEqual(clinvar_to_evidence_strings.clinvar_2_ot_allele_origin(test_list), output_test_list)
+#
+#     def test_germline_and_somatic(self):
+#         output_test_list = ["somatic", "germline"]
+#
+#         input_test_lists = []
+#         for som in self.populated_somatic_combinations:
+#             for germ in self.populated_germline_combinations:
+#                 input_test_lists.append([list(som) + list(germ)])
+#
+#         # print(input_test_lists)
+#
+#         # input_test_lists = [som + germ
+#         #                     for som in self.populated_somatic_combinations
+#         #                     for germ in self.populated_germline_combinations]
+#
+#         for test_list in input_test_lists:
+#             self.assertEqual(sorted(clinvar_to_evidence_strings.clinvar_2_ot_allele_origin(test_list)), sorted(output_test_list))
 
 
 class TestGetDefaultAllowedClincalSignificance(unittest.TestCase):

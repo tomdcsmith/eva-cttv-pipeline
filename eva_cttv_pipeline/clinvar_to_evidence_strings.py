@@ -216,8 +216,14 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
 
         traits = create_traits(clinvar_record.traits, mappings.trait_2_efo, report)
 
+        allele_origins = clinvar_2_ot_allele_origin(clinvar_record.allele_origins)
+
         for ensembl_gene_id, trait, allele_origin \
                 in itertools.product(clinvar_record.consequence_type.ensembl_gene_ids, traits, clinvar_record.allele_origins):
+
+            # TODO needs a different system for iterating/using allele origins.
+            # TODO If other origin values are allowed to create either germline or somatic evidence strings then this could end up creating multiple identical strings.
+
 
             if allele_origin not in ('germline', 'somatic'):
                 report.n_unrecognised_allele_origin[allele_origin] += 1
@@ -419,6 +425,18 @@ def get_terms_from_file(terms_file_path):
         terms_list = []
 
     return terms_list
+
+
+def clinvar_2_ot_allele_origin(clinvar_allele_origins):
+    print(clinvar_allele_origins)
+    sys.exit(1)
+    ot_allele_origins = []
+    clinvar_allele_origins = set(clinvar_allele_origins)
+    if len(clinvar_allele_origins.intersection({"germline", "inherited", "maternal", "paternal", "biparental", "uniparental"})) > 1:
+        ot_allele_origins.append("germline")
+    if len(clinvar_allele_origins.intersection({"somatic", "de novo"})) > 1:
+        ot_allele_origins.append("somatic")
+    return ot_allele_origins
 
 
 def get_default_allowed_clinical_significance():
