@@ -18,7 +18,6 @@ EVIDENCE_STRINGS_FILE_NAME = 'evidence_strings.json'
 EVIDENCE_RECORDS_FILE_NAME = 'evidence_records.tsv'
 UNMAPPED_TRAITS_FILE_NAME = 'unmappedTraits.tsv'
 UNAVAILABLE_EFO_FILE_NAME = 'unavailableefo.tsv'
-NO_GENE_FILE_NAME = "no_gene_mappings.tsv"
 NSV_LIST_FILE = 'nsvlist.txt'
 
 ######

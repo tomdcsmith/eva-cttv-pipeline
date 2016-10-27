@@ -38,7 +38,6 @@ class Report:
         self.evidence_string_list = []
         self.evidence_list = []  # To store Helen Parkinson records of the form
         self.counters = self.__get_counters()
-        self.no_gene_mapping = []
 
     def __str__(self):
 
@@ -148,10 +147,6 @@ class Report:
                 evidence_record_to_output = ['.' if ele is None else ele for ele in evidence_record]
                 fdw.write('\t'.join(evidence_record_to_output) + '\n')
 
-        with utilities.open_file(dir_out + '/' + config.NO_GENE_FILE_NAME, 'wt') as fdw:
-            for ev_string in self.no_gene_mapping:
-                fdw.write(json.dumps(ev_string) + "\n")
-
     @staticmethod
     def __get_counters():
         return {"n_processed_clinvar_records": 0,
@@ -208,7 +203,7 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
         append_nsv(report.nsv_list, clinvar_record)
 
         if skip_record(clinvar_record,
-                       cellbase_record, allowed_clinical_significance, report.counters, report.no_gene_mapping):
+                       cellbase_record, allowed_clinical_significance, report.counters):
             continue
 
         report.counters["n_multiple_allele_origin"] += (len(clinvar_record.allele_origins) > 1)
@@ -274,7 +269,7 @@ def get_mappings(efo_mapping_file, ignore_terms_file,
     return mappings
 
 
-def skip_record(clinvar_record, cellbase_record, allowed_clinical_significance, counters, no_gene_mapping):
+def skip_record(clinvar_record, cellbase_record, allowed_clinical_significance, counters):
     if clinvar_record.clinical_significance not in allowed_clinical_significance:
         if clinvar_record.nsv is not None:
             counters["n_nsv_skipped_clin_sig"] += 1
@@ -287,7 +282,6 @@ def skip_record(clinvar_record, cellbase_record, allowed_clinical_significance, 
         return True
 
     if clinvar_record.consequence_type is None:
-        no_gene_mapping.append(cellbase_record)
         counters["no_variant_to_ensg_mapping"] += 1
         return True
 
