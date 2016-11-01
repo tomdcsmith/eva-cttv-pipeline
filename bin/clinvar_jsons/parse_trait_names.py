@@ -21,7 +21,10 @@ def main():
 
 
 def get_trait_names(clinvar_json):
-    trait_set = clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["traitSet"]
+    if "clinvarSet" in clinvar_json:
+        trait_set = clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["traitSet"]
+    else:
+        trait_set = clinvar_json["referenceClinVarAssertion"]["traitSet"]
     trait_list = []
     for trait in trait_set['trait']:
         trait_list.append([])
