@@ -1,4 +1,5 @@
 import argparse
+import json
 import requests
 import sys
 
@@ -20,9 +21,10 @@ class OntologyMapping:
         self.label = label
         self.confidence = confidence
         self.source = source
+        self.ols_label = 0
 
     def __str__(self):
-        return "{}\t{}\t{}\t{}".format(self.label, self.uri, self.confidence, self.source)
+        return "{}\t{}\t{}\t{}\t{}".format(self.label, self.ols_label, self.uri, self.confidence, self.source)
 
 
 
@@ -36,8 +38,12 @@ def main():
         output_file.write("#{}\n".format(parser.filters))
         for trait in traits:
             output_file.write(str(trait))
-            for mapping in get_ontology_mappings(trait, parser.filters):
-                output_file.write("\t" + str(mapping))
+            mappings = get_ontology_mappings(trait, parser.filters)
+            if mappings is not None:
+                for mapping in mappings:
+                    output_file.write("\t" + str(mapping))
+            else:
+                output_file.write("\tZOOMA_MAPPING_FAILED")
             output_file.write("\n")
 
 
@@ -54,13 +60,6 @@ def read_traits(filepath):
     return traits
 
 
-def write_ontology_mappings(ontology_mappings, filters, output_filepath):
-    with open(output_filepath, "wt") as output_file:
-        output_file.write("#{}\n".format(filters))
-        for mapping in ontology_mappings:
-            output_file.write("\t".join(mapping) + "\n")
-
-
 def get_ontology_mappings(trait, filters):
     '''
     First get the URI, label from a selected source, confidence and source:
@@ -69,7 +68,16 @@ def get_ontology_mappings(trait, filters):
     http://www.ebi.ac.uk/ols/api/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0003847
     '''
     url = build_zooma_query(trait.name, filters)
-    json_response_1 = requests.get(url).json()
+    retry_count = 4
+    for retry_num in range(retry_count):  # retries
+        try:
+            json_response_1 = requests.get(url).json()
+            break
+        except json.decoder.JSONDecodeError as e:
+            print("attempt {}: decode error for request with url {}".format(retry_num, url))
+            if retry_num == retry_count - 1:
+                print("error on last attempt, skipping")
+                return None
 
     mappings = get_mappings_for_trait(json_response_1, trait)
 
@@ -79,6 +87,7 @@ def get_ontology_mappings(trait, filters):
             # If no label is returned (shouldn't really happen) keep the existing one
             if label:
                 mapping.label = label
+                mapping.ols_label = 1
         except:
             print("Couldn't retrieve ontology label from OLS for trait '{}', will use the one from Zooma".format(trait.name))
 
@@ -86,7 +95,7 @@ def get_ontology_mappings(trait, filters):
 
 
 def build_zooma_query(trait_name, filters):
-    url = "http://snarf.ebi.ac.uk:8580/spot/zooma/v2/api/services/annotate?propertyValue={}".format(trait_name)
+    url = "https://www.ebi.ac.uk/spot/zooma/v2/api/services/annotate?propertyValue={}".format(trait_name)
     url_filters = [
                     "required:[{}]".format(filters["required"]),
                     "ontologies:[{}]".format(filters["ontologies"]),
@@ -130,9 +139,9 @@ class ArgParser:
 
         parser.add_argument("-i", dest="input_filepath", required=True, help="path to input file, with trait names in first column, number of variants the trait name appears in in the second column. delimeted using tab")
         parser.add_argument("-o", dest="output_filepath", required=True, help="path to output file (not just the directory). outputs a file with a header (line starting with \"#\") which shows the filters used. then the first column is trait name, then number of variants for the trait, then zooma label, uri(s), confidence, source. these zooma columns repeat when there are multiple mappings.")
-        parser.add_argument("-n", dest="ontologies", default="efo,hp,ordo", help="ontologies to use in query")
-        parser.add_argument("-r", dest="required", default="bmb-wp7,cttv,eva-clinvar,sysmicro,atlas,uniprot,gwas,ebisc", help="data sources to use in query.")
-        parser.add_argument("-p", dest="preferred", default="efo,hp,ordo,cttv,eva-clinvar,gwas,atlas", help="preference for data sources, with preferred data source first.")
+        parser.add_argument("-n", dest="ontologies", default="efo,hp", help="ontologies to use in query")
+        parser.add_argument("-r", dest="required", default="cttv,eva-clinvar,gwas", help="data sources to use in query.")
+        parser.add_argument("-p", dest="preferred", default="eva-clinvar,cttv,gwas", help="preference for data sources, with preferred data source first.")
 
         args = parser.parse_args(args=argv[1:])
 
