@@ -57,10 +57,14 @@ def clinvar_jsons(filepath):
 
 class ArgParser:
     def __init__(self, argv):
-        parser = argparse.ArgumentParser()
+        usage = """
+                Script for extracting the trait names of clinvar records from a file with a list
+                of cellbase clinvar jsons, and the number of traits with this trait name.
+                """
+        parser = argparse.ArgumentParser(usage=usage)
 
-        parser.add_argument("-i", dest="infile_path", required=True)
-        parser.add_argument("-o", dest="outfile_path", required=True)
+        parser.add_argument("-i", dest="infile_path", required=True, help="Path to a file containing one cellbase clinvar json per line. This should usually contain just the clinvar records that have clinical significances of 'pathogenic' and 'likely pathogenic'")
+        parser.add_argument("-o", dest="outfile_path", required=True, help="Path to file to output trait names. This is a tab separated file with the trait name in the first column, and the number of traits (not records, since some records have multiple traits, although that count would not differ much) that have this trait name.")
 
         args = parser.parse_args(args=argv[1:])
 
