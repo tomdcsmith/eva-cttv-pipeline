@@ -6,10 +6,10 @@ import sys
 def main():
     parser = ArgParser(sys.argv)
 
-    varsum_file_path = parser.varsum_file_path
+    infile_path = parser.infile_path
     outfile_path = parser.outfile_path
 
-    with open_file(varsum_file_path, "rt") as varsum_file:
+    with open_file(infile_path, "rt") as varsum_file:
         with open_file(outfile_path, "wt") as outfile:
             for line in varsum_file:
                 line_list = line.rstrip().split("\t")
@@ -80,12 +80,12 @@ class ArgParser:
     def __init__(self, argv):
         parser = argparse.ArgumentParser()
 
-        parser.add_argument("-v", dest="varsum_file_path", required=True)
+        parser.add_argument("-i", dest="infile_path", required=True, help="path to variant summary file from clinvar")
         parser.add_argument("-o", dest="outfile_path", required=True)
 
         args = parser.parse_args(args=argv[1:])
 
-        self.varsum_file_path = args.varsum_file_path
+        self.infile_path = args.infile_path
         self.outfile_path = args.outfile_path
 
 
