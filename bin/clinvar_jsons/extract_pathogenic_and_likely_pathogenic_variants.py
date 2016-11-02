@@ -32,10 +32,15 @@ def is_path_or_likely_path(clinvar_json):
 
 class ArgParser:
     def __init__(self, argv):
-        parser = argparse.ArgumentParser()
+        usage = """
+        Script for extracting the clinvar records that have clinical significance of 'pathogenic'
+        and 'likely pathogenic' from a file with a list of cellbase clinvar jsons. The output is
+        in the same format as the input.
+        """
+        parser = argparse.ArgumentParser(usage=usage)
 
-        parser.add_argument("-i", dest="infile_path", required=True)
-        parser.add_argument("-o", dest="outfile_path", required=True)
+        parser.add_argument("-i", dest="infile_path", required=True, help="a path to a file containing one cellbase clinvar json per line")
+        parser.add_argument("-o", dest="outfile_path", required=True, help="a path to the output file which will contain the jsons from the input file, but only those that are specified as having a pathogenic or likely pathogenic clincar significance")
 
         args = parser.parse_args(args=argv[1:])
 
