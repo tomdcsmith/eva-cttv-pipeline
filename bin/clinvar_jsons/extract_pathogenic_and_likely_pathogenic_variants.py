@@ -27,11 +27,7 @@ def is_path_or_likely_path(clinvar_json):
         if "description" in clinvar_assertion["clinicalSignificance"]:
             for description in clinvar_assertion["clinicalSignificance"]["description"]:
                 clin_sigs.add(description)
-        else:
-            continue
-    if len(clin_sigs.intersection({"Pathogenic", "Likely pathogenic"})) == 0:
-        return False
-    return True
+    return len(clin_sigs.intersection({"Pathogenic", "Likely pathogenic"})) > 0
 
 
 class ArgParser:
