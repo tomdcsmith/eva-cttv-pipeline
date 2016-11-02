@@ -20,10 +20,6 @@ class CellbaseRecords:
         self.json_file = json_file
 
     def __iter__(self):
-        for record in self.__each_line_in_file():
-            yield record
-
-    def __each_line_in_file(self):
         with utilities.open_file(self.json_file, "rt") as f:
             for line in f:
                 yield json.loads(line.rstrip())
