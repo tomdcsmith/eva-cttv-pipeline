@@ -438,8 +438,7 @@ def convert_allele_origins(orig_allele_origins):
         converted_allele_origins.append("somatic")
     if set(orig_allele_origins).intersection({"biparental", "de novo", "germline", "inherited",
                                               "maternal", "not applicable", "not provided",
-                                              "paternal", "uniparental", "unknown",
-                                              "uniparental"}):
+                                              "paternal", "uniparental", "unknown"}):
         converted_allele_origins.append("germline")
 
     return converted_allele_origins
