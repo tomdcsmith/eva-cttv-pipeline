@@ -135,11 +135,11 @@ def build_ols_query(ontology_uri):
 class ArgParser:
 
     def __init__(self, argv):
-        usage = """
+        description = """
                 Script for running terms through Zooma, retrieving mapped uri, label from OLS,
                 confidence of the mapping, and source of the mapping.
                 """
-        parser = argparse.ArgumentParser(usage=usage)
+        parser = argparse.ArgumentParser(description=description)
 
         parser.add_argument("-i", dest="input_filepath", required=True, help="path to input file, with trait names in first column, number of variants the trait name appears in in the second column. delimeted using tab")
         parser.add_argument("-o", dest="output_filepath", required=True, help="path to output file (not just the directory). outputs a file with a header (line starting with \"#\") which shows the filters used. then the first column is trait name, then number of variants for the trait, then zooma label, uri(s), confidence, source. these zooma columns repeat when there are multiple mappings.")
