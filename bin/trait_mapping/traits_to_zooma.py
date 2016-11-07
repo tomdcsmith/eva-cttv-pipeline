@@ -16,15 +16,16 @@ class Trait:
 
 class OntologyMapping:
 
-    def __init__(self, uri, label, confidence, source):
-        self.uri = uri
-        self.label = label
+    def __init__(self, uris, zooma_label, confidence, source):
+        self.uris = uris
+        self.zooma_label = zooma_label
+        self.labels = [self.zooma_label for _ in range(len(uris))]
         self.confidence = confidence
         self.source = source
-        self.ols_label = 0
+        self.ols_label = [0 for _ in range(len(uris))]
 
     def __str__(self):
-        return "{}\t{}\t{}\t{}\t{}".format(self.label, self.ols_label, self.uri, self.confidence, self.source)
+        return "{}\t{}\t{}\t{}\t{}".format(",".join(self.labels), self.ols_label, ",".join(self.uris), self.confidence, self.source)
 
 
 
@@ -82,16 +83,16 @@ def get_ontology_mappings(trait, filters):
     mappings = get_mappings_for_trait(json_response_1, trait)
 
     for mapping in mappings:
-        try:
-            label = get_ontology_label_from_ols(mapping.uri)
+        for idx, uri in enumerate(mapping.uris):
+            label = get_ontology_label_from_ols(uri)
             # If no label is returned (shouldn't really happen) keep the existing one
             if label:
-                mapping.label = label
-                mapping.ols_label = 1
-        except:
-            print(
-                "Couldn't retrieve ontology label from OLS for trait '{}', will use the one from Zooma".format(
-                    trait.name))
+                mapping.labels[idx] = label
+                mapping.ols_label[idx] = 1
+            else:
+                print(
+                    "Couldn't retrieve ontology label from OLS for trait '{}', will use the one from Zooma".format(
+                        trait.name))
 
     return mappings
 
@@ -110,11 +111,12 @@ def build_zooma_query(trait_name, filters):
 def get_mappings_for_trait(zooma_response, trait):
     mappings = []
     for result in zooma_response:
-        uri = ",".join(result["semanticTags"])
-        label = result["annotatedProperty"]["propertyValue"]
+        # uris = ",".join(result["semanticTags"])
+        uris = result["semanticTags"]
+        zooma_label = result["annotatedProperty"]["propertyValue"]
         confidence = result["confidence"]
         source_name = result["derivedFrom"]["provenance"]["source"]["name"]
-        mappings.append(OntologyMapping(uri, label, confidence, source_name))
+        mappings.append(OntologyMapping(uris, zooma_label, confidence, source_name))
     return mappings
 
 
