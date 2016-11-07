@@ -21,6 +21,9 @@ def main():
 
 
 def get_trait_names(clinvar_json):
+    # This if-else block is due to the change in the format of the cellbase json that holds the
+    # clinvar data. Originally "clinvarSet" was the top level, but this level was removed and
+    # referenceClinVarAssertion is now the top level.
     if "clinvarSet" in clinvar_json:
         trait_set = clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["traitSet"]
     else:
