@@ -82,21 +82,16 @@ def get_ontology_mappings(trait, filters):
     mappings = get_mappings_for_trait(json_response_1, trait)
 
     for mapping in mappings:
-        retry_count = 4
-        for retry_num in range(retry_count):  # retries
-            try:
-                label = get_ontology_label_from_ols(mapping.uri)
-                # If no label is returned (shouldn't really happen) keep the existing one
-                if label:
-                    mapping.label = label
-                    mapping.ols_label = 1
-                break
-            except:
-                print("attempt {}: error for request with uri {}".format(retry_num, mapping.uri))
-                if retry_num == retry_count - 1:
-                    print("error on last attempt, skipping")
-                    print("Couldn't retrieve ontology label from OLS for trait '{}', will use the one from Zooma".format(trait.name))
-                    break
+        try:
+            label = get_ontology_label_from_ols(mapping.uri)
+            # If no label is returned (shouldn't really happen) keep the existing one
+            if label:
+                mapping.label = label
+                mapping.ols_label = 1
+        except:
+            print(
+                "Couldn't retrieve ontology label from OLS for trait '{}', will use the one from Zooma".format(
+                    trait.name))
 
     return mappings
 
@@ -125,10 +120,19 @@ def get_mappings_for_trait(zooma_response, trait):
 
 def get_ontology_label_from_ols(uri_mapping):
     url = build_ols_query(uri_mapping)
-    json_response = requests.get(url).json()
-    for term in json_response["_embedded"]["terms"]:
-        if term["is_defining_ontology"]:
-            return term["label"]
+
+    retry_count = 4
+    for retry_num in range(retry_count):  # retries
+        try:
+            json_response = requests.get(url).json()
+            for term in json_response["_embedded"]["terms"]:
+                if term["is_defining_ontology"]:
+                    return term["label"]
+        except:
+            print("attempt {}: error for request with url {}".format(retry_num, url))
+            if retry_num == retry_count - 1:
+                print("error on last attempt, skipping")
+                return None
 
     return None
 
