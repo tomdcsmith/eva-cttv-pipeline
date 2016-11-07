@@ -29,12 +29,8 @@ def get_output_lines(line_list):
     alt = line_list[26]
     strand = "+"
     rcvs = line_list[8].split(";")
-    rs = line_list[6]
-    if rs != "-1":
-        rs = "rs" + rs
-    nsv = line_list[7]
-    if nsv == "-":
-        nsv = "-1"
+    rs = "rs" + line_list[6] if line_list != "-1" else "-1"
+    nsv = line_list[7] if line_list[7] != "-" else "-1"
     ncbi_geneid = line_list[3]
 
     output_lines = []
