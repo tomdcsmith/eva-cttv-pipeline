@@ -278,6 +278,6 @@ class ClinvarRecord(UserDict):
         allele_origins = set()
         for clinvar_assetion_document in self.data['clinVarAssertion']:
             for observed_in_document in clinvar_assetion_document['observedIn']:
-                allele_origins.add(observed_in_document['sample']['origin'])
+                allele_origins.add(observed_in_document['sample']['origin'].lower())
 
         return list(allele_origins)

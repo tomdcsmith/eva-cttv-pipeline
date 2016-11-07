@@ -216,8 +216,10 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
 
         traits = create_traits(clinvar_record.traits, mappings.trait_2_efo, report)
 
+        converted_allele_origins = convert_allele_origins(clinvar_record.allele_origins)
+
         for ensembl_gene_id, trait, allele_origin \
-                in itertools.product(clinvar_record.consequence_type.ensembl_gene_ids, traits, clinvar_record.allele_origins):
+                in itertools.product(clinvar_record.consequence_type.ensembl_gene_ids, traits, converted_allele_origins):
 
             if allele_origin not in ('germline', 'somatic'):
                 report.n_unrecognised_allele_origin[allele_origin] += 1
@@ -428,3 +430,19 @@ def get_default_allowed_clinical_significance():
             'likely benign', 'confers sensitivity', 'uncertain significance',
             'likely pathogenic', 'conflicting data from submitters', 'risk factor',
             'association']
+
+def convert_allele_origins(orig_allele_origins):
+    orig_allele_origins = [item.lower() for item in orig_allele_origins]
+    converted_allele_origins = []
+    if "somatic" in orig_allele_origins:
+        converted_allele_origins.append("somatic")
+    if len(set(orig_allele_origins).intersection({"germline", "unknown", "not provided", "de novo",
+                                                  "inherited", "maternal", "paternal",
+                                                  "biparental", "uniparental",
+                                                  "not applicable"})) > 0:
+        converted_allele_origins.append("germline")
+
+    return converted_allele_origins
+
+
+
