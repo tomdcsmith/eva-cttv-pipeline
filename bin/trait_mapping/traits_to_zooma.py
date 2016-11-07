@@ -22,10 +22,10 @@ class OntologyMapping:
         self.labels = [self.zooma_label for _ in range(len(uris))]
         self.confidence = confidence
         self.source = source
-        self.ols_label = [0 for _ in range(len(uris))]
+        self.ols_label = ["0" for _ in range(len(uris))]
 
     def __str__(self):
-        return "{}\t{}\t{}\t{}\t{}".format(",".join(self.labels), self.ols_label, ",".join(self.uris), self.confidence, self.source)
+        return "{}\t{}\t{}\t{}\t{}".format("|".join(self.labels), "|".join(self.ols_label), "|".join(self.uris), self.confidence, self.source)
 
 
 
@@ -61,6 +61,34 @@ def read_traits(filepath):
     return traits
 
 
+def request_retry_helper(function, retry_count, url):
+    for retry_num in range(retry_count):
+        return_value = function(url)
+        if return_value is not None:
+            return return_value
+        print("attempt {}: failed running function {} with url {}".format(retry_num, function, url))
+    print("error on last attempt, skipping")
+    return None
+
+
+def zooma_query_helper(url):
+    try:
+        json_response_1 = requests.get(url).json()
+        return json_response_1
+    except json.decoder.JSONDecodeError as e:
+        return None
+
+
+def ols_query_helper(url):
+    try:
+        json_response = requests.get(url).json()
+        for term in json_response["_embedded"]["terms"]:
+            if term["is_defining_ontology"]:
+                return term["label"]
+    except:
+        return None
+
+
 def get_ontology_mappings(trait, filters):
     '''
     First get the URI, label from a selected source, confidence and source:
@@ -69,16 +97,10 @@ def get_ontology_mappings(trait, filters):
     http://www.ebi.ac.uk/ols/api/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0003847
     '''
     url = build_zooma_query(trait.name, filters)
-    retry_count = 4
-    for retry_num in range(retry_count):  # retries
-        try:
-            json_response_1 = requests.get(url).json()
-            break
-        except json.decoder.JSONDecodeError as e:
-            print("attempt {}: decode error for request with url {}".format(retry_num, url))
-            if retry_num == retry_count - 1:
-                print("error on last attempt, skipping")
-                return None
+    json_response_1 = request_retry_helper(zooma_query_helper, 4, url)
+
+    if json_response_1 is None:
+        return None
 
     mappings = get_mappings_for_trait(json_response_1, trait)
 
@@ -86,9 +108,9 @@ def get_ontology_mappings(trait, filters):
         for idx, uri in enumerate(mapping.uris):
             label = get_ontology_label_from_ols(uri)
             # If no label is returned (shouldn't really happen) keep the existing one
-            if label:
+            if label is not None:
                 mapping.labels[idx] = label
-                mapping.ols_label[idx] = 1
+                mapping.ols_label[idx] = "1"
             else:
                 print(
                     "Couldn't retrieve ontology label from OLS for trait '{}', will use the one from Zooma".format(
@@ -122,21 +144,8 @@ def get_mappings_for_trait(zooma_response, trait):
 
 def get_ontology_label_from_ols(uri_mapping):
     url = build_ols_query(uri_mapping)
-
-    retry_count = 4
-    for retry_num in range(retry_count):  # retries
-        try:
-            json_response = requests.get(url).json()
-            for term in json_response["_embedded"]["terms"]:
-                if term["is_defining_ontology"]:
-                    return term["label"]
-        except:
-            print("attempt {}: error for request with url {}".format(retry_num, url))
-            if retry_num == retry_count - 1:
-                print("error on last attempt, skipping")
-                return None
-
-    return None
+    json_response_1 = request_retry_helper(ols_query_helper, 4, url)
+    return json_response_1
 
 
 def build_ols_query(ontology_uri):
