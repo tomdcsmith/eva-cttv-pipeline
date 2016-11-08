@@ -239,11 +239,10 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
             report.add_evidence_string(evidence_string, clinvar_record, trait, ensembl_gene_id)
             report.evidence_list.append([clinvar_record.accession,
                                          clinvar_record.rs,
-                                         ','.join(trait.clinvar_trait_list),
-                                         ','.join(trait.efo_list)])
+                                         trait.clinvar_name,
+                                         trait.ontology_name])
             report.counters["n_valid_rs_and_nsv"] += (clinvar_record.nsv is not None)
-            report.counters["n_more_than_one_efo_term"] += (len(trait.efo_list) > 1)
-            report.traits.update(set(trait.efo_list))
+            report.traits.add(trait.ontology_name)
             report.ensembl_gene_id_uris.add(evidence_strings.get_ensembl_gene_id_uri(
                 ensembl_gene_id))
 

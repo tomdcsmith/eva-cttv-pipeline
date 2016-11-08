@@ -60,8 +60,8 @@ class CTTVEvidenceString(dict):
     Subclass of dict to use indexing.
     """
 
-    def __init__(self, a_dictionary, clinvar_record=None,
-                 efo_list=None, ref_list=None, ensembl_gene_id=None, report=None):
+    def __init__(self, a_dictionary, clinvar_record=None, ontology_name=None, ref_list=None,
+                 ensembl_gene_id=None, report=None, clinvar_name=None):
         super().__init__(a_dictionary)
         # dict.__init__(a_dictionary)
 
@@ -83,12 +83,11 @@ class CTTVEvidenceString(dict):
         if ref_list and len(ref_list) > 0:
             self.top_level_literature = ref_list
 
-        if efo_list:
-            efo_list.sort()
-            # Just (arbitrarily) adding one of the
-            # potentially multiple EFO terms because of schema constraints
-            self.disease = efo_list[0]
-            self.add_unique_association_field('phenotype', efo_list[0])
+        self.disease_id = ontology_name
+        self.add_unique_association_field('phenotype', ontology_name)
+
+        if clinvar_name:
+            self.disease_source_name = clinvar_name
 
     def add_unique_association_field(self, key, value):
         self['unique_association_fields'][key] = value
@@ -101,11 +100,19 @@ class CTTVEvidenceString(dict):
         self['target']['activity'] = activity
 
     @property
-    def disease(self):
+    def disease_source_name(self):
+        return efo_term.EFOTerm(self['disease']['source_name'][0])
+
+    @disease_source_name.setter
+    def disease_source_name(self, value):
+        self['disease']['source_name'] = [value]
+
+    @property
+    def disease_id(self):
         return efo_term.EFOTerm(self['disease']['id'][0])
 
-    @disease.setter
-    def disease(self, value):
+    @disease_id.setter
+    def disease_id(self, value):
         self['disease']['id'] = [value]
 
     @property
@@ -150,7 +157,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                             clinvar_record.measure_set_refs_list))
 
         super().__init__(a_dictionary, clinvar_record,
-                         trait.efo_list, ref_list, ensembl_gene_id, report)
+                         trait.ontology_name, ref_list, ensembl_gene_id, report. trait.clinvar_name)
 
         self.add_unique_association_field('alleleOrigin', 'germline')
         if clinvar_record.rs:
@@ -243,7 +250,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
     def validate(self):
         jsonschema.validate(self, CTTVGeneticsEvidenceString.schema,
                             format_checker=jsonschema.FormatChecker())
-        self.disease.is_obsolete()
+        self.disease_id.is_obsolete()
         return True
 
     def _clear_variant(self):
@@ -298,8 +305,8 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                             clinvar_record.observed_refs_list +
                             clinvar_record.measure_set_refs_list))
 
-        super().__init__(a_dictionary, clinvar_record,
-                         trait.efo_list, ref_list, ensembl_gene_id, report)
+        super().__init__(a_dictionary, clinvar_record, trait.ontology_name, ref_list,
+                         ensembl_gene_id, report, trait.clinvar_name)
 
         self.add_unique_association_field('alleleOrigin', 'somatic')
 
@@ -350,7 +357,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
     def validate(self):
         jsonschema.validate(self, CTTVSomaticEvidenceString.schema,
                             format_checker=jsonschema.FormatChecker())
-        self.disease.is_obsolete()
+        self.disease_id.is_obsolete()
         return True
 
     @property

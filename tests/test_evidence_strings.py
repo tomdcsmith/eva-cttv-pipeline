@@ -162,8 +162,8 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
     def test_disease(self):
         disease_id = "Ciliary dyskinesia, primary, 26"
 
-        self.test_ges.disease = disease_id
-        self.assertEqual(self.test_ges.disease, efo_term.EFOTerm(disease_id))
+        self.test_ges.disease_id = disease_id
+        self.assertEqual(self.test_ges.disease_id, efo_term.EFOTerm(disease_id))
 
     def test_evidence_codes(self):
         evidence_codes = ["http://purl.obolibrary.org/obo/ECO_0000205"]
