@@ -29,16 +29,15 @@ class GetMappingsTest(unittest.TestCase):
         cls.mappings = MAPPINGS
 
     def test_efo_mapping(self):
-        self.assertEqual(len(self.mappings.trait_2_efo), 5055)
-        self.assertEqual(len(self.mappings.unavailable_efo_dict), 0)
+        self.assertEqual(len(self.mappings.trait_2_efo), 5283)
 
         self.assertEqual(self.mappings.trait_2_efo["renal-hepatic-pancreatic dysplasia 2"],
-                         ['http://www.orpha.net/ORDO/Orphanet_294415'])
+                         ('http://www.orpha.net/ORDO/Orphanet_294415', None))
         self.assertEqual(self.mappings.trait_2_efo["frontotemporal dementia"],
-                         ['http://purl.obolibrary.org/obo/HP_0000713'])
+                         ('http://purl.obolibrary.org/obo/HP_0000713', None))
         self.assertEqual(
             self.mappings.trait_2_efo["3 beta-hydroxysteroid dehydrogenase deficiency"],
-            ['http://www.orpha.net/ORDO/Orphanet_90791'])
+            ('http://www.orpha.net/ORDO/Orphanet_90791', None))
 
     def test_consequence_type_dict(self):
         self.assertEqual(len(self.mappings.consequence_type_dict), 56)
@@ -119,29 +118,13 @@ class LoadEfoMappingTest(unittest.TestCase):
         cls.trait_2_efo, cls.unavailable_efo = \
             clinvar_to_evidence_strings.load_efo_mapping(efo_file)
         cls.trait_2_efo_w_ignore, cls.unavailable_efo_w_ignore = \
-            clinvar_to_evidence_strings.load_efo_mapping(efo_file, ignore_terms_file=ignore_file)
+            clinvar_to_evidence_strings.load_efo_mapping(efo_file)
 
     def test_just_mapping_trait_2_efo(self):
         self.assertEqual(len(self.trait_2_efo), 5283)
 
     def test_w_ignore_trait_2_efo(self):
         self.assertEqual(len(self.trait_2_efo_w_ignore), 5055)
-
-
-class GetUnmappedUrlTest(unittest.TestCase):
-    def test_orphanet(self):
-        url = "http://www.orpha.net/ORDO/Orphanet_2670"
-        self.assertEqual(clinvar_to_evidence_strings.get_unmapped_url(url),
-                         "http://purl.bioontology.org/ORDO/Orphanet_2670")
-
-    def test_hp(self):
-        url = "http://purl.obolibrary.org/obo/HP_0000545"
-        self.assertEqual(clinvar_to_evidence_strings.get_unmapped_url(url),
-                         "http://purl.bioontology.org/obo/HP_0000545")
-
-    def test_bad_url(self):
-        #TODO currently the function exits execution with bad urls
-        pass
 
 
 class GetTermsFromFileTest(unittest.TestCase):
