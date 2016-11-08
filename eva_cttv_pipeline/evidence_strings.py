@@ -61,7 +61,7 @@ class CTTVEvidenceString(dict):
     """
 
     def __init__(self, a_dictionary, clinvar_record=None, ontology_name=None, ref_list=None,
-                 ensembl_gene_id=None, report=None, clinvar_name=None):
+                 ensembl_gene_id=None, report=None, clinvar_name=None, ontology_label=None):
         super().__init__(a_dictionary)
         # dict.__init__(a_dictionary)
 
@@ -89,6 +89,10 @@ class CTTVEvidenceString(dict):
         if clinvar_name:
             self.disease_source_name = clinvar_name
 
+        if ontology_label:
+            self.disease_name = ontology_label
+
+
     def add_unique_association_field(self, key, value):
         self['unique_association_fields'][key] = value
 
@@ -98,6 +102,14 @@ class CTTVEvidenceString(dict):
     def set_target(self, target_id, activity):
         self['target']['id'].append(target_id)
         self['target']['activity'] = activity
+
+    @property
+    def disease_name(self):
+        return efo_term.EFOTerm(self['disease']['name'][0])
+
+    @disease_name.setter
+    def disease_name(self, value):
+        self['disease']['name'] = [value]
 
     @property
     def disease_source_name(self):
@@ -157,7 +169,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                             clinvar_record.measure_set_refs_list))
 
         super().__init__(a_dictionary, clinvar_record, trait.ontology_id, ref_list,
-                         ensembl_gene_id, report, trait.clinvar_name)
+                         ensembl_gene_id, report, trait.clinvar_name, trait.ontology_label)
 
         self.add_unique_association_field('alleleOrigin', 'germline')
         if clinvar_record.rs:
@@ -306,7 +318,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                             clinvar_record.measure_set_refs_list))
 
         super().__init__(a_dictionary, clinvar_record, trait.ontology_id, ref_list,
-                         ensembl_gene_id, report, trait.clinvar_name)
+                         ensembl_gene_id, report, trait.clinvar_name, trait.ontology_label)
 
         self.add_unique_association_field('alleleOrigin', 'somatic')
 
