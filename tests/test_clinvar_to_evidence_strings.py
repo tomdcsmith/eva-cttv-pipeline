@@ -123,9 +123,6 @@ class LoadEfoMappingTest(unittest.TestCase):
     def test_just_mapping_trait_2_efo(self):
         self.assertEqual(len(self.trait_2_efo), 5283)
 
-    def test_w_ignore_trait_2_efo(self):
-        self.assertEqual(len(self.trait_2_efo_w_ignore), 5055)
-
 
 class GetTermsFromFileTest(unittest.TestCase):
     #TODO do the same for adapt terms file?
