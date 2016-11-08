@@ -75,7 +75,7 @@ class CreateTraitTest(unittest.TestCase):
         self.assertEqual(self.trait.clinvar_name, 'ciliary dyskinesia, primary, 7')
 
     def test_efo_list(self):
-        self.assertEqual(self.trait.ontology_name, 'http://www.ebi.ac.uk/efo/EFO_0003900')
+        self.assertEqual(self.trait.ontology_id, 'http://www.ebi.ac.uk/efo/EFO_0003900')
 
     def test_return_none(self):
         none_trait = \

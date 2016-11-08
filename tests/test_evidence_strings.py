@@ -32,7 +32,7 @@ def get_args_CTTVGeneticsEvidenceString_init():
     trait = SimpleNamespace()
     trait.trait_counter = 0
     trait.clinvar_name = ""
-    trait.ontology_name = 'http://www.orpha.net/ORDO/Orphanet_88991'
+    trait.ontology_id = 'http://www.orpha.net/ORDO/Orphanet_88991'
 
     ensembl_gene_id = "ENSG00000197616"
 
@@ -65,7 +65,7 @@ def get_args_CTTVSomaticEvidenceString_init():
     trait = SimpleNamespace()
     trait.trait_counter = 0
     trait.clinvar_name = ""
-    trait.ontology_name = 'http://www.ebi.ac.uk/efo/EFO_0003840'
+    trait.ontology_id = 'http://www.ebi.ac.uk/efo/EFO_0003840'
 
     ensembl_gene_id = "ENSG00000135486"
 

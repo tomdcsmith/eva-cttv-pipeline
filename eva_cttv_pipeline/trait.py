@@ -18,5 +18,5 @@ def map_efo(trait_2_efo_dict, name_list):
 class Trait:
     def __init__(self, clinvar_trait_name_list, trait_counter, trait_2_efo_dict):
         self.trait_counter = trait_counter  # number of trait for record
-        self.clinvar_name, self.ontology_name = map_efo(trait_2_efo_dict,
-                                                        clinvar_trait_name_list)
+        self.clinvar_name, self.ontology_id = map_efo(trait_2_efo_dict,
+                                                      clinvar_trait_name_list)

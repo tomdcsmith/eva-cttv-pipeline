@@ -240,9 +240,9 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
             report.evidence_list.append([clinvar_record.accession,
                                          clinvar_record.rs,
                                          trait.clinvar_name,
-                                         trait.ontology_name])
+                                         trait.ontology_id])
             report.counters["n_valid_rs_and_nsv"] += (clinvar_record.nsv is not None)
-            report.traits.add(trait.ontology_name)
+            report.traits.add(trait.ontology_id)
             report.ensembl_gene_id_uris.add(evidence_strings.get_ensembl_gene_id_uri(
                 ensembl_gene_id))
 
@@ -305,7 +305,7 @@ def create_trait(trait_counter, name_list, trait_2_efo_dict):
     trait = Trait(name_list, trait_counter, trait_2_efo_dict)
     # Only ClinVar records associated to a
     # trait with mapped EFO term will generate evidence_strings
-    if trait.ontology_name is None:
+    if trait.ontology_id is None:
         return None
     return trait
 
