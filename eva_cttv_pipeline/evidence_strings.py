@@ -156,8 +156,8 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                             clinvar_record.observed_refs_list +
                             clinvar_record.measure_set_refs_list))
 
-        super().__init__(a_dictionary, clinvar_record,
-                         trait.ontology_name, ref_list, ensembl_gene_id, report. trait.clinvar_name)
+        super().__init__(a_dictionary, clinvar_record, trait.ontology_name, ref_list,
+                         ensembl_gene_id, report, trait.clinvar_name)
 
         self.add_unique_association_field('alleleOrigin', 'germline')
         if clinvar_record.rs:

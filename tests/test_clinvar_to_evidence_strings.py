@@ -72,10 +72,10 @@ class CreateTraitTest(unittest.TestCase):
                                                              MAPPINGS.trait_2_efo)
 
     def test_clinvar_trait_list(self):
-        self.assertEqual(self.trait.clinvar_trait_list, ['Ciliary dyskinesia, primary, 7'])
+        self.assertEqual(self.trait.clinvar_name, 'ciliary dyskinesia, primary, 7')
 
     def test_efo_list(self):
-        self.assertEqual(self.trait.efo_list, ['http://www.ebi.ac.uk/efo/EFO_0003900'])
+        self.assertEqual(self.trait.ontology_name, 'http://www.ebi.ac.uk/efo/EFO_0003900')
 
     def test_return_none(self):
         none_trait = \
