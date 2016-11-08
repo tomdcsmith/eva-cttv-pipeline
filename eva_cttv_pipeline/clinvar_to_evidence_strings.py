@@ -333,7 +333,7 @@ def load_efo_mapping(efo_mapping_file):
             clinvar_name = line_list[0].lower()
             if len(line_list) > 1:
                 ontology_id = line_list[1]
-                ontology_label = line_list[2]
+                ontology_label = line_list[2] if len(line_list) > 2 else None
                 trait_2_efo[clinvar_name] = (ontology_id, ontology_label)
             else:
                 unavailable_efo.add(clinvar_name)
