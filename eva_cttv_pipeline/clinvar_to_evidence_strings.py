@@ -9,7 +9,7 @@ import xlrd
 
 from eva_cttv_pipeline import cellbase_records, efo_term, consequence_type, config, \
     evidence_strings, clinvar, utilities
-
+from eva_cttv_pipeline.trait import Trait
 
 __author__ = 'Javier Lopez: javild@gmail.com'
 
@@ -303,12 +303,10 @@ def create_traits(clinvar_traits, trait_2_efo_dict, report):
 
 
 def create_trait(trait_counter, name_list, trait_2_efo_dict):
-    trait = SimpleNamespace()
-    trait.trait_counter = trait_counter
-    trait.clinvar_trait_list, trait.efo_list = map_efo(trait_2_efo_dict, name_list)
+    trait = Trait(name_list, trait_counter, trait_2_efo_dict)
     # Only ClinVar records associated to a
     # trait with mapped EFO term will generate evidence_strings
-    if len(trait.efo_list) == 0:
+    if trait.ontology_name is None:
         return None
     return trait
 
@@ -323,29 +321,6 @@ def append_nsv(nsv_list, clinvar_record):
     if nsv is not None:
         nsv_list.append(nsv)
     return nsv_list
-
-
-def map_efo(trait_2_efo, name_list):
-    efo_list = []
-    trait_list_to_return = []
-    trait_string = name_list[0].lower()
-    if trait_string in trait_2_efo:
-        for efo_trait in trait_2_efo[trait_string]:
-            # First element in trait_list mus always be the "Preferred" trait name
-            if efo_trait not in efo_list:
-                trait_list_to_return.append(name_list[0])
-                efo_list.append(efo_trait)
-    else:
-        for trait in name_list[1:]:
-            trait_string = trait.lower()
-            if trait_string in trait_2_efo:
-                for efo_trait in trait_2_efo[trait_string]:
-                    # First element in trait_list mus always be the "Preferred" trait name
-                    if efo_trait not in efo_list:
-                        trait_list_to_return.append(trait)
-                        efo_list.append(efo_trait)
-
-    return trait_list_to_return, efo_list
 
 
 def load_efo_mapping(efo_mapping_file, ignore_terms_file=None, adapt_terms_file=None):
