@@ -14,8 +14,8 @@ def _get_mappings():
     variant_summary_file = os.path.join(os.path.dirname(__file__), 'resources',
                                         'variant_summary_2016-05_test_extract.txt')
 
-    mappings = clinvar_to_evidence_strings.get_mappings(efo_mapping_file, ignore_file, None,
-                                                        snp_2_gene_file, variant_summary_file)
+    mappings = clinvar_to_evidence_strings.get_mappings(efo_mapping_file, snp_2_gene_file,
+                                                        variant_summary_file)
 
     return mappings
 

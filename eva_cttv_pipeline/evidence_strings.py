@@ -87,10 +87,10 @@ class CTTVEvidenceString(dict):
         self.add_unique_association_field('phenotype', ontology_name)
 
         if clinvar_name:
-            self.disease_source_name = clinvar_name
+            self.disease_source_name = [clinvar_name]
 
         if ontology_label:
-            self.disease_name = ontology_label
+            self.disease_name = [ontology_label]
 
 
     def add_unique_association_field(self, key, value):
