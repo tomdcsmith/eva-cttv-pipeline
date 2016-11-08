@@ -23,11 +23,11 @@ class Report:
     One instance of this class is instantiated in the running of the pipeline.
     """
 
-    def __init__(self, unavailable_efo_dict=None):
-        if unavailable_efo_dict is None:
-            self.unavailable_efo_dict = {}
+    def __init__(self, unavailable_efo=None):
+        if unavailable_efo is None:
+            self.unavailable_efo = set()
         else:
-            self.unavailable_efo_dict = unavailable_efo_dict
+            self.unavailable_efo = unavailable_efo
 
         self.unrecognised_clin_sigs = set()
         self.ensembl_gene_id_uris = set()
@@ -89,7 +89,7 @@ class Report:
             ' mapping and valid EFO mapping were skipped due to a lack of a valid alleleOrigin.',
             str(self.counters["n_more_than_one_efo_term"]) +
             ' evidence strings with more than one trait mapped to EFO terms',
-            str(len(self.unavailable_efo_dict)) +
+            str(len(self.unavailable_efo)) +
             ' evidence strings were generated with traits without EFO correspondence',
             str(self.counters["n_valid_rs_and_nsv"]) +
             ' evidence strings were generated from ClinVar records with rs and nsv ids',
@@ -135,8 +135,8 @@ class Report:
         # Contains urls provided by Gary which are not yet included within EFO
         with utilities.open_file(dir_out + '/' + config.UNAVAILABLE_EFO_FILE_NAME, 'wt') as fdw:
             fdw.write('Trait\tCount\n')
-            for url in self.unavailable_efo_dict:
-                fdw.write(url.encode('utf8') + '\t' + str(self.unavailable_efo_dict[url]) + '\n')
+            for clinvar_name in list(self.unavailable_efo):
+                fdw.write(clinvar_name + "\n")
 
         with utilities.open_file(dir_out + '/' + config.EVIDENCE_STRINGS_FILE_NAME, 'wt') as fdw:
             for evidence_string in self.evidence_string_list:
@@ -167,14 +167,13 @@ class Report:
                 "n_total_clinvar_records": 0}
 
 
-def launch_pipeline(dir_out, allowed_clinical_significance, ignore_terms_file, adapt_terms_file,
-                    efo_mapping_file, snp_2_gene_file, variant_summary_file, json_file):
+def launch_pipeline(dir_out, allowed_clinical_significance, efo_mapping_file, snp_2_gene_file,
+                    variant_summary_file, json_file):
 
     allowed_clinical_significance = allowed_clinical_significance.split(',') if \
         allowed_clinical_significance else get_default_allowed_clinical_significance()
 
-    mappings = get_mappings(efo_mapping_file, ignore_terms_file, adapt_terms_file, snp_2_gene_file,
-                            variant_summary_file)
+    mappings = get_mappings(efo_mapping_file, snp_2_gene_file, variant_summary_file)
 
     report = clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_file)
 
@@ -188,7 +187,7 @@ def output(report, dir_out):
 
 def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_file):
 
-    report = Report(mappings.unavailable_efo_dict)
+    report = Report(mappings.unavailable_efo)
 
     cell_recs = cellbase_records.CellbaseRecords(json_file=json_file)
 
@@ -256,11 +255,10 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
     return report
 
 
-def get_mappings(efo_mapping_file, ignore_terms_file,
-                 adapt_terms_file, snp_2_gene_file, variant_summary_file):
+def get_mappings(efo_mapping_file, snp_2_gene_file, variant_summary_file):
     mappings = SimpleNamespace()
-    mappings.trait_2_efo, mappings.unavailable_efo_dict = \
-        load_efo_mapping(efo_mapping_file, ignore_terms_file, adapt_terms_file)
+    mappings.trait_2_efo, mappings.unavailable_efo = \
+        load_efo_mapping(efo_mapping_file)
 
     mappings.consequence_type_dict = \
         consequence_type.process_consequence_type_file(snp_2_gene_file)
@@ -322,12 +320,9 @@ def append_nsv(nsv_list, clinvar_record):
     return nsv_list
 
 
-def load_efo_mapping(efo_mapping_file, ignore_terms_file=None, adapt_terms_file=None):
-    ignore_terms = get_terms_from_file(ignore_terms_file)
-    adapt_terms = get_terms_from_file(adapt_terms_file)
-
+def load_efo_mapping(efo_mapping_file):
     trait_2_efo = {}
-    unavailable_efo = {}
+    unavailable_efo = set()
     n_efo_mappings = 0
 
     with utilities.open_file(efo_mapping_file, "rt") as f:
@@ -335,20 +330,13 @@ def load_efo_mapping(efo_mapping_file, ignore_terms_file=None, adapt_terms_file=
             if line.startswith("#"):
                 continue
             line_list = line.rstrip().split("\t")
-            valid_efo, urls_to_adapt = get_urls([line_list[1]], ignore_terms, adapt_terms)
-            clinvar_trait = line_list[0].lower()
-
-            if len(valid_efo) > 0:
-                trait_2_efo[clinvar_trait] = valid_efo
-                n_efo_mappings += 1
-            if len(urls_to_adapt) > 0:
-                trait_2_efo[clinvar_trait] = []
-                for url in urls_to_adapt:
-                    if url not in unavailable_efo:
-                        unavailable_efo[url] = 1
-                    else:
-                        unavailable_efo[url] += 1
-                    trait_2_efo[clinvar_trait].append(get_unmapped_url(url))
+            clinvar_name = line_list[0].lower()
+            if len(line_list) > 1:
+                ontology_id = line_list[1]
+                ontology_label = line_list[2]
+                trait_2_efo[clinvar_name] = (ontology_id, ontology_label)
+            else:
+                unavailable_efo.add(clinvar_name)
 
     print(str(n_efo_mappings) + ' EFO mappings loaded')
     print(str(len(unavailable_efo)) + ' urls without an actual valid EFO mapping')
@@ -358,31 +346,6 @@ def load_efo_mapping(efo_mapping_file, ignore_terms_file=None, adapt_terms_file=
 
 class UnhandledUrlTypeException(Exception):
     pass
-
-
-def get_unmapped_url(url):
-    parts = url.split('/')
-    if parts[-1].startswith("Orphanet_"):
-        new_url = "http://purl.bioontology.org/ORDO/" + parts[-1]
-    elif parts[-1].startswith("HP_"):
-        new_url = "http://purl.bioontology.org/obo/" + parts[-1]
-    else:
-        raise UnhandledUrlTypeException("Error. Unhandled url type: " + url)
-
-    return new_url
-
-
-def get_urls(url_list, ignore_terms, adapt_terms):
-    valid_efo = []
-    urls_to_adapt = []
-    for term in url_list:
-        if term not in ignore_terms:
-            if term in adapt_terms:
-                urls_to_adapt.append(term)
-            else:
-                valid_efo.append(term)
-
-    return valid_efo, urls_to_adapt
 
 
 def get_terms_from_file(terms_file_path):
