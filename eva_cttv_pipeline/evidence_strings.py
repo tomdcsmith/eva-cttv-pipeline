@@ -63,7 +63,6 @@ class CTTVEvidenceString(dict):
     def __init__(self, a_dictionary, clinvar_record=None, ontology_name=None, ref_list=None,
                  ensembl_gene_id=None, report=None, clinvar_name=None, ontology_label=None):
         super().__init__(a_dictionary)
-        # dict.__init__(a_dictionary)
 
         if ensembl_gene_id:
             self.add_unique_association_field('gene', ensembl_gene_id)
