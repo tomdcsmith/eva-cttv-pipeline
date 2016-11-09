@@ -60,8 +60,8 @@ class CTTVEvidenceString(dict):
     Subclass of dict to use indexing.
     """
 
-    def __init__(self, a_dictionary, clinvar_record=None, ontology_name=None, ref_list=None,
-                 ensembl_gene_id=None, report=None, clinvar_name=None, ontology_label=None):
+    def __init__(self, a_dictionary, clinvar_record=None, ref_list=None,
+                 ensembl_gene_id=None, report=None, trait=None):
         super().__init__(a_dictionary)
 
         if ensembl_gene_id:
@@ -82,14 +82,14 @@ class CTTVEvidenceString(dict):
         if ref_list and len(ref_list) > 0:
             self.top_level_literature = ref_list
 
-        self.disease_id = ontology_name
-        self.add_unique_association_field('phenotype', ontology_name)
+        self.disease_id = trait.ontology_name
+        self.add_unique_association_field('phenotype', trait.ontology_name)
 
-        if clinvar_name:
-            self.disease_source_name = clinvar_name
+        if trait.clinvar_name:
+            self.disease_source_name = trait.clinvar_name
 
-        if ontology_label:
-            self.disease_name = ontology_label
+        if trait.ontology_label:
+            self.disease_name = trait.ontology_label
 
 
     def add_unique_association_field(self, key, value):
@@ -167,8 +167,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                             clinvar_record.observed_refs_list +
                             clinvar_record.measure_set_refs_list))
 
-        super().__init__(a_dictionary, clinvar_record, trait.ontology_id, ref_list,
-                         ensembl_gene_id, report, trait.clinvar_name, trait.ontology_label)
+        super().__init__(a_dictionary, clinvar_record, ref_list, ensembl_gene_id, report, trait)
 
         self.add_unique_association_field('alleleOrigin', 'germline')
         if clinvar_record.rs:
@@ -316,8 +315,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                             clinvar_record.observed_refs_list +
                             clinvar_record.measure_set_refs_list))
 
-        super().__init__(a_dictionary, clinvar_record, trait.ontology_id, ref_list,
-                         ensembl_gene_id, report, trait.clinvar_name, trait.ontology_label)
+        super().__init__(a_dictionary, clinvar_record, ref_list, ensembl_gene_id, report, trait)
 
         self.add_unique_association_field('alleleOrigin', 'somatic')
 
