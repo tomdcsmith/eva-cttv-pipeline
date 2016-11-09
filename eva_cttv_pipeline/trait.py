@@ -20,9 +20,11 @@ def map_efo(trait_2_efo_dict, name_list):
         ontology_label = trait_2_efo_dict[trait_string][1]
         return trait_string, ontology_id, ontology_label
     else:
-        for trait in name_list[1:]:  # Otherwise cycle through the list, the first name that is in
-            trait_string = trait.lower()  # the dict is returned along with the ontology id and
-            if trait_string in trait_2_efo_dict:  # label from the dict
+        # Otherwise cycle through the list, the first name that is in the dict
+        # is returned along with the ontology id and label from the dict
+        for trait in name_list[1:]:
+            trait_string = trait.lower()
+            if trait_string in trait_2_efo_dict:
                 ontology_id = trait_2_efo_dict[trait_string][0]
                 ontology_label = trait_2_efo_dict[trait_string][1]
                 return trait_string, ontology_id, ontology_label
