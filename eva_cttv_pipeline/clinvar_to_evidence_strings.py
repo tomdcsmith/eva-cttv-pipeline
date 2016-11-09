@@ -135,7 +135,7 @@ class Report:
         # Contains urls provided by Gary which are not yet included within EFO
         with utilities.open_file(dir_out + '/' + config.UNAVAILABLE_EFO_FILE_NAME, 'wt') as fdw:
             fdw.write('Trait\tCount\n')
-            for clinvar_name in list(self.unavailable_efo):
+            for clinvar_name in self.unavailable_efo:
                 fdw.write(clinvar_name + "\n")
 
         with utilities.open_file(dir_out + '/' + config.EVIDENCE_STRINGS_FILE_NAME, 'wt') as fdw:
