@@ -82,8 +82,8 @@ class CTTVEvidenceString(dict):
         if ref_list and len(ref_list) > 0:
             self.top_level_literature = ref_list
 
-        self.disease_id = trait.ontology_name
-        self.add_unique_association_field('phenotype', trait.ontology_name)
+        self.disease_id = trait.ontology_id
+        self.add_unique_association_field('phenotype', trait.ontology_id)
 
         if trait.clinvar_name:
             self.disease_source_name = trait.clinvar_name
