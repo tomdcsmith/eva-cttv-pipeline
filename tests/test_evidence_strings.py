@@ -31,8 +31,9 @@ def get_args_CTTVGeneticsEvidenceString_init():
 
     trait = SimpleNamespace()
     trait.trait_counter = 0
-    trait.clinvar_trait_list = [[]]
-    trait.efo_list = ['http://www.orpha.net/ORDO/Orphanet_88991']
+    trait.clinvar_name = ""
+    trait.ontology_id = 'http://www.orpha.net/ORDO/Orphanet_88991'
+    trait.ontology_label = None
 
     ensembl_gene_id = "ENSG00000197616"
 
@@ -45,13 +46,13 @@ def get_args_CTTVGeneticsEvidenceString_init():
 class CTTVGeneticsEvidenceStringInitTest(unittest.TestCase):
     maxDiff = None
     def setUp(self):
-        test_args = get_args_CTTVGeneticsEvidenceString_init()
-        self.evidence_string = evidence_strings.CTTVGeneticsEvidenceString(*test_args)
+        self.test_args = get_args_CTTVGeneticsEvidenceString_init()
+        self.evidence_string = evidence_strings.CTTVGeneticsEvidenceString(*self.test_args)
 
     def test_evidence_string(self):
         test_dict = {"literature": {"references": [{"lit_id": "http://europepmc.org/abstract/MED/12145752"}, {"lit_id": "http://europepmc.org/abstract/MED/21697857"}, {"lit_id": "http://europepmc.org/abstract/MED/11524702"}]}, "disease": {"id": ["http://www.orpha.net/ORDO/Orphanet_886"]}, "validated_against_schema_version": "1.2.3", "target": {"target_type": "http://identifiers.org/cttv.target/gene_variant", "id": ["http://identifiers.org/ensembl/ENSG00000163646"], "activity": "http://identifiers.org/cttv.activity/damaging_to_target"}, "sourceID": "eva", "evidence": {"gene2variant": {"is_associated": True, "provenance_type": {"expert": {"status": True, "statement": "Primary submitter of data"}, "database": {"id": "EVA", "dbxref": {"url": "http://identifiers.org/clinvar.record/RCV000004642", "id": "http://identifiers.org/clinvar", "version": "2015-04"}, "version": "1.0"}}, "evidence_codes": ["http://identifiers.org/eco/cttv_mapping_pipeline"], "date_asserted": "2015-06-27T00:00:00", "functional_consequence": "http://purl.obolibrary.org/obo/SO_0001587", "urls": [{"url": "http://www.ncbi.nlm.nih.gov/clinvar/RCV000004642", "nice_name": "Further details in ClinVar database"}]}, "variant2disease": {"is_associated": True, "provenance_type": {"literature": {"references": [{"lit_id": "http://europepmc.org/abstract/MED/12145752"}, {"lit_id": "http://europepmc.org/abstract/MED/21697857"}, {"lit_id": "http://europepmc.org/abstract/MED/11524702"}]}, "expert": {"status": True, "statement": "Primary submitter of data"}, "database": {"id": "EVA", "dbxref": {"url": "http://identifiers.org/clinvar.record/RCV000004642", "id": "http://identifiers.org/clinvar", "version": "2015-04"}, "version": "1.0"}}, "evidence_codes": ["http://purl.obolibrary.org/obo/ECO_0000205"], "date_asserted": "2015-06-27T00:00:00", "unique_experiment_reference": "http://europepmc.org/abstract/MED/12145752", "urls": [{"url": "http://www.ncbi.nlm.nih.gov/clinvar/RCV000004642", "nice_name": "Further details in ClinVar database"}], "resource_score": {"type": "pvalue", "method": {"url": "", "description": "Not provided by data supplier"}, "value": 1e-07}}}, "type": "genetic_association", "access_level": "public", "unique_association_fields": {"gene": "ENSG00000163646", "alleleOrigin": "germline", "phenotype": "http://www.orpha.net/ORDO/Orphanet_886", "clinvarAccession": "RCV000004642"}, "variant": {"type": "snp single", "id": ["http://identifiers.org/dbsnp/rs121908140"]}}
 
-        test_ev_string = evidence_strings.CTTVEvidenceString(test_dict)
+        test_ev_string = evidence_strings.CTTVEvidenceString(test_dict, trait=self.test_args[2])
 
         self.assertEqual(set(self.evidence_string.__dict__.values()), set(test_ev_string.__dict__.values()))
 
@@ -64,8 +65,9 @@ def get_args_CTTVSomaticEvidenceString_init():
 
     trait = SimpleNamespace()
     trait.trait_counter = 0
-    trait.clinvar_trait_list = [[]]
-    trait.efo_list = ['http://www.ebi.ac.uk/efo/EFO_0003840']
+    trait.clinvar_name = ""
+    trait.ontology_id = 'http://www.ebi.ac.uk/efo/EFO_0003840'
+    trait.ontology_label = None
 
     ensembl_gene_id = "ENSG00000135486"
 
@@ -76,13 +78,13 @@ def get_args_CTTVSomaticEvidenceString_init():
 
 class CTTVSomaticEvidenceStringInitTest(unittest.TestCase):
     def setUp(self):
-        test_args = get_args_CTTVSomaticEvidenceString_init()
-        self.evidence_string = evidence_strings.CTTVSomaticEvidenceString(*test_args)
+        self.test_args = get_args_CTTVSomaticEvidenceString_init()
+        self.evidence_string = evidence_strings.CTTVSomaticEvidenceString(*self.test_args)
 
     def test_evidence_string(self):
         test_dict = {"literature": {"references": [{"lit_id": "http://europepmc.org/abstract/MED/8281160"}]}, "disease": {"id": ["http://www.ebi.ac.uk/efo/EFO_0000232"]}, "validated_against_schema_version": "1.2.3", "target": {"target_type": "http://identifiers.org/cttv.target/gene_variant", "id": ["http://identifiers.org/ensembl/ENSG00000134982"], "activity": "http://identifiers.org/cttv.activity/damaging_to_target"}, "sourceID": "eva_somatic", "type": "somatic_mutation", "access_level": "public", "unique_association_fields": {"gene": "ENSG00000134982", "alleleOrigin": "somatic", "phenotype": "http://www.ebi.ac.uk/efo/EFO_0000232", "clinvarAccession": "RCV000000851"}, "evidence": {"is_associated": True, "provenance_type": {"literature": {"references": [{"lit_id": "http://europepmc.org/abstract/MED/8281160"}]}, "expert": {"status": True, "statement": "Primary submitter of data"}, "database": {"id": "EVA", "dbxref": {"url": "http://identifiers.org/clinvar.record/RCV000000851", "id": "http://identifiers.org/clinvar", "version": "2015-04"}, "version": "1.0"}}, "evidence_codes": ["http://purl.obolibrary.org/obo/ECO_0000205"], "date_asserted": "2016-02-17T00:00:00", "urls": [{"url": "http://www.ncbi.nlm.nih.gov/clinvar/RCV000000851", "nice_name": "Further details in ClinVar database"}], "known_mutations": [{"preferred_name": "frameshift_variant", "functional_consequence": "http://purl.obolibrary.org/obo/SO_0001589"}], "resource_score": {"type": "probability", "value": 1}}}
 
-        test_ev_string = evidence_strings.CTTVEvidenceString(test_dict)
+        test_ev_string = evidence_strings.CTTVEvidenceString(test_dict, trait=self.test_args[2])
 
         self.assertEqual(set(self.evidence_string.__dict__.values()), set(test_ev_string.__dict__.values()))
 
@@ -162,8 +164,8 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
     def test_disease(self):
         disease_id = "Ciliary dyskinesia, primary, 26"
 
-        self.test_ges.disease = disease_id
-        self.assertEqual(self.test_ges.disease, efo_term.EFOTerm(disease_id))
+        self.test_ges.disease_id = disease_id
+        self.assertEqual(self.test_ges.disease_id, efo_term.EFOTerm(disease_id))
 
     def test_evidence_codes(self):
         evidence_codes = ["http://purl.obolibrary.org/obo/ECO_0000205"]
