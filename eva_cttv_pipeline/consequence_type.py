@@ -13,9 +13,9 @@ def process_gene(consequence_type_dict, variant_id, ensembl_gene_id, so_term):
 
 def get_most_severe_consequence_type(consequence_types):
     most_severe_consequence = consequence_types[0]
-    highest_rank = SoTerm.ranked_so_names_list.index(most_severe_consequence)
+    highest_rank = len(SoTerm.ranked_so_names_list) if most_severe_consequence not in SoTerm.ranked_so_names_list else SoTerm.ranked_so_names_list.index(most_severe_consequence)
     for term in consequence_types:
-        this_rank = SoTerm.ranked_so_names_list.index(term)
+        this_rank = len(SoTerm.ranked_so_names_list) if term not in SoTerm.ranked_so_names_list else SoTerm.ranked_so_names_list.index(term)
         if this_rank < highest_rank:
             most_severe_consequence = term
             highest_rank = this_rank

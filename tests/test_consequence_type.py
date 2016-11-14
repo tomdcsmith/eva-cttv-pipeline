@@ -19,6 +19,27 @@ class ProcessGeneTest(unittest.TestCase):
         self.assertEqual(test_consequence_type_dict["rs121912888"], test_consequence_type)
 
 
+class GetMostSevereConsequenceTypeTest(unittest.TestCase):
+    def test_one_consequence_type(self):
+        test_consequence_lists = [[consequence] for consequence in consequence_type.SoTerm.ranked_so_names_list]
+        for consequence in test_consequence_lists:
+            self.assertEqual(consequence_type.get_most_severe_consequence_type(consequence), consequence[0])
+
+    def test_one_in_list_one_not(self):
+        test_consequence_lists = [[consequence, "not_a_consequence_type"] for consequence in
+                                  consequence_type.SoTerm.ranked_so_names_list]
+        for consequence in test_consequence_lists:
+            self.assertEqual(consequence_type.get_most_severe_consequence_type(consequence), consequence[0])
+
+    def test_two_consequence_types(self):
+        test_consequence_lists = []
+        for idx in range(0, len(consequence_type.SoTerm.ranked_so_names_list), 2):
+            test_consequence_lists.append(consequence_type.SoTerm.ranked_so_names_list[idx:idx+2])
+
+        for consequence in test_consequence_lists:
+            self.assertEqual(consequence_type.get_most_severe_consequence_type(consequence), consequence[0])
+
+
 class ProcessConsequenceTypeFileTsvTest(unittest.TestCase):
     def test__process_consequence_type_file_tsv(self):
         test_consequence_type = consequence_type.ConsequenceType(ensembl_gene_ids=["ENSG00000021488"],
