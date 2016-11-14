@@ -11,6 +11,18 @@ def process_gene(consequence_type_dict, variant_id, ensembl_gene_id, so_term):
         consequence_type_dict[variant_id] = ConsequenceType([ensembl_gene_id], [so_term])
 
 
+def get_most_severe_consequence_type(consequence_types):
+    most_severe_consequence = consequence_types[0]
+    highest_rank = SoTerm.ranked_so_names_list.index(most_severe_consequence)
+    for term in consequence_types:
+        this_rank = SoTerm.ranked_so_names_list.index(term)
+        if this_rank < highest_rank:
+            most_severe_consequence = term
+            highest_rank = this_rank
+
+    return most_severe_consequence
+
+
 def process_consequence_type_file_tsv(snp_2_gene_filepath):
 
     consequence_type_dict = {}
@@ -22,12 +34,13 @@ def process_consequence_type_file_tsv(snp_2_gene_filepath):
             line_list = line.split("\t")
 
             variant_id = line_list[0]
-            ensembl_gene_id = line_list[1]
-            so_term = line_list[3]
+            ensembl_gene_ids = line_list[1].split(",")
+            so_terms = line_list[3].split(",")
 
-            ensembl_gene_ids = ensembl_gene_id.split(",")
+            most_severe_consequence = get_most_severe_consequence_type(so_terms)
+
             for ensembl_gene_id in ensembl_gene_ids:
-                process_gene(consequence_type_dict, variant_id, ensembl_gene_id, so_term)
+                process_gene(consequence_type_dict, variant_id, ensembl_gene_id, most_severe_consequence)
 
     return consequence_type_dict, one_rs_multiple_genes
 
