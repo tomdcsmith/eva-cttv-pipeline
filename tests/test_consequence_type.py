@@ -9,36 +9,14 @@ class ProcessGeneTest(unittest.TestCase):
         test_consequence_type_dict = {}
         test_rs_id = "rs121912888"
         test_ensembl_gene_id = "ENSG00000139219"
-        test_so_name = "missense_variant"
+        test_so_names = ["missense_variant"]
 
         test_consequence_type = consequence_type.ConsequenceType(ensembl_gene_ids=[test_ensembl_gene_id],
-                                                   so_names=[test_so_name])
+                                                   so_names=test_so_names)
 
-        consequence_type.process_gene(test_consequence_type_dict, test_rs_id, test_ensembl_gene_id, test_so_name)
+        consequence_type.process_gene(test_consequence_type_dict, test_rs_id, test_ensembl_gene_id, test_so_names)
 
         self.assertEqual(test_consequence_type_dict["rs121912888"], test_consequence_type)
-
-
-class GetMostSevereConsequenceTypeTest(unittest.TestCase):
-    def test_one_consequence_type(self):
-        test_consequence_lists = [[consequence] for consequence in consequence_type.SoTerm.ranked_so_names_list]
-        for consequence in test_consequence_lists:
-            self.assertEqual(consequence_type.get_most_severe_consequence_type(consequence), consequence[0])
-
-    def test_one_in_list_one_not(self):
-        test_consequence_lists = [[consequence, "not_a_consequence_type"] for consequence in
-                                  consequence_type.SoTerm.ranked_so_names_list]
-        for consequence in test_consequence_lists:
-            self.assertEqual(consequence_type.get_most_severe_consequence_type(consequence), consequence[0])
-
-    def test_two_consequence_types(self):
-        test_consequence_lists = []
-        for idx in range(0, len(consequence_type.SoTerm.ranked_so_names_list), 2):
-            test_consequence_lists.append(consequence_type.SoTerm.ranked_so_names_list[idx:idx+2])
-
-        for consequence in test_consequence_lists:
-            self.assertEqual(consequence_type.get_most_severe_consequence_type(consequence), consequence[0])
-
 
 class ProcessConsequenceTypeFileTsvTest(unittest.TestCase):
     def test__process_consequence_type_file_tsv(self):
@@ -75,11 +53,11 @@ class ConsequenceTypeTest(unittest.TestCase):
         self.test_so_term_b = consequence_type.SoTerm(self.test_so_name_b)
         self.test_consequence_type_a = \
             consequence_type.ConsequenceType(ensembl_gene_ids=self.test_ensembl_gene_ids_a,
-                               so_names={self.test_so_name_a})
+                               so_names=[self.test_so_name_a])
         self.test_consequence_type_b = consequence_type.ConsequenceType()
         self.test_consequence_type_c = \
             consequence_type.ConsequenceType(ensembl_gene_ids=self.test_ensembl_gene_ids_a,
-                               so_names={self.test_so_name_a, self.test_so_name_b})
+                               so_names=[self.test_so_name_a, self.test_so_name_b])
 
     def test_ensembl_gene_ids(self):
         self.assertEqual(self.test_consequence_type_a.ensembl_gene_ids,
@@ -100,17 +78,17 @@ class ConsequenceTypeTest(unittest.TestCase):
 
     def test_add_so_term(self):
         self.assertEqual(self.test_consequence_type_a.so_terms, {self.test_so_term_a})
-        self.test_consequence_type_a.add_so_term(self.test_so_name_b)
+        self.test_consequence_type_a.add_so_terms([self.test_so_name_b])
         self.assertEqual(self.test_consequence_type_a.so_terms, {self.test_so_term_a,
                                                                  self.test_so_term_b})
 
         self.assertEqual(self.test_consequence_type_b.so_terms, set())
-        self.test_consequence_type_b.add_so_term(self.test_so_name_b)
+        self.test_consequence_type_b.add_so_terms([self.test_so_name_b])
         self.assertEqual(self.test_consequence_type_b.so_terms, {self.test_so_term_b})
 
     def test_most_severe_so(self):
         self.assertEqual(self.test_consequence_type_a.most_severe_so, self.test_so_term_a)
-        self.test_consequence_type_a.add_so_term(self.test_so_name_b)
+        self.test_consequence_type_a.add_so_terms([self.test_so_name_b])
         self.assertEqual(self.test_consequence_type_a.most_severe_so, self.test_so_term_b)
 
         self.assertEqual(self.test_consequence_type_c.most_severe_so, self.test_so_term_b)

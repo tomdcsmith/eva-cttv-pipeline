@@ -3,24 +3,12 @@ from eva_cttv_pipeline import utilities
 __author__ = 'Javier Lopez: javild@gmail.com'
 
 
-def process_gene(consequence_type_dict, variant_id, ensembl_gene_id, so_term):
+def process_gene(consequence_type_dict, variant_id, ensembl_gene_id, so_terms):
     if variant_id in consequence_type_dict:
         consequence_type_dict[variant_id].ensembl_gene_ids.add(ensembl_gene_id)
-        consequence_type_dict[variant_id].add_so_term(so_term)
+        consequence_type_dict[variant_id].add_so_terms(so_terms)
     else:
-        consequence_type_dict[variant_id] = ConsequenceType([ensembl_gene_id], [so_term])
-
-
-def get_most_severe_consequence_type(consequence_types):
-    most_severe_consequence = consequence_types[0]
-    highest_rank = len(SoTerm.ranked_so_names_list) if most_severe_consequence not in SoTerm.ranked_so_names_list else SoTerm.ranked_so_names_list.index(most_severe_consequence)
-    for term in consequence_types:
-        this_rank = len(SoTerm.ranked_so_names_list) if term not in SoTerm.ranked_so_names_list else SoTerm.ranked_so_names_list.index(term)
-        if this_rank < highest_rank:
-            most_severe_consequence = term
-            highest_rank = this_rank
-
-    return most_severe_consequence
+        consequence_type_dict[variant_id] = ConsequenceType([ensembl_gene_id], so_terms)
 
 
 def process_consequence_type_file_tsv(snp_2_gene_filepath):
@@ -37,10 +25,8 @@ def process_consequence_type_file_tsv(snp_2_gene_filepath):
             ensembl_gene_ids = line_list[1].split(",")
             so_terms = line_list[3].split(",")
 
-            most_severe_consequence = get_most_severe_consequence_type(so_terms)
-
             for ensembl_gene_id in ensembl_gene_ids:
-                process_gene(consequence_type_dict, variant_id, ensembl_gene_id, most_severe_consequence)
+                process_gene(consequence_type_dict, variant_id, ensembl_gene_id, so_terms)
 
     return consequence_type_dict, one_rs_multiple_genes
 
@@ -215,8 +201,9 @@ class ConsequenceType:
     def ensembl_gene_ids(self, value):
         self.__ensembl_gene_ids = value
 
-    def add_so_term(self, so_name):
-        self.so_terms.add(SoTerm(so_name))
+    def add_so_terms(self, so_terms):
+        for so_name in so_terms:
+            self.so_terms.add(SoTerm(so_name))
 
     @property
     def most_severe_so(self):
