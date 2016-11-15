@@ -8,13 +8,13 @@ class ProcessGeneTest(unittest.TestCase):
     def test__process_gene(self):
         test_consequence_type_dict = {}
         test_rs_id = "rs121912888"
-        test_ensembl_gene_id = "ENSG00000139219"
+        test_ensembl_gene_ids = ["ENSG00000139219"]
         test_so_names = ["missense_variant"]
 
-        test_consequence_type = consequence_type.ConsequenceType(ensembl_gene_ids=[test_ensembl_gene_id],
+        test_consequence_type = consequence_type.ConsequenceType(ensembl_gene_ids=test_ensembl_gene_ids,
                                                    so_names=test_so_names)
 
-        consequence_type.process_gene(test_consequence_type_dict, test_rs_id, test_ensembl_gene_id, test_so_names)
+        consequence_type.process_gene(test_consequence_type_dict, test_rs_id, test_ensembl_gene_ids, test_so_names)
 
         self.assertEqual(test_consequence_type_dict["rs121912888"], test_consequence_type)
 
