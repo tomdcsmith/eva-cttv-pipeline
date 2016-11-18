@@ -193,9 +193,9 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
 
     for cellbase_record in cell_recs:
         n_ev_strings_per_record = 0
+        a_dictionary = cellbase_record if "clinvarSet" not in  cellbase_record else cellbase_record['clinvarSet']
         clinvar_record = \
-            clinvar.ClinvarRecord(mappings=mappings,
-                                                a_dictionary=cellbase_record['clinvarSet'])
+            clinvar.ClinvarRecord(mappings=mappings, a_dictionary=a_dictionary)
 
         report.counters["record_counter"] += 1
         report.counters["n_nsvs"] += (clinvar_record.nsv is not None)

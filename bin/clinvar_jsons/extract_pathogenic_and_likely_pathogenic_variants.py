@@ -23,7 +23,7 @@ def clinvar_jsons(filepath):
 
 def is_path_or_likely_path(clinvar_json):
     clin_sigs = set()
-    for clinvar_assertion in clinvar_json["clinVarAssertion"]:
+    for clinvar_assertion in clinvar_json["clinvarSet"]["clinVarAssertion"]:
         if "description" in clinvar_assertion["clinicalSignificance"]:
             for description in clinvar_assertion["clinicalSignificance"]["description"]:
                 clin_sigs.add(description)
