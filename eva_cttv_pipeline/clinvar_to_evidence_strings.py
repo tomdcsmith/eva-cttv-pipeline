@@ -129,7 +129,7 @@ class Report:
         with utilities.open_file(dir_out + '/' + config.UNMAPPED_TRAITS_FILE_NAME, 'wt') as fdw:
             fdw.write('Trait\tCount\n')
             for trait_list in self.unmapped_traits:
-                fdw.write(str(trait_list.encode('utf8')) + '\t' +
+                fdw.write(str(trait_list) + '\t' +
                           str(self.unmapped_traits[trait_list]) + '\n')
 
         # Contains urls provided by Gary which are not yet included within EFO
@@ -194,8 +194,7 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
     for cellbase_record in cell_recs:
         n_ev_strings_per_record = 0
         clinvar_record = \
-            clinvar.ClinvarRecord(mappings=mappings,
-                                                a_dictionary=cellbase_record['clinvarSet'])
+            clinvar.ClinvarRecord(mappings=mappings, cellbase_dict=cellbase_record['clinvarSet'])
 
         report.counters["record_counter"] += 1
         report.counters["n_nsvs"] += (clinvar_record.nsv is not None)
@@ -206,12 +205,11 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
             continue
 
         report.counters["n_multiple_allele_origin"] += (len(clinvar_record.allele_origins) > 1)
-        report.counters["n_germline_somatic"] += (
-            ('germline' in clinvar_record.allele_origins) and
-             ('somatic' in clinvar_record.allele_origins))
-        report.counters["n_records_no_recognised_allele_origin"] += (
-            ('germline' not in clinvar_record.allele_origins) and
-            ('somatic' not in clinvar_record.allele_origins))
+        if set(clinvar_record.allele_origins).difference({"biparental", "de novo", "germline",
+                                                            "inherited", "maternal",
+                                                            "not applicable", "not provided",
+                                                            "paternal", "uniparental", "unknown"}):
+            report.counters["n_records_no_recognised_allele_origin"] += 1
 
         traits = create_traits(clinvar_record.traits, mappings.trait_2_efo, report)
 
@@ -295,7 +293,8 @@ def create_traits(clinvar_traits, trait_2_efo_dict, report):
             traits.append(new_trait)
         else:
             report.counters["n_missed_strings_unmapped_traits"] += 1
-            report.unmapped_traits[name_list[0]] += 1
+            for name in name_list:
+                report.unmapped_traits[name] += 1
     return traits
 
 

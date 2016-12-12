@@ -54,8 +54,8 @@ class ClinvarRecord(UserDict):
         "REVIEWED_BY_PROFESSIONAL_SOCIETY": 4
     }
 
-    def __init__(self, mappings=None, a_dictionary=None):
-        UserDict.__init__(self, dict=a_dictionary)
+    def __init__(self, mappings=None, cellbase_dict=None):
+        UserDict.__init__(self, dict=cellbase_dict)
         self.rs = self.__get_rs(mappings.rcv_to_rs)
         self.nsv = self.__get_nsv(mappings.rcv_to_nsv)
         self.consequence_type = self.__get_main_consequence_types(mappings.consequence_type_dict,
