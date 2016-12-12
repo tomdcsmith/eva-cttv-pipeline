@@ -83,10 +83,10 @@ class Report:
             ' ClinVar records with allowed clinical significance, valid rs id and ' +
             'Variant->ENSG mapping were skipped due to a lack of EFO mapping (see ' +
             config.UNMAPPED_TRAITS_FILE_NAME + ').',
-            # str(self.counters["n_records_no_recognised_allele_origin"]) +
-            # ' ClinVar records with allowed clinical significance, ' +
-            # 'valid rs id, valid Variant->ENSG' +
-            # ' mapping and valid EFO mapping were skipped due to a lack of a valid alleleOrigin.',
+            str(self.counters["n_records_no_recognised_allele_origin"]) +
+            ' ClinVar records with allowed clinical significance, ' +
+            'valid rs id, valid Variant->ENSG' +
+            ' mapping and valid EFO mapping were skipped due to a lack of a valid alleleOrigin.',
             str(self.counters["n_more_than_one_efo_term"]) +
             ' evidence strings with more than one trait mapped to EFO terms',
             str(len(self.unavailable_efo)) +
@@ -193,9 +193,8 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
 
     for cellbase_record in cell_recs:
         n_ev_strings_per_record = 0
-        a_dictionary = cellbase_record if "clinvarSet" not in  cellbase_record else cellbase_record['clinvarSet']
         clinvar_record = \
-            clinvar.ClinvarRecord(mappings=mappings, a_dictionary=a_dictionary)
+            clinvar.ClinvarRecord(mappings=mappings, cellbase_dict=cellbase_record['clinvarSet'])
 
         report.counters["record_counter"] += 1
         report.counters["n_nsvs"] += (clinvar_record.nsv is not None)
@@ -206,6 +205,11 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
             continue
 
         report.counters["n_multiple_allele_origin"] += (len(clinvar_record.allele_origins) > 1)
+        if set(clinvar_record.allele_origins).difference({"biparental", "de novo", "germline",
+                                                            "inherited", "maternal",
+                                                            "not applicable", "not provided",
+                                                            "paternal", "uniparental", "unknown"}):
+            report.counters["n_records_no_recognised_allele_origin"] += 1
 
         traits = create_traits(clinvar_record.traits, mappings.trait_2_efo, report)
 
