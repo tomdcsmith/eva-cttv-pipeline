@@ -27,24 +27,21 @@ def get_output_lines(line_list):
     stop = line_list[15]
     ref = line_list[25]
     alt = line_list[26]
-    strand = "+"
     rcvs = line_list[8].split(";")
-    rs = "rs" + line_list[6] if line_list != "-1" else "-1"
+    rs = "rs" + line_list[6] if line_list[6] != "-1" else "-1"
     nsv = line_list[7] if line_list[7] != "-" else "-1"
     ncbi_geneid = line_list[3]
 
     output_lines = []
     for rcv in rcvs:
-        output_line = build_output_line(chrom, start, stop, ref, alt, strand, rcv, rs, nsv, ncbi_geneid)
+        output_line = build_output_line(chrom, start, stop, ref, alt, rcv, rs, nsv, ncbi_geneid)
         output_lines.append(output_line)
 
     return output_lines
 
 
-def build_output_line(chrom, start, stop, ref, alt, strand, rcv, rs, nsv, ncbi_geneid):
-    alleles = "{}/{}".format(ref, alt)
-
-    output_line_list = [chrom, start, stop, alleles, strand, rs, rcv, ncbi_geneid, nsv]
+def build_output_line(chrom, start, stop, ref, alt, rcv, rs, nsv, ncbi_geneid):
+    output_line_list = [chrom, start, stop, ref, alt, rs, rcv, ncbi_geneid, nsv]
     output_line = "\t".join(output_line_list)
 
     return output_line
