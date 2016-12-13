@@ -72,14 +72,19 @@ def open_file(file_path, mode):
 class ArgParser:
     def __init__(self, argv):
         description = """
-                Script for extracting the coordinates, variant ids, and NCBI gene id for ClinVar
-                records from a ClinVar variant_summary file. Output is a tab separated file with
-                one ClinVar record per line.
+                Script for extracting the coordinates, variant IDs, and NCBI gene ID for ClinVar
+                records from a ClinVar variant_summary file.Output is a tab separated file with one
+                 ClinVar record per line, and containing the columns: chromosome, start pos,
+                 stop pos, reference and alternate alleles, RS ID, RCV ID, NCBI gene ID, NSV ID.
+                 If a column doesn't have a value then a value of '-1' is used.
                 """
         parser = argparse.ArgumentParser(description=description)
 
-        parser.add_argument("-i", dest="infile_path", required=True, help="path to variant summary file from ClinVar")
-        parser.add_argument("-o", dest="outfile_path", required=True, help="Path to file to output the data. tab separated with the columns: chromosome, start pos, stop pos, reference and alternate alleles in that order separated by a '/', strand, rs id, rcv, ncbi gene id, nsv id. If a column doesn't have a value then a value of '-1' is specified.")
+        parser.add_argument("-i", dest="infile_path", required=True,
+                            help="path to variant summary file from ClinVar")
+        parser.add_argument("-o", dest="outfile_path", required=True,
+                            help="Tab separated output file, with one ClinVar record data per " +
+                                 "line. '-1' represents an empty value.")
 
         args = parser.parse_args(args=argv[1:])
 
