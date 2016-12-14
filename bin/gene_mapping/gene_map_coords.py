@@ -27,6 +27,7 @@ def get_output_lines(line_list):
     stop = line_list[15]
     ref = line_list[25]
     alt = line_list[26]
+    strand = "+"
     rcvs = line_list[8].split(";")
     rs = "rs" + line_list[6] if line_list[6] != "-1" else "-1"
     nsv = line_list[7] if line_list[7] != "-" else "-1"
@@ -34,14 +35,14 @@ def get_output_lines(line_list):
 
     output_lines = []
     for rcv in rcvs:
-        output_line = build_output_line(chrom, start, stop, ref, alt, rcv, rs, nsv, ncbi_geneid)
+        output_line = build_output_line(chrom, start, stop, ref, alt, strand, rcv, rs, nsv, ncbi_geneid)
         output_lines.append(output_line)
 
     return output_lines
 
 
-def build_output_line(chrom, start, stop, ref, alt, rcv, rs, nsv, ncbi_geneid):
-    output_line_list = [chrom, start, stop, ref, alt, rs, rcv, ncbi_geneid, nsv]
+def build_output_line(chrom, start, stop, ref, alt, strand, rcv, rs, nsv, ncbi_geneid):
+    output_line_list = [chrom, start, stop, ref, alt, strand, rs, rcv, ncbi_geneid, nsv]
     output_line = "\t".join(output_line_list)
 
     return output_line
@@ -75,7 +76,7 @@ class ArgParser:
                 Script for extracting the coordinates, variant IDs, and NCBI gene ID for ClinVar
                 records from a ClinVar variant_summary file.Output is a tab separated file with one
                 ClinVar record per line, and containing the columns: chromosome, start pos,
-                stop pos, reference and alternate alleles, RS ID, RCV ID, NCBI gene ID, NSV ID.
+                stop pos, reference and alternate alleles, strand, RS ID, RCV ID, NCBI gene ID, NSV ID.
                 If a column doesn't have a value then a value of '-1' is used.
                 """
         parser = argparse.ArgumentParser(description=description)
