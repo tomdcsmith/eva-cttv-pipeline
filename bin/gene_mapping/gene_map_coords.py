@@ -22,12 +22,17 @@ def main():
 
 
 def get_output_lines(line_list):
-    chrom = line_list[13]
     start = line_list[14]
     stop = line_list[15]
-    ref = line_list[25]
-    alt = line_list[26]
+
+    if int(stop) - int(start) > 50000:
+        return []
+
+    chrom = line_list[13]
+    ref = line_list[25] if line_list[25] != "na" else "-"
+    alt = line_list[26] if line_list[26] != "na" else "-"
     strand = "+"
+    svtype = get_svtype(line_list[1])
     rcvs = line_list[8].split(";")
     rs = "rs" + line_list[6] if line_list[6] != "-1" else "-1"
     nsv = line_list[7] if line_list[7] != "-" else "-1"
@@ -35,17 +40,25 @@ def get_output_lines(line_list):
 
     output_lines = []
     for rcv in rcvs:
-        output_line = build_output_line(chrom, start, stop, ref, alt, strand, rcv, rs, nsv, ncbi_geneid)
+        output_line = build_output_line(chrom, start, stop, ref, alt, strand, svtype, rcv, rs, nsv, ncbi_geneid)
         output_lines.append(output_line)
 
     return output_lines
 
 
-def build_output_line(chrom, start, stop, ref, alt, strand, rcv, rs, nsv, ncbi_geneid):
-    output_line_list = [chrom, start, stop, ref, alt, strand, rs, rcv, ncbi_geneid, nsv]
+def build_output_line(chrom, start, stop, ref, alt, strand, svtype, rcv, rs, nsv, ncbi_geneid):
+    output_line_list = [chrom, start, stop, ref, alt, strand, svtype, rs, rcv, ncbi_geneid, nsv]
     output_line = "\t".join(output_line_list)
 
     return output_line
+
+
+def get_svtype(type):
+    type_to_svtype_dict = {"deletion": "DEL", "insertion": "INS", "duplication": "DUP"}
+    if type.lower() in type_to_svtype_dict:
+        return type_to_svtype_dict[type]
+    else:
+        return "INS"
 
 
 def skip_varsum_line(line_list):
