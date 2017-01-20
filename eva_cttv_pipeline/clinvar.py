@@ -12,9 +12,6 @@ from collections import UserDict
 from eva_cttv_pipeline import utilities
 
 
-__author__ = 'Javier Lopez: javild@gmail.com'
-
-
 def get_rcv_to_rsnsv_mapping(variant_summary_file):
 
     rcv_to_rs = {}
@@ -44,8 +41,6 @@ class ClinvarRecord(UserDict):
     than dict in order to use attributes
     """
 
-    cached_symbol_2_ensembl = {}
-
     score_map = {
         "CLASSIFIED_BY_SINGLE_SUBMITTER": 1,
         "NOT_CLASSIFIED_BY_SUBMITTER": None,
@@ -54,96 +49,10 @@ class ClinvarRecord(UserDict):
         "REVIEWED_BY_PROFESSIONAL_SOCIETY": 4
     }
 
-    def __init__(self, mappings=None, cellbase_dict=None):
+    def __init__(self, cellbase_dict, consequence_type_dict):
         UserDict.__init__(self, dict=cellbase_dict)
-        self.rs = self.__get_rs(mappings.rcv_to_rs)
-        self.nsv = self.__get_nsv(mappings.rcv_to_nsv)
-        self.consequence_type = self.__get_main_consequence_types(mappings.consequence_type_dict,
-                                                                  mappings.rcv_to_rs)
-
-    @property
-    def gene_id(self):
-        j = 0
-        measure = self.data['referenceClinVarAssertion']['measureSet']['measure']
-        found = False
-        while j < len(measure) and not found:
-            attribute_set = measure[j]['attributeSet']
-            i = 0
-            while i < len(attribute_set) and \
-                    not attribute_set[i]['attribute']['type'].startswith('HGVS'):
-                i += 1
-            found = (i < len(attribute_set))
-            j += 1
-
-        if found:
-            return attribute_set[i]['attribute']['value'][:9]
-        else:
-            return self.data['referenceClinVarAssertion']['measureSet']['measure'][0]['name'][0]['elementValue']['value']
-
-    @property
-    def ensembl_id(self):
-        measure = self.data['referenceClinVarAssertion']['measureSet']['measure']
-        for j in range(len(measure)):
-            if 'measureRelationship' not in measure[j]:
-                continue
-            measure_relationship = measure[j]['measureRelationship']
-            for l in range(len(measure_relationship)):
-                if 'symbol' not in measure_relationship[l]:
-                    continue
-                symbol = measure_relationship[l]['symbol']
-                for i in range(len(symbol)):
-                    try:
-                        return ClinvarRecord.cached_symbol_2_ensembl[
-                            symbol[i]['elementValue']['value']
-                        ]
-                    except KeyError:
-                        not_solved = True
-                        while not_solved:
-                            try:
-                                url = 'http://rest.ensembl.org/' + \
-                                      'lookup/symbol/homo_sapiens/' + \
-                                      symbol[i]['elementValue']['value'] + \
-                                      '?content-type=application/json'
-                                raw_reply = urllib.request.urlopen(url).read()
-                                ensembl_json = json.loads(raw_reply.decode())
-                                not_solved = False
-                            except urllib.error.HTTPError as e:
-                                if e.code == 400:
-                                    print('WARNING: Bad request code returned +' +
-                                          'from ENSEMBL rest.')
-                                    print(' ClinVar accession: ' + self.accession)
-                                    print(' Gene symbol: ' +
-                                          symbol[i]['elementValue']['value'])
-                                    print(' Error: ')
-                                    print(e)
-                                    print(' Returning None.')
-                                    ClinvarRecord.cached_symbol_2_ensembl[
-                                        symbol[i]['elementValue']['value']] = None
-                                    return None
-                                else:
-                                    time.sleep(0.05)
-                            except http.client.BadStatusLine:
-                                time.sleep(3)
-
-                        if len(ensembl_json) > 0:
-                            if ensembl_json['id'] and \
-                                    (ensembl_json['object_type'] == 'Gene'):
-                                ClinvarRecord.cached_symbol_2_ensembl[symbol[i]['elementValue']['value']] = \
-                                    ensembl_json['id']
-                                return ensembl_json['id']
-                            else:
-                                print("WARNING at clinvar_record.py: ENSEMBL's REST API " +
-                                      "returned an unexpected json object")
-                                print(" Queried gene symbol: " +
-                                      symbol[i]['elementValue']['value'])
-                                print(" ENSEMBL's API response:")
-                                print(ensembl_json)
-                                print("Exiting.")
-                                sys.exit(1)
-                        else:
-                            ClinvarRecord.cached_symbol_2_ensembl[symbol[i]['elementValue']['value']] = \
-                                None
-        return None
+        self.measures = [ClinvarRecordMeasure(measure_dict, self, consequence_type_dict)
+                         for measure_dict in self.data["measureSet"]["measure"]]
 
     @property
     def date(self):
@@ -205,18 +114,6 @@ class ClinvarRecord(UserDict):
         return pubmed_refs_list
 
     @property
-    def measure_set_pubmed_refs(self):
-        pubmed_refs_list = []
-        for measure in self.data['referenceClinVarAssertion']['measureSet']['measure']:
-            if 'citation' in measure:
-                for citation in measure['citation']:
-                    if 'id' in citation and citation['id'] is not None:
-                        for citation_id in citation['id']:
-                            if citation_id['source'] == 'PubMed':
-                                pubmed_refs_list.append(int(citation_id['value']))
-        return pubmed_refs_list
-
-    @property
     def trait_refs_list(self):
         return [['http://europepmc.org/abstract/MED/' + str(ref) for ref in ref_list]
                 for ref_list in self.trait_pubmed_refs]
@@ -227,51 +124,9 @@ class ClinvarRecord(UserDict):
                 for ref in self.observed_pubmed_refs]
 
     @property
-    def measure_set_refs_list(self):
-        return ['http://europepmc.org/abstract/MED/' + str(ref)
-                for ref in self.measure_set_pubmed_refs]
-
-    @property
-    def hgvs(self):
-        hgvs_list = []
-        for measure in self.data['referenceClinVarAssertion']['measureSet']['measure']:
-            for attribute_set in measure['attributeSet']:
-                if attribute_set['attribute']['type'].startswith('HGVS'):
-                    hgvs_list.append(attribute_set['attribute']['value'])
-
-        return hgvs_list
-
-    @property
     def clinical_significance(self):
         return \
             self.data['referenceClinVarAssertion']['clinicalSignificance']['description'].lower()
-
-    def __get_rs(self, rcv_to_rs):
-        try:
-            return rcv_to_rs[self.accession]
-        except KeyError:
-            return None
-
-    def __get_nsv(self, rcv_to_nsv):
-        try:
-            return rcv_to_nsv[self.accession]
-        except KeyError:
-            return None
-
-    def __get_main_consequence_types(self, consequence_type_dict, rcv_to_rs):
-
-        new_rs_id = self.__get_rs(rcv_to_rs)
-
-        if new_rs_id is not None and new_rs_id in consequence_type_dict:
-            return consequence_type_dict[new_rs_id]
-        elif self.accession in consequence_type_dict:
-            return consequence_type_dict[self.accession]
-        else:
-            return None
-
-    @property
-    def variant_type(self):
-        return self.data['referenceClinVarAssertion']['measureSet']['measure'][0]['type']
 
     @property
     def allele_origins(self):
@@ -281,3 +136,64 @@ class ClinvarRecord(UserDict):
                 allele_origins.add(observed_in_document['sample']['origin'].lower())
 
         return list(allele_origins)
+
+
+class ClinvarRecordMeasure(UserDict):
+
+    def __init__(self, clinvar_measure_dict, clinvar_record, consequence_type_dict):
+        UserDict.__init__(self, dict=clinvar_measure_dict)
+        self.clinvar_record = clinvar_record
+        self.consequence_type = self.__get_main_consequence_types(consequence_type_dict)
+
+    @property
+    def rs_id(self):
+        for xref in self.data["xref"]:
+            if xref["db"].lower() == "dbsnp":
+                return "rs{}".format(xref["id"])
+        return None
+
+    @property
+    def nsv_id(self):
+        for xref in self.data["xref"]:
+            if xref["db"].lower() == "dbvar":
+                return xref["id"]
+        return None
+
+    def __get_main_consequence_types(self, consequence_type_dict):
+
+        if self.rs_id is not None and self.rs_id in consequence_type_dict:
+            return consequence_type_dict[self.rs_id]
+        elif self.clinvar_record.accession in consequence_type_dict:
+            return consequence_type_dict[self.clinvar_record.accession]  # todo change this depending upon OT gene mapping file
+        else:
+            return None
+
+    @property
+    def hgvs(self):
+        hgvs_list = []
+        for attribute_set in self.data['attributeSet']:
+            if attribute_set['attribute']['type'].startswith('HGVS'):
+                hgvs_list.append(attribute_set['attribute']['value'])
+
+        return hgvs_list
+
+    @property
+    def variant_type(self):
+        return self.data['type']
+
+    @property
+    def measure_set_pubmed_refs(self):
+        pubmed_refs_list = []
+        if 'citation' in self.data:
+            for citation in self.data['citation']:
+                if 'id' in citation and citation['id'] is not None:
+                    for citation_id in citation['id']:
+                        if citation_id['source'] == 'PubMed':
+                            pubmed_refs_list.append(int(citation_id['value']))
+        return pubmed_refs_list
+
+    @property
+    def measure_set_refs_list(self):
+        return ['http://europepmc.org/abstract/MED/' + str(ref)
+                for ref in self.measure_set_pubmed_refs]
+
