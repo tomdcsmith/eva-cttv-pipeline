@@ -124,16 +124,18 @@ class ClinvarRecordMeasure(UserDict):
 
     @property
     def rs_id(self):
-        for xref in self.data["xref"]:
-            if xref["db"].lower() == "dbsnp":
-                return "rs{}".format(xref["id"])
+        if "xref" in self.data:
+            for xref in self.data["xref"]:
+                if xref["db"].lower() == "dbsnp":
+                    return "rs{}".format(xref["id"])
         return None
 
     @property
     def nsv_id(self):
-        for xref in self.data["xref"]:
-            if xref["db"].lower() == "dbvar":
-                return xref["id"]
+        if "xref" in self.data:
+            for xref in self.data["xref"]:
+                if xref["db"].lower() == "dbvar":
+                    return xref["id"]
         return None
 
     def __get_main_consequence_types(self, consequence_type_dict):
@@ -152,7 +154,8 @@ class ClinvarRecordMeasure(UserDict):
         elif self.clinvar_record.accession in consequence_type_dict:
             consequence_type_dict_id = self.clinvar_record.accession  # todo change this depending upon OT gene mapping file
 
-        return consequence_type_dict[consequence_type_dict_id]
+        return consequence_type_dict[consequence_type_dict_id] \
+            if consequence_type_dict_id is not None else None
 
     @property
     def hgvs(self):
@@ -204,10 +207,10 @@ class ClinvarRecordMeasure(UserDict):
         return self.sequence_location_helper("alternateAllele")
 
     def sequence_location_helper(self, attr):
-        for sequence_location in self.data["sequenceLocation"]:
-            if sequence_location["assembly"].lower() == "grch38":
-                if attr in sequence_location:
-                    return sequence_location[attr]
-                else:
-                    return None
+        if "sequenceLocation" in self.data:
+            for sequence_location in self.data["sequenceLocation"]:
+                if sequence_location["assembly"].lower() == "grch38":
+                    if attr in sequence_location:
+                        return sequence_location[attr]
+        return None
 
