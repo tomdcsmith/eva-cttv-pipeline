@@ -88,15 +88,11 @@ class SkipRecordTest(unittest.TestCase):
         self.clinvar_record = test_clinvar.get_test_record()
         report = clinvar_to_evidence_strings.Report()
         # skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, counters)
-        self.args = [self.clinvar_record, {"reference": "A", "alternate": "T"},
-                     ["not provided"], report.counters]
+        self.args = [self.clinvar_record, self.clinvar_record.measures[0], ["not provided"],
+                     report.counters]
         # allowed clin sig changed to just "non provided" to match that in the test record
 
     def test_return_true(self):
-        self.assertTrue(clinvar_to_evidence_strings.skip_record(*self.args))
-
-    def test_ref_eq_alt(self):
-        self.args[1] = {"reference": "A", "alternate": "A"}
         self.assertTrue(clinvar_to_evidence_strings.skip_record(*self.args))
 
     def test_rs_is_none(self):

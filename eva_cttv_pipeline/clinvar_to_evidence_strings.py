@@ -266,19 +266,19 @@ def get_mappings(efo_mapping_file, snp_2_gene_file, variant_summary_file):
     return mappings
 
 
-def skip_record(clinvar_record, cellbase_record, allowed_clinical_significance, counters):
+def skip_record(clinvar_record, clinvar_record_measure, allowed_clinical_significance, counters):
     if clinvar_record.clinical_significance not in allowed_clinical_significance:
-        if clinvar_record.nsv is not None:
+        if clinvar_record_measure.nsv_id is not None:
             counters["n_nsv_skipped_clin_sig"] += 1
         return True
 
-    if cellbase_record['reference'] == cellbase_record['alternate']:
+    if clinvar_record_measure.ref == clinvar_record_measure.alt:
         counters["n_same_ref_alt"] += 1
-        if clinvar_record.nsv is not None:
+        if clinvar_record_measure.nsv_id is not None:
             counters["n_nsv_skipped_wrong_ref_alt"] += 1
         return True
 
-    if clinvar_record.consequence_type is None:
+    if clinvar_record_measure.consequence_type is None:
         counters["no_variant_to_ensg_mapping"] += 1
         return True
 
