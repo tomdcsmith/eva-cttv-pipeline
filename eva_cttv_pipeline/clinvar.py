@@ -50,7 +50,7 @@ class ClinvarRecord(UserDict):
     }
 
     def __init__(self, cellbase_dict, consequence_type_dict):
-        UserDict.__init__(self, dict=cellbase_dict)
+        UserDict.__init__(self, cellbase_dict)
         self.measures = [ClinvarRecordMeasure(measure_dict, self, consequence_type_dict)
                          for measure_dict in self.data['referenceClinVarAssertion']["measureSet"]["measure"]]
 
@@ -141,7 +141,7 @@ class ClinvarRecord(UserDict):
 class ClinvarRecordMeasure(UserDict):
 
     def __init__(self, clinvar_measure_dict, clinvar_record, consequence_type_dict):
-        UserDict.__init__(self, dict=clinvar_measure_dict)
+        UserDict.__init__(self, clinvar_measure_dict)
         self.clinvar_record = clinvar_record
         self.consequence_type = self.__get_main_consequence_types(consequence_type_dict)
 
