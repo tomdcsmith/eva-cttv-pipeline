@@ -52,7 +52,7 @@ class ClinvarRecord(UserDict):
     def __init__(self, cellbase_dict, consequence_type_dict):
         UserDict.__init__(self, dict=cellbase_dict)
         self.measures = [ClinvarRecordMeasure(measure_dict, self, consequence_type_dict)
-                         for measure_dict in self.data["measureSet"]["measure"]]
+                         for measure_dict in self.data['referenceClinVarAssertion']["measureSet"]["measure"]]
 
     @property
     def date(self):
@@ -163,6 +163,8 @@ class ClinvarRecordMeasure(UserDict):
 
         if self.rs_id is not None and self.rs_id in consequence_type_dict:
             return consequence_type_dict[self.rs_id]
+        elif self.nsv_id is not None and self.nsv_id in consequence_type_dict:
+            return consequence_type_dict[self.nsv_id]
         elif self.clinvar_record.accession in consequence_type_dict:
             return consequence_type_dict[self.clinvar_record.accession]  # todo change this depending upon OT gene mapping file
         else:
@@ -196,4 +198,32 @@ class ClinvarRecordMeasure(UserDict):
     def measure_set_refs_list(self):
         return ['http://europepmc.org/abstract/MED/' + str(ref)
                 for ref in self.measure_set_pubmed_refs]
+
+    @property
+    def chr(self):
+        return self.sequence_location_helper("chr")
+
+    @property
+    def start(self):
+        return self.sequence_location_helper("start")
+
+    @property
+    def stop(self):
+        return self.sequence_location_helper("stop")
+
+    @property
+    def ref(self):
+        return self.sequence_location_helper("referenceAllele")
+
+    @property
+    def alt(self):
+        return self.sequence_location_helper("alternateAllele")
+
+    def sequence_location_helper(self, attr):
+        for sequence_location in self.data["sequenceLocation"]:
+            if sequence_location["assembly"].lower() == "grch38":
+                if attr in sequence_location:
+                    return sequence_location[attr]
+                else:
+                    return None
 
