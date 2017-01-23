@@ -194,61 +194,64 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
     for cellbase_record in cell_recs:
         n_ev_strings_per_record = 0
         clinvar_record = \
-            clinvar.ClinvarRecord(mappings=mappings, cellbase_dict=cellbase_record['clinvarSet'])
+            clinvar.ClinvarRecord(cellbase_record['clinvarSet'], mappings.consequence_type_dict)
 
-        report.counters["record_counter"] += 1
-        report.counters["n_nsvs"] += (clinvar_record.nsv is not None)
-        append_nsv(report.nsv_list, clinvar_record)
+        for crm in clinvar_record.measures:
 
-        if skip_record(clinvar_record,
-                       cellbase_record, allowed_clinical_significance, report.counters):
-            continue
+            report.counters["record_counter"] += 1
+            report.counters["n_nsvs"] += (crm.nsv_id is not None)
+            append_nsv(report.nsv_list, crm)
 
-        report.counters["n_multiple_allele_origin"] += (len(clinvar_record.allele_origins) > 1)
-        if set(clinvar_record.allele_origins).difference({"biparental", "de novo", "germline",
-                                                            "inherited", "maternal",
-                                                            "not applicable", "not provided",
-                                                            "paternal", "uniparental", "unknown"}):
-            report.counters["n_records_no_recognised_allele_origin"] += 1
-
-        traits = create_traits(clinvar_record.traits, mappings.trait_2_efo, report)
-
-        converted_allele_origins = convert_allele_origins(clinvar_record.allele_origins)
-
-        for ensembl_gene_id, trait, allele_origin \
-                in itertools.product(clinvar_record.consequence_type.ensembl_gene_ids, traits, converted_allele_origins):
-
-            if allele_origin not in ('germline', 'somatic'):
-                report.n_unrecognised_allele_origin[allele_origin] += 1
+            if skip_record(clinvar_record, crm, allowed_clinical_significance, report.counters):
                 continue
 
-            if allele_origin == 'germline':
-                evidence_string = evidence_strings.CTTVGeneticsEvidenceString(clinvar_record,
-                                                                              report,
-                                                                              trait,
-                                                                              ensembl_gene_id,
-                                                                              cellbase_record)
-            elif allele_origin == 'somatic':
-                evidence_string = evidence_strings.CTTVSomaticEvidenceString(clinvar_record,
-                                                                             report,
-                                                                             trait,
-                                                                             ensembl_gene_id)
-            report.add_evidence_string(evidence_string, clinvar_record, trait, ensembl_gene_id)
-            report.evidence_list.append([clinvar_record.accession,
-                                         clinvar_record.rs,
-                                         trait.clinvar_name,
-                                         trait.ontology_id])
-            report.counters["n_valid_rs_and_nsv"] += (clinvar_record.nsv is not None)
-            report.traits.add(trait.ontology_id)
-            report.ensembl_gene_id_uris.add(evidence_strings.get_ensembl_gene_id_uri(
-                ensembl_gene_id))
+            report.counters["n_multiple_allele_origin"] += (len(clinvar_record.allele_origins) > 1)
+            if set(clinvar_record.allele_origins).difference({"biparental", "de novo", "germline",
+                                                                "inherited", "maternal",
+                                                                "not applicable", "not provided",
+                                                                "paternal", "uniparental", "unknown"}):
+                report.counters["n_records_no_recognised_allele_origin"] += 1
 
-            n_ev_strings_per_record += 1
+            traits = create_traits(clinvar_record.traits, mappings.trait_2_efo, report)
 
-        if n_ev_strings_per_record > 0:
-            report.counters["n_processed_clinvar_records"] += 1
-            if n_ev_strings_per_record > 1:
-                report.counters["n_multiple_evidence_strings"] += 1
+            converted_allele_origins = convert_allele_origins(clinvar_record.allele_origins)
+
+            for ensembl_gene_id, trait, allele_origin \
+                    in itertools.product(crm.consequence_type.ensembl_gene_ids, traits, converted_allele_origins):
+
+                if allele_origin not in ('germline', 'somatic'):
+                    report.n_unrecognised_allele_origin[allele_origin] += 1
+                    continue
+
+                if allele_origin == 'germline':
+                    evidence_string = evidence_strings.CTTVGeneticsEvidenceString(clinvar_record,
+                                                                                  crm,
+                                                                                  report,
+                                                                                  trait,
+                                                                                  ensembl_gene_id,
+                                                                                  cellbase_record)
+                elif allele_origin == 'somatic':
+                    evidence_string = evidence_strings.CTTVSomaticEvidenceString(clinvar_record,
+                                                                                 crm,
+                                                                                 report,
+                                                                                 trait,
+                                                                                 ensembl_gene_id)
+                report.add_evidence_string(evidence_string, clinvar_record, trait, ensembl_gene_id)
+                report.evidence_list.append([clinvar_record.accession,
+                                             crm.rs_id,
+                                             trait.clinvar_name,
+                                             trait.ontology_id])
+                report.counters["n_valid_rs_and_nsv"] += (crm.nsv_id is not None)
+                report.traits.add(trait.ontology_id)
+                report.ensembl_gene_id_uris.add(evidence_strings.get_ensembl_gene_id_uri(
+                    ensembl_gene_id))
+
+                n_ev_strings_per_record += 1
+
+            if n_ev_strings_per_record > 0:
+                report.counters["n_processed_clinvar_records"] += 1
+                if n_ev_strings_per_record > 1:
+                    report.counters["n_multiple_evidence_strings"] += 1
 
     return report
 
@@ -312,8 +315,8 @@ def write_string_list_to_file(string_list, filename):
         out_file.write('\n'.join(string_list))
 
 
-def append_nsv(nsv_list, clinvar_record):
-    nsv = clinvar_record.nsv
+def append_nsv(nsv_list, crm):
+    nsv = crm.nsv_id
     if nsv is not None:
         nsv_list.append(nsv)
     return nsv_list
