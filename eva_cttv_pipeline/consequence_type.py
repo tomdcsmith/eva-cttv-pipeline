@@ -21,9 +21,12 @@ def process_consequence_type_file_tsv(snp_2_gene_filepath):
             line = line.rstrip()
             line_list = line.split("\t")
 
+            if len(line_list) < 6:
+                continue
+
             variant_id = line_list[0]
-            ensembl_gene_ids = line_list[1].split(",")
-            so_terms = line_list[3].split(",")
+            ensembl_gene_ids = line_list[2].split(",")
+            so_terms = line_list[4].split(",")
 
             process_gene(consequence_type_dict, variant_id, ensembl_gene_ids, so_terms)
 

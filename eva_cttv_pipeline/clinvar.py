@@ -12,29 +12,6 @@ from collections import UserDict
 from eva_cttv_pipeline import utilities
 
 
-def get_rcv_to_rsnsv_mapping(variant_summary_file):
-
-    rcv_to_rs = {}
-    rcv_to_nsv = {}
-
-    print('Loading mapping RCV->rs/nsv')
-    fdr = utilities.open_file(variant_summary_file, "rt")
-    fdr.readline()
-    for line in fdr:
-        parts = line.split('\t')
-        rcv_list = parts[8].split(';')
-        if parts[6] != '-' and parts[6] != '-1' and parts[6] != '':
-            for rcv_id in rcv_list:
-                rcv_to_rs[rcv_id] = 'rs' + parts[6]
-        if parts[7] != '-' and parts[7] != '-1' and parts[7] != '':
-            for rcv_id in rcv_list:
-                rcv_to_nsv[rcv_id] = parts[7]
-    fdr.close()
-    print(' Done.')
-
-    return rcv_to_rs, rcv_to_nsv
-
-
 class ClinvarRecord(UserDict):
     """
     Class of which instances hold data on individual clinvar records. Subclass of UserDict rather

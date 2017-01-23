@@ -168,12 +168,12 @@ class Report:
 
 
 def launch_pipeline(dir_out, allowed_clinical_significance, efo_mapping_file, snp_2_gene_file,
-                    variant_summary_file, json_file):
+                    json_file):
 
     allowed_clinical_significance = allowed_clinical_significance.split(',') if \
         allowed_clinical_significance else get_default_allowed_clinical_significance()
 
-    mappings = get_mappings(efo_mapping_file, snp_2_gene_file, variant_summary_file)
+    mappings = get_mappings(efo_mapping_file, snp_2_gene_file)
 
     report = clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_file)
 
@@ -256,15 +256,13 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
     return report
 
 
-def get_mappings(efo_mapping_file, snp_2_gene_file, variant_summary_file):
+def get_mappings(efo_mapping_file, snp_2_gene_file):
     mappings = SimpleNamespace()
     mappings.trait_2_efo, mappings.unavailable_efo = \
         load_efo_mapping(efo_mapping_file)
 
     mappings.consequence_type_dict = \
         consequence_type.process_consequence_type_file(snp_2_gene_file)
-    mappings.rcv_to_rs, mappings.rcv_to_nsv = \
-        clinvar.get_rcv_to_rsnsv_mapping(variant_summary_file)
 
     return mappings
 
