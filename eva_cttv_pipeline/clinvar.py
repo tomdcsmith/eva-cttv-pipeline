@@ -161,14 +161,21 @@ class ClinvarRecordMeasure(UserDict):
 
     def __get_main_consequence_types(self, consequence_type_dict):
 
+        alt_str = self.alt if self.alt is not None else "-"
+        coord_id = "{}:{}-{}:1/{}".format(self.chr, self.start, self.stop, alt_str)
+
+        consequence_type_dict_id = None
+
         if self.rs_id is not None and self.rs_id in consequence_type_dict:
-            return consequence_type_dict[self.rs_id]
+            consequence_type_dict_id = self.rs_id
         elif self.nsv_id is not None and self.nsv_id in consequence_type_dict:
-            return consequence_type_dict[self.nsv_id]
+            consequence_type_dict_id = self.nsv_id
+        elif coord_id in consequence_type_dict:
+            consequence_type_dict_id = coord_id
         elif self.clinvar_record.accession in consequence_type_dict:
-            return consequence_type_dict[self.clinvar_record.accession]  # todo change this depending upon OT gene mapping file
-        else:
-            return None
+            consequence_type_dict_id = self.clinvar_record.accession  # todo change this depending upon OT gene mapping file
+
+        return consequence_type_dict[consequence_type_dict_id]
 
     @property
     def hgvs(self):
