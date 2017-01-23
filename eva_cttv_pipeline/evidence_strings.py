@@ -170,10 +170,10 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         super().__init__(a_dictionary, clinvar_record, ref_list, ensembl_gene_id, report, trait)
 
         self.add_unique_association_field('alleleOrigin', 'germline')
-        if clinvar_record_measure.rs:
-            self.set_variant('http://identifiers.org/dbsnp/' + clinvar_record.rs,
-                             get_cttv_variant_type(cellbase_record['reference'],
-                                                   cellbase_record['alternate']))
+        if clinvar_record_measure.rs_id:
+            self.set_variant('http://identifiers.org/dbsnp/' + clinvar_record_measure.rs_id,
+                             get_cttv_variant_type(clinvar_record_measure.ref,
+                                                   clinvar_record_measure.alt))
         else:
             self.set_variant('http://www.ncbi.nlm.nih.gov/clinvar/' + clinvar_record.accession,
                              get_cttv_variant_type(clinvar_record_measure.ref,
@@ -313,7 +313,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
         ref_list = list(set(clinvar_record.trait_refs_list[trait.trait_counter] +
                             clinvar_record.observed_refs_list +
-                            clinvar_record.measure_set_refs_list))
+                            clinvar_record_measure.measure_set_refs_list))
 
         super().__init__(a_dictionary, clinvar_record, ref_list, ensembl_gene_id, report, trait)
 
