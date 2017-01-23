@@ -10,12 +10,9 @@ def _get_mappings():
                                     'feb16_jul16_combined_trait_to_url.tsv')
     ignore_file = os.path.join(os.path.dirname(__file__), 'resources', 'ignore_file.txt')
     snp_2_gene_file = os.path.join(os.path.dirname(__file__), 'resources',
-                                   'snp2gene_assignment_jul2016_extract.tsv')
-    variant_summary_file = os.path.join(os.path.dirname(__file__), 'resources',
-                                        'variant_summary_2016-05_test_extract.txt')
+                                   'coords_20170117_out_extract.tsv')
 
-    mappings = clinvar_to_evidence_strings.get_mappings(efo_mapping_file, snp_2_gene_file,
-                                                        variant_summary_file)
+    mappings = clinvar_to_evidence_strings.get_mappings(efo_mapping_file, snp_2_gene_file)
 
     return mappings
 
@@ -40,7 +37,7 @@ class GetMappingsTest(unittest.TestCase):
             ('http://www.orpha.net/ORDO/Orphanet_90791', None))
 
     def test_consequence_type_dict(self):
-        self.assertEqual(len(self.mappings.consequence_type_dict), 56)
+        self.assertEqual(len(self.mappings.consequence_type_dict), 34)
 
         self.assertTrue("rs121908485" in self.mappings.consequence_type_dict)
         self.assertTrue("rs121912888" in self.mappings.consequence_type_dict)
@@ -50,18 +47,6 @@ class GetMappingsTest(unittest.TestCase):
         self.assertFalse("rs0" in self.mappings.consequence_type_dict)
         self.assertFalse("rs5" in self.mappings.consequence_type_dict)
         self.assertFalse("rs9" in self.mappings.consequence_type_dict)
-
-    def test_rcv_to_rs_nsv(self):
-        self.assertEqual(len(self.mappings.rcv_to_rs), 21)
-        self.assertEqual(len(self.mappings.rcv_to_nsv), 6)
-
-        self.assertEqual(self.mappings.rcv_to_nsv["RCV000020147"], "nsv1067916")
-        self.assertEqual(self.mappings.rcv_to_nsv["RCV000004182"], "nsv1067860")
-        self.assertEqual(self.mappings.rcv_to_nsv["RCV000004183"], "nsv1067861")
-
-        self.assertEqual(self.mappings.rcv_to_rs["RCV000000012"], "rs397704705")
-        self.assertEqual(self.mappings.rcv_to_rs["RCV000000204"], "rs121965059")
-        self.assertEqual(self.mappings.rcv_to_rs["RCV000000381"], "rs137854556")
 
 
 class CreateTraitTest(unittest.TestCase):

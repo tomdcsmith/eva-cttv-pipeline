@@ -83,13 +83,11 @@ class ArgParserTest(unittest.TestCase):
     out = '/path/to/out/file'
     efo_map_file = '/path/to/efo/file'
     snp_2_gene_file = '/path/to/snp/to/gene/file'
-    variant_summary_file = '/path/to/variant/summary/file'
 
     @classmethod
     def setUpClass(cls):
         argv = ['clinvar_to_evidence_strings.py', '--clinSig', cls.clin_sig, '--ignore',
-                cls.ignore, '--out', cls.out, '-e', cls.efo_map_file, '-g', cls.snp_2_gene_file,
-                '-v', cls.variant_summary_file]
+                cls.ignore, '--out', cls.out, '-e', cls.efo_map_file, '-g', cls.snp_2_gene_file]
         cls.argparser = utilities.ArgParser(argv)
 
     def test_clin_sig(self):
@@ -106,9 +104,6 @@ class ArgParserTest(unittest.TestCase):
 
     def test_snp_2_gene_file(self):
         self.assertEqual(self.argparser.snp_2_gene_file, self.snp_2_gene_file)
-
-    def test_variant_summary_file(self):
-        self.assertEqual(self.argparser.variant_summary_file, self.variant_summary_file)
 
 
 class CheckDirExistsCreateTest(unittest.TestCase):
