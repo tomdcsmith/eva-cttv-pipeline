@@ -40,14 +40,22 @@ CLIN_SIG_TO_ACTIVITY = {'other': 'http://identifiers.org/cttv.activity/unknown',
                         'risk factor': 'http://identifiers.org/cttv.activity/predicted_damaging'}
 
 
-def get_cttv_variant_type(ref, alt):
-    if len(ref) < 2 and len(alt) < 2:
-        cttv_variant_type = 'snp single'
-    elif len(ref) > 50 or len(alt) > 50:
-        cttv_variant_type = 'structural variant'
+def get_cttv_variant_type(clinvar_record_measure):
+    if clinvar_record_measure.ref is not None and clinvar_record_measure.alt is not None:
+        if len(clinvar_record_measure.ref) < 2 and len(clinvar_record_measure.alt) < 2:
+            cttv_variant_type = 'snp single'
+        elif len(clinvar_record_measure.ref) > 50 or len(clinvar_record_measure.alt) > 50:
+            cttv_variant_type = 'structural variant'
+        else:
+            cttv_variant_type = 'snp single'  # Sam asked for this in his email 21/05/2015
+            # cttv_variant_type = 'snp multiple'
     else:
-        cttv_variant_type = 'snp single'  # Sam asked for this in his email 21/05/2015
-        # cttv_variant_type = 'snp multiple'
+        if clinvar_record_measure.rs_id is not None:
+            cttv_variant_type = "snp single"
+        elif clinvar_record_measure.nsv_id is not None:
+            cttv_variant_type = "structural variant"
+        else:
+            cttv_variant_type = "snp single"
 
     return cttv_variant_type
 
@@ -169,15 +177,18 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 
         super().__init__(a_dictionary, clinvar_record, ref_list, consequence_type.ensembl_gene_id, report, trait)
 
+        variant_type = get_cttv_variant_type(clinvar_record_measure)
+
         self.add_unique_association_field('alleleOrigin', 'germline')
         if clinvar_record_measure.rs_id:
             self.set_variant('http://identifiers.org/dbsnp/' + clinvar_record_measure.rs_id,
-                             get_cttv_variant_type(clinvar_record_measure.ref,
-                                                   clinvar_record_measure.alt))
+                             variant_type)
+        elif clinvar_record_measure.nsv_id:
+            self.set_variant('http://identifiers.org/dbsnp/' + clinvar_record_measure.nsv_id,
+                             variant_type)
         else:
             self.set_variant('http://www.ncbi.nlm.nih.gov/clinvar/' + clinvar_record.accession,
-                             get_cttv_variant_type(clinvar_record_measure.ref,
-                                                   clinvar_record_measure.alt))
+                             variant_type)
         self.date = clinvar_record.date
         self.db_xref_url = 'http://identifiers.org/clinvar.record/' + clinvar_record.accession
         self.url = 'http://www.ncbi.nlm.nih.gov/clinvar/' + clinvar_record.accession
