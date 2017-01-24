@@ -5,13 +5,11 @@ from collections import defaultdict
 from types import SimpleNamespace
 
 import jsonschema
-import xlrd
 
-from eva_cttv_pipeline import cellbase_records, efo_term, consequence_type, config, \
-    evidence_strings, clinvar, utilities
+from eva_cttv_pipeline import cellbase_records, efo_term, config, evidence_strings, clinvar, \
+    utilities
+from eva_cttv_pipeline import consequence_type as ct
 from eva_cttv_pipeline.trait import Trait
-
-__author__ = 'Javier Lopez: javild@gmail.com'
 
 
 class Report:
@@ -201,15 +199,14 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
             report.counters["n_nsvs"] += (crm.nsv_id is not None)
             append_nsv(report.nsv_list, crm)
 
-            if skip_record(clinvar_record, crm, allowed_clinical_significance, report.counters):
-                continue
-
-            report.counters["n_multiple_allele_origin"] += (len(clinvar_record.allele_origins) > 1)
-            if set(clinvar_record.allele_origins).difference({"biparental", "de novo", "germline",
-                                                              "inherited", "maternal",
-                                                              "not applicable", "not provided",
-                                                              "paternal", "uniparental",
-                                                              "unknown"}):
+            report.counters["n_multiple_allele_origin"] \
+                += (len(clinvar_record.allele_origins) > 1)
+            if set(clinvar_record.allele_origins).difference(
+                    {"biparental", "de novo", "germline",
+                     "inherited", "maternal",
+                     "not applicable", "not provided",
+                     "paternal", "uniparental",
+                     "unknown"}):
                 report.counters["n_records_no_recognised_allele_origin"] += 1
 
             traits = create_traits(clinvar_record.traits, mappings.trait_2_efo, report)
@@ -221,8 +218,8 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
                     traits,
                     converted_allele_origins):
 
-                if allele_origin not in ('germline', 'somatic'):
-                    report.n_unrecognised_allele_origin[allele_origin] += 1
+                if skip_record(clinvar_record, crm, consequence_type, allele_origin,
+                               allowed_clinical_significance, report):
                     continue
 
                 if allele_origin == 'germline':
@@ -262,25 +259,30 @@ def get_mappings(efo_mapping_file, snp_2_gene_file):
         load_efo_mapping(efo_mapping_file)
 
     mappings.consequence_type_dict = \
-        consequence_type.process_consequence_type_file(snp_2_gene_file)
+        ct.process_consequence_type_file(snp_2_gene_file)
 
     return mappings
 
 
-def skip_record(clinvar_record, clinvar_record_measure, allowed_clinical_significance, counters):
+def skip_record(clinvar_record, clinvar_record_measure, consequence_type, allele_origin,
+                allowed_clinical_significance, report):
     if clinvar_record.clinical_significance not in allowed_clinical_significance:
         if clinvar_record_measure.nsv_id is not None:
-            counters["n_nsv_skipped_clin_sig"] += 1
+            report.counters["n_nsv_skipped_clin_sig"] += 1
         return True
 
     if clinvar_record_measure.ref == clinvar_record_measure.alt:
-        counters["n_same_ref_alt"] += 1
+        report.counters["n_same_ref_alt"] += 1
         if clinvar_record_measure.nsv_id is not None:
-            counters["n_nsv_skipped_wrong_ref_alt"] += 1
+            report.counters["n_nsv_skipped_wrong_ref_alt"] += 1
         return True
 
-    if clinvar_record_measure.consequence_type is None:
-        counters["no_variant_to_ensg_mapping"] += 1
+    if consequence_type is None:
+        report.counters["no_variant_to_ensg_mapping"] += 1
+        return True
+
+    if allele_origin not in ('germline', 'somatic'):
+        report.n_unrecognised_allele_origin[allele_origin] += 1
         return True
 
     return False
@@ -302,7 +304,7 @@ def get_consequence_types(crm, consequence_type_dict):
         consequence_type_dict_id = crm.clinvar_record.accession  # todo change this depending upon OT gene mapping file
 
     return consequence_type_dict[consequence_type_dict_id] \
-        if consequence_type_dict_id is not None else None
+        if consequence_type_dict_id is not None else [None]
 
 
 def create_traits(clinvar_traits, trait_2_efo_dict, report):
