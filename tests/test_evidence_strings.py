@@ -88,42 +88,45 @@ class CTTVSomaticEvidenceStringInitTest(unittest.TestCase):
 class GetCTTVVariantTypeTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        record_single_a = \
-            ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG", "alternate": "C"},
-             "snp single")
-        record_single_b = ({"reference": "A", "alternate": "C"}, "snp single")
-        record_single_c = ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG",
-                            "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG"}, "snp single")
+
+        crm = SimpleNamespace()
+        crm.ref = "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG"
+        crm.alt = "C"
+        record_single_a = (crm, "snp single")
+        crm = SimpleNamespace()
+        crm.ref = "A"
+        crm.alt = "C"
+        record_single_b = (crm, "snp single")
+        record_single_c = SimpleNamespace()
+        record_single_c.ref = "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG"
+        record_single_c.alt = "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACG"
+        record_single_c = (crm, "snp single")
 
         cls.test_records_singles = [record_single_a, record_single_b, record_single_c]
 
-        record_structurals_a = \
-            ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT",
-              "alternate": "C"},
-             "structural variant")
-        record_structurals_b = \
-            ({"reference": "A",
-              "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
-             "structural variant")
-        record_structurals_c = \
-            ({"reference": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT",
-              "alternate": "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"},
-             "structural variant")
+        crm = SimpleNamespace()
+        crm.ref = "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"
+        crm.alt = "C"
+        record_structurals_a = (crm, "structural variant")
+        crm = SimpleNamespace()
+        crm.ref = "A"
+        crm.alt = "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"
+        record_structurals_b = (crm, "structural variant")
+        record_single_c = SimpleNamespace()
+        record_single_c.ref = "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"
+        record_single_c.alt = "AGAGACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT"
+        record_structurals_c = (crm, "structural variant")
 
         cls.test_records_structurals = \
             [record_structurals_a, record_structurals_b, record_structurals_c]
 
     def test_get_cttv_variant_type_singles(self):
         for record in self.test_records_singles:
-            self.assertEqual(evidence_strings.get_cttv_variant_type(record[0]["reference"],
-                                                      record[0]["alternate"]),
-                             record[1])
+            self.assertEqual(evidence_strings.get_cttv_variant_type(record[0]), record[1])
 
     def test_get_cttv_variant_type_structurals(self):
         for record in self.test_records_structurals:
-            self.assertEqual(evidence_strings.get_cttv_variant_type(record[0]["reference"],
-                                                      record[0]["alternate"]),
-                             record[1])
+            self.assertEqual(evidence_strings.get_cttv_variant_type(record[0]), record[1])
 
 
 class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
