@@ -71,12 +71,16 @@ class CreateTraitTest(unittest.TestCase):
 
 class SkipRecordTest(unittest.TestCase):
 
+    #clinvar_record, clinvar_record_measure, consequence_type, allele_origin,
+                # allowed_clinical_significance, report
+
     def setUp(self):
         self.clinvar_record = test_clinvar.get_test_record()
         report = clinvar_to_evidence_strings.Report()
+        consequence_type = CT.ConsequenceType("ENSG00000163646", "stop_gained")
         # skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, counters)
-        self.args = [self.clinvar_record, self.clinvar_record.measures[0], ["not provided"],
-                     report.counters]
+        self.args = [self.clinvar_record, self.clinvar_record.measures[0], consequence_type,
+                     "germline", ["not provided"], report]
         # allowed clin sig changed to just "non provided" to match that in the test record
 
     def test_return_true(self):
@@ -231,5 +235,5 @@ class TestGetConsequenceTypes(unittest.TestCase):
             self.consequence_type_dict)[0],
             test_consequence_type)
         self.assertEqual(clinvar_to_evidence_strings.get_consequence_types(self.test_crm, {}),
-                         None)
+                         [None])
 
