@@ -70,15 +70,6 @@ class TestClinvarRecordMeasure(unittest.TestCase):
     def test_rs(self):
         self.assertEqual(self.test_crm.rs_id, "rs121908140")
 
-    def test___get_main_consequence_types(self):
-        test_consequence_type = CT.ConsequenceType(ensembl_gene_ids=["ENSG00000163646"],
-                                                   so_names=["stop_gained"])
-
-        self.assertEqual(
-            self.test_crm._ClinvarRecordMeasure__get_main_consequence_types(self.consequence_type_dict),
-            test_consequence_type)
-        self.assertEqual(self.test_crm._ClinvarRecordMeasure__get_main_consequence_types({}), None)
-
     def test_variant_type(self):
         self.assertEqual(self.test_crm.variant_type, "single nucleotide variant")
 
@@ -91,7 +82,6 @@ def get_test_record():
                                               'test_clinvar_record.json')
     with utilities.open_file(test_clinvar_record_filepath, "rt") as f:
         test_record_dict = json.load(f)
-    test_record = clinvar.ClinvarRecord(test_record_dict,
-                                        test_clinvar_to_evidence_strings.MAPPINGS.consequence_type_dict)
+    test_record = clinvar.ClinvarRecord(test_record_dict)
     return test_record
 
