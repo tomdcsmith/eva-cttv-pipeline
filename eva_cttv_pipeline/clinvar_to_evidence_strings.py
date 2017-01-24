@@ -193,8 +193,7 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
 
     for cellbase_record in cell_recs:
         n_ev_strings_per_record = 0
-        clinvar_record = \
-            clinvar.ClinvarRecord(cellbase_record['clinvarSet'], mappings.consequence_type_dict)
+        clinvar_record = clinvar.ClinvarRecord(cellbase_record['clinvarSet'])
 
         for crm in clinvar_record.measures:
 

@@ -175,7 +175,7 @@ class ConsequenceType:
 
     def __init__(self, ensembl_gene_id, so_term):
         self.ensembl_gene_id = ensembl_gene_id
-        self.so_term = so_term
+        self.so_term = SoTerm(so_term)
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__

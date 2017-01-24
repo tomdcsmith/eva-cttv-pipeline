@@ -325,7 +325,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
         self.association = clinvar_record.clinical_significance not in \
                            ('non-pathogenic', 'probable-non-pathogenic', 'likely benign', 'benign')
 
-        self.set_known_mutations(consequence_type)
+        self.set_known_mutations(consequence_type.so_term)
 
         if len(ref_list) > 0:
             self.evidence_literature = ref_list

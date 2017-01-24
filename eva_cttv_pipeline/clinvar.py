@@ -26,9 +26,9 @@ class ClinvarRecord(UserDict):
         "REVIEWED_BY_PROFESSIONAL_SOCIETY": 4
     }
 
-    def __init__(self, cellbase_dict, consequence_type_dict):
+    def __init__(self, cellbase_dict):
         UserDict.__init__(self, cellbase_dict)
-        self.measures = [ClinvarRecordMeasure(measure_dict, self, consequence_type_dict)
+        self.measures = [ClinvarRecordMeasure(measure_dict, self)
                          for measure_dict in self.data['referenceClinVarAssertion']["measureSet"]["measure"]]
 
     @property
@@ -117,10 +117,9 @@ class ClinvarRecord(UserDict):
 
 class ClinvarRecordMeasure(UserDict):
 
-    def __init__(self, clinvar_measure_dict, clinvar_record, consequence_type_dict):
+    def __init__(self, clinvar_measure_dict, clinvar_record):
         UserDict.__init__(self, clinvar_measure_dict)
         self.clinvar_record = clinvar_record
-        self.consequence_type = self.__get_main_consequence_types(consequence_type_dict)
 
     @property
     def rs_id(self):
@@ -137,25 +136,6 @@ class ClinvarRecordMeasure(UserDict):
                 if xref["db"].lower() == "dbvar":
                     return xref["id"]
         return None
-
-    def get_main_consequence_types(self, consequence_type_dict):
-
-        alt_str = self.alt if self.alt is not None else "-"
-        coord_id = "{}:{}-{}:1/{}".format(self.chr, self.start, self.stop, alt_str)
-
-        consequence_type_dict_id = None
-
-        if self.rs_id is not None and self.rs_id in consequence_type_dict:
-            consequence_type_dict_id = self.rs_id
-        elif self.nsv_id is not None and self.nsv_id in consequence_type_dict:
-            consequence_type_dict_id = self.nsv_id
-        elif coord_id in consequence_type_dict:
-            consequence_type_dict_id = coord_id
-        elif self.clinvar_record.accession in consequence_type_dict:
-            consequence_type_dict_id = self.clinvar_record.accession  # todo change this depending upon OT gene mapping file
-
-        return consequence_type_dict[consequence_type_dict_id] \
-            if consequence_type_dict_id is not None else None
 
     @property
     def hgvs(self):
