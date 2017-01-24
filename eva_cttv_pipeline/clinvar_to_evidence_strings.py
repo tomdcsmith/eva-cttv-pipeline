@@ -207,17 +207,20 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
 
             report.counters["n_multiple_allele_origin"] += (len(clinvar_record.allele_origins) > 1)
             if set(clinvar_record.allele_origins).difference({"biparental", "de novo", "germline",
-                                                                "inherited", "maternal",
-                                                                "not applicable", "not provided",
-                                                                "paternal", "uniparental", "unknown"}):
+                                                              "inherited", "maternal",
+                                                              "not applicable", "not provided",
+                                                              "paternal", "uniparental",
+                                                              "unknown"}):
                 report.counters["n_records_no_recognised_allele_origin"] += 1
 
             traits = create_traits(clinvar_record.traits, mappings.trait_2_efo, report)
 
             converted_allele_origins = convert_allele_origins(clinvar_record.allele_origins)
 
-            for ensembl_gene_id, trait, allele_origin \
-                    in itertools.product(crm.consequence_type.ensembl_gene_ids, traits, converted_allele_origins):
+            for consequence_type, trait, allele_origin in itertools.product(
+                    get_consequence_types(crm, mappings.consequence_type_dict),
+                    traits,
+                    converted_allele_origins):
 
                 if allele_origin not in ('germline', 'somatic'):
                     report.n_unrecognised_allele_origin[allele_origin] += 1
@@ -228,23 +231,21 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
                                                                                   crm,
                                                                                   report,
                                                                                   trait,
-                                                                                  ensembl_gene_id,
-                                                                                  cellbase_record)
+                                                                                  consequence_type)
                 elif allele_origin == 'somatic':
                     evidence_string = evidence_strings.CTTVSomaticEvidenceString(clinvar_record,
                                                                                  crm,
                                                                                  report,
                                                                                  trait,
-                                                                                 ensembl_gene_id)
-                report.add_evidence_string(evidence_string, clinvar_record, trait, ensembl_gene_id)
+                                                                                 consequence_type)
+                report.add_evidence_string(evidence_string, clinvar_record, trait, consequence_type.ensembl_gene_id)
                 report.evidence_list.append([clinvar_record.accession,
                                              crm.rs_id,
                                              trait.clinvar_name,
                                              trait.ontology_id])
                 report.counters["n_valid_rs_and_nsv"] += (crm.nsv_id is not None)
                 report.traits.add(trait.ontology_id)
-                report.ensembl_gene_id_uris.add(evidence_strings.get_ensembl_gene_id_uri(
-                    ensembl_gene_id))
+                report.ensembl_gene_id_uris.add(evidence_strings.get_ensembl_gene_id_uri(consequence_type.ensembl_gene_id))
 
                 n_ev_strings_per_record += 1
 
@@ -284,6 +285,25 @@ def skip_record(clinvar_record, clinvar_record_measure, allowed_clinical_signifi
         return True
 
     return False
+
+
+def get_consequence_types(crm, consequence_type_dict):
+    alt_str = crm.alt if crm.alt is not None else "-"
+    coord_id = "{}:{}-{}:1/{}".format(crm.chr, crm.start, crm.stop, alt_str)
+
+    consequence_type_dict_id = None
+
+    if crm.rs_id is not None and crm.rs_id in consequence_type_dict:
+        consequence_type_dict_id = crm.rs_id
+    elif crm.nsv_id is not None and crm.nsv_id in consequence_type_dict:
+        consequence_type_dict_id = crm.nsv_id
+    elif coord_id in consequence_type_dict:
+        consequence_type_dict_id = coord_id
+    elif crm.clinvar_record.accession in consequence_type_dict:
+        consequence_type_dict_id = crm.clinvar_record.accession  # todo change this depending upon OT gene mapping file
+
+    return consequence_type_dict[consequence_type_dict_id] \
+        if consequence_type_dict_id is not None else None
 
 
 def create_traits(clinvar_traits, trait_2_efo_dict, report):

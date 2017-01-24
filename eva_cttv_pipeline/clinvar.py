@@ -138,7 +138,7 @@ class ClinvarRecordMeasure(UserDict):
                     return xref["id"]
         return None
 
-    def __get_main_consequence_types(self, consequence_type_dict):
+    def get_main_consequence_types(self, consequence_type_dict):
 
         alt_str = self.alt if self.alt is not None else "-"
         coord_id = "{}:{}-{}:1/{}".format(self.chr, self.start, self.stop, alt_str)

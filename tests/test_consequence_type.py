@@ -12,8 +12,7 @@ class ProcessGeneTest(unittest.TestCase):
         test_ensembl_gene_id = "ENSG00000139219"
         test_so_name = "missense_variant"
 
-        test_consequence_type = consequence_type.ConsequenceType(ensembl_gene_ids=[test_ensembl_gene_id],
-                                                   so_names=[test_so_name])
+        test_consequence_type = consequence_type.ConsequenceType(test_ensembl_gene_id, test_so_name)
 
         consequence_type.process_gene(test_consequence_type_dict, test_rs_id, test_ensembl_gene_id, test_so_name)
 
@@ -22,8 +21,7 @@ class ProcessGeneTest(unittest.TestCase):
 
 class ProcessConsequenceTypeFileTsvTest(unittest.TestCase):
     def test__process_consequence_type_file_tsv(self):
-        test_consequence_type = consequence_type.ConsequenceType(ensembl_gene_ids=["ENSG00000021488"],
-                                                   so_names=["missense_variant"])
+        test_consequence_type = consequence_type.ConsequenceType("ENSG00000021488", "missense_variant")
         snp_2_gene_file_path = os.path.join(os.path.dirname(__file__), 'resources',
                                       'coords_20170117_out_extract.tsv')
         consequence_type_dict, one_rs_multiple_genes = \

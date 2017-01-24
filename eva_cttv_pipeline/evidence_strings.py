@@ -159,7 +159,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                              "rt") as gen_json_file:
         base_json = json.load(gen_json_file)
 
-    def __init__(self, clinvar_record, clinvar_record_measure, report, trait, ensembl_gene_id, cellbase_record):
+    def __init__(self, clinvar_record, clinvar_record_measure, report, trait, consequence_type):
 
         a_dictionary = copy.deepcopy(self.base_json)
 
@@ -167,7 +167,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
                             clinvar_record.observed_refs_list +
                             clinvar_record_measure.measure_set_refs_list))
 
-        super().__init__(a_dictionary, clinvar_record, ref_list, ensembl_gene_id, report, trait)
+        super().__init__(a_dictionary, clinvar_record, ref_list, consequence_type.ensembl_gene_id, report, trait)
 
         self.add_unique_association_field('alleleOrigin', 'germline')
         if clinvar_record_measure.rs_id:
@@ -184,7 +184,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         self.association = clinvar_record.clinical_significance not in \
                            ('non-pathogenic', 'probable-non-pathogenic', 'likely benign', 'benign')
         self.gene_2_var_ev_codes = ['http://identifiers.org/eco/cttv_mapping_pipeline']
-        most_severe_so_term = clinvar_record_measure.consequence_type.most_severe_so
+        most_severe_so_term = consequence_type.so_term
         if most_severe_so_term.accession is None:
             self.gene_2_var_func_consequence = 'http://targetvalidation.org/sequence/' + \
                                                most_severe_so_term.so_name
@@ -307,7 +307,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                              "rt") as som_json_file:
         base_json = json.load(som_json_file)
 
-    def __init__(self, clinvar_record, clinvar_record_measure, report, trait, ensembl_gene_id):
+    def __init__(self, clinvar_record, clinvar_record_measure, report, trait, consequence_type):
 
         a_dictionary = copy.deepcopy(self.base_json)
 
@@ -315,7 +315,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
                             clinvar_record.observed_refs_list +
                             clinvar_record_measure.measure_set_refs_list))
 
-        super().__init__(a_dictionary, clinvar_record, ref_list, ensembl_gene_id, report, trait)
+        super().__init__(a_dictionary, clinvar_record, ref_list, consequence_type.ensembl_gene_id, report, trait)
 
         self.add_unique_association_field('alleleOrigin', 'somatic')
 
@@ -325,7 +325,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
         self.association = clinvar_record.clinical_significance not in \
                            ('non-pathogenic', 'probable-non-pathogenic', 'likely benign', 'benign')
 
-        self.set_known_mutations(clinvar_record_measure.consequence_type)
+        self.set_known_mutations(consequence_type)
 
         if len(ref_list) > 0:
             self.evidence_literature = ref_list
@@ -385,16 +385,14 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
             {'functional_consequence': new_functional_consequence, 'preferred_name': so_name}
         self['evidence']['known_mutations'].append(new_known_mutation)
 
-    def set_known_mutations(self, consequence_type):
-        for so_term in consequence_type.so_terms:
-            so_name = so_term.so_name
-            if so_term.accession:
-                new_functional_consequence = \
-                    "http://purl.obolibrary.org/obo/" + so_term.accession.replace(':', '_')
-            else:
-                new_functional_consequence = \
-                    'http://targetvalidation.org/sequence/' + so_term.so_name
-            self.add_known_mutation(new_functional_consequence, so_name)
+    def set_known_mutations(self, so_term):
+        if so_term.accession:
+            new_functional_consequence = \
+                "http://purl.obolibrary.org/obo/" + so_term.accession.replace(':', '_')
+        else:
+            new_functional_consequence = \
+                'http://targetvalidation.org/sequence/' + so_term.so_name
+        self.add_known_mutation(new_functional_consequence, so_term.so_name)
 
 
 def get_ensembl_gene_id_uri(ensembl_gene_id):

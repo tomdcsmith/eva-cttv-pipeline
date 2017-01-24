@@ -4,7 +4,7 @@ from eva_cttv_pipeline import utilities
 
 
 def process_gene(consequence_type_dict, variant_id, ensembl_gene_id, so_term):
-    consequence_type_dict[variant_id].append(ConsequenceType([ensembl_gene_id], [so_term]))
+    consequence_type_dict[variant_id].append(ConsequenceType(ensembl_gene_id, so_term))
 
 
 def process_consequence_type_file_tsv(snp_2_gene_filepath):
@@ -173,36 +173,12 @@ class ConsequenceType:
     with relationship to ensembl gene IDs and SO terms
     """
 
-    def __init__(self, ensembl_gene_ids=None, so_names=None):
-        if ensembl_gene_ids:
-            self.ensembl_gene_ids = set(ensembl_gene_ids)
-        else:
-            self.ensembl_gene_ids = set()
-        self._ensembl_transcript_id = None
-
-        if so_names is not None:
-            self.so_terms = set([SoTerm(so_name) for so_name in so_names])
-        else:
-            self.so_terms = set()
+    def __init__(self, ensembl_gene_id, so_term):
+        self.ensembl_gene_id = ensembl_gene_id
+        self.so_term = so_term
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not self.__eq__(other)
-
-    @property
-    def ensembl_gene_ids(self):
-        return self.__ensembl_gene_ids
-
-    @ensembl_gene_ids.setter
-    def ensembl_gene_ids(self, value):
-        self.__ensembl_gene_ids = value
-
-    def add_so_terms(self, so_terms):
-        for so_name in so_terms:
-            self.so_terms.add(SoTerm(so_name))
-
-    @property
-    def most_severe_so(self):
-        return min(list(self.so_terms), key=lambda x: x.rank)
