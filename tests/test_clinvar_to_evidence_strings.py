@@ -1,8 +1,10 @@
 import os
 import unittest
 
+from eva_cttv_pipeline import consequence_type as CT
 from eva_cttv_pipeline import clinvar_to_evidence_strings
 from tests import test_clinvar
+import tests.test_config as test_config
 
 
 def _get_mappings():
@@ -214,4 +216,20 @@ class TestConvertAlleleOrigins(unittest.TestCase):
                 orig_allele_origins)
             self.assertListEqual(["somatic", "germline"], converted_allele_origins)
 
+
+class TestGetConsequenceTypes(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.test_crm = test_clinvar.get_test_record().measures[0]
+        cls.consequence_type_dict = CT.process_consequence_type_file(test_config.snp_2_gene_file)
+
+    def test_get_consequence_types(self):
+        test_consequence_type = CT.ConsequenceType("ENSG00000163646", "stop_gained")
+
+        self.assertEqual(clinvar_to_evidence_strings.get_consequence_types(
+            self.test_crm,
+            self.consequence_type_dict)[0],
+            test_consequence_type)
+        self.assertEqual(clinvar_to_evidence_strings.get_consequence_types(self.test_crm, {}),
+                         None)
 
