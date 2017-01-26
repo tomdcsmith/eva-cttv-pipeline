@@ -66,11 +66,11 @@ def skip_varsum_line(line_list):
     if line_list[0].startswith("#"):
         return True
 
-    clin_sig = line_list[5]
-    if "pathogenic" not in clin_sig.lower():
+    clin_sig_simple = line_list[7]
+    if clin_sig_simple != "1":
         return True
 
-    assembly = line_list[12]
+    assembly = line_list[16]
     if assembly.lower() != "grch38":
         return True
 
