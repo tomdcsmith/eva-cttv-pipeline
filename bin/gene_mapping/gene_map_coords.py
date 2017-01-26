@@ -22,21 +22,21 @@ def main():
 
 
 def get_output_lines(line_list):
-    start = line_list[14]
-    stop = line_list[15]
+    start = line_list[19]
+    stop = line_list[20]
 
     if int(stop) - int(start) > 50000:
         return []
 
-    chrom = line_list[13]
-    ref = line_list[25] if line_list[25] != "na" else "-"
-    alt = line_list[26] if line_list[26] != "na" else "-"
+    chrom = line_list[18]
+    ref = line_list[21] if line_list[21] != "na" else "-"
+    alt = line_list[22] if line_list[22] != "na" else "-"
     strand = "+"
     type = line_list[1]
     svtype = get_svtype(type)
-    rcvs = line_list[8].split(";")
-    rs = "rs" + line_list[6] if line_list[6] != "-1" else "-1"
-    nsv = line_list[7] if line_list[7] != "-" else "-1"
+    rcvs = line_list[11].split(";")
+    rs = "rs" + line_list[9] if line_list[9] != "-1" else "-1"
+    nsv = line_list[10] if line_list[10] != "-" else "-1"
     ncbi_geneid = line_list[3]
 
     output_lines = []
