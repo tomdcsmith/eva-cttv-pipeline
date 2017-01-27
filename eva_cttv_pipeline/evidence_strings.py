@@ -106,7 +106,7 @@ class CTTVEvidenceString(dict):
         self['target']['id'] = []
 
     def set_target(self, target_id, activity):
-        self['target']['id'].append(target_id)
+        self['target']['id'] = target_id
         self['target']['activity'] = activity
 
     @property
@@ -131,7 +131,7 @@ class CTTVEvidenceString(dict):
 
     @disease_id.setter
     def disease_id(self, value):
-        self['disease']['id'] = [value]
+        self['disease']['id'] = value
 
     @property
     def evidence_codes(self):
@@ -278,7 +278,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         self['variant']['type'] = []
 
     def set_variant(self, var_id, var_type):
-        self['variant']['id'].append(var_id)
+        self['variant']['id'] = var_id
         self['variant']['type'] = var_type
 
     @property
