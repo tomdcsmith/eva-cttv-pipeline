@@ -264,7 +264,7 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
         test_type = "snp single"
         self.test_ges._clear_variant()
         self.test_ges.set_variant(test_id, test_type)
-        self.assertEqual(self.test_ges['variant']['id'], [test_id])
+        self.assertEqual(self.test_ges['variant']['id'], test_id)
         self.assertEqual(self.test_ges['variant']['type'], test_type)
 
     def test_unique_reference(self):

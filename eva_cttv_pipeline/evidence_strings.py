@@ -127,7 +127,7 @@ class CTTVEvidenceString(dict):
 
     @property
     def disease_id(self):
-        return efo_term.EFOTerm(self['disease']['id'][0])
+        return efo_term.EFOTerm(self['disease']['id'])
 
     @disease_id.setter
     def disease_id(self, value):
