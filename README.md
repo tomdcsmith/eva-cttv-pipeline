@@ -25,7 +25,9 @@ Building and (optional) Setting up virtual environment
 Usage
 -------
 
-python3 bin/main.py --out \<OUTPUT_FILE\> -e \<EFO_MAPPING_FILE\> -g \<SNP_2_GENE_MAPPING_FILE\> [--clinSig \<CLINICAL_SIGNIFICANCE_LIST\>] [--ignore \<TERM_URL_IGNORE_FILE\>]
+python3 bin/main.py -j \<INPUT_JSON_FILE\> --out \<OUTPUT_FILE\> -e \<EFO_MAPPING_FILE\> -g \<SNP_2_GENE_MAPPING_FILE\> [--clinSig \<CLINICAL_SIGNIFICANCE_LIST\>] [--ignore \<TERM_URL_IGNORE_FILE\>]
+
+INPUT_JSON_FILE: path to a file with one json per line. Each json is in the format of Cellbase ClinVar json.
 
 OUTPUT_FILE: path to output directory
 
