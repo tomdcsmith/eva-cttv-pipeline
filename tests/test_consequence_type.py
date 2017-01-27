@@ -3,6 +3,7 @@ import os
 import unittest
 
 from eva_cttv_pipeline import consequence_type as CT
+from tests import config
 
 
 class ProcessGeneTest(unittest.TestCase):
@@ -23,7 +24,7 @@ class ProcessConsequenceTypeFileTsvTest(unittest.TestCase):
     def test__process_consequence_type_file_tsv(self):
         test_consequence_type = CT.ConsequenceType("ENSG00000021488", "missense_variant")
         snp_2_gene_file_path = os.path.join(os.path.dirname(__file__), 'resources',
-                                      'coords_20170117_out_extract.tsv')
+                                            config.snp_2_gene_file)
         consequence_type_dict, one_rs_multiple_genes = \
             CT.process_consequence_type_file_tsv(snp_2_gene_file_path)
         self.assertEqual(consequence_type_dict["rs121908485"][0], test_consequence_type)
