@@ -69,6 +69,9 @@ class TestClinvarRecordMeasure(unittest.TestCase):
     def test_rs(self):
         self.assertEqual(self.test_crm.rs_id, "rs121908140")
 
+    def test_nsv(self):
+        self.assertEqual(self.test_crm.nsv_id, "nsv123456")
+
     def test_variant_type(self):
         self.assertEqual(self.test_crm.variant_type, "single nucleotide variant")
 
