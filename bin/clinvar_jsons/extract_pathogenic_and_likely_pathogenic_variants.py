@@ -20,14 +20,13 @@ def clinvar_jsons(filepath):
             line = line.rstrip()
             yield json.loads(line)
 
-
 def is_path_or_likely_path(clinvar_json):
     clin_sigs = set()
-    for clinvar_assertion in clinvar_json["clinvarSet"]["clinVarAssertion"]:
-        if "description" in clinvar_assertion["clinicalSignificance"]:
-            for description in clinvar_assertion["clinicalSignificance"]["description"]:
-                clin_sigs.add(description)
-    return len(clin_sigs.intersection({"Pathogenic", "Likely pathogenic"})) > 0
+    if "description" in clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]:
+        clin_sigs.add(clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]["description"])
+        if clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]["description"].lower() in ("pathogenic", "likely pathogenic"):
+            return True
+    return False
 
 
 class ArgParser:
