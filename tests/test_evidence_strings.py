@@ -6,7 +6,7 @@ from eva_cttv_pipeline import clinvar
 from eva_cttv_pipeline import efo_term
 from eva_cttv_pipeline import clinvar_to_evidence_strings
 from eva_cttv_pipeline import evidence_strings
-from eva_cttv_pipeline import consequence_type
+from eva_cttv_pipeline import consequence_type as CT
 
 from tests import config
 from tests import test_clinvar_to_evidence_strings
@@ -292,7 +292,7 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
 class CTTVSomaticEvidenceStringTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.consequence_type_dict = consequence_type.process_consequence_type_file(config.snp_2_gene_file)
+        cls.consequence_type_dict = CT.process_consequence_type_file(config.snp_2_gene_file)
 
     def setUp(self):
         test_args = get_args_CTTVSomaticEvidenceString_init()
@@ -352,8 +352,8 @@ class CTTVSomaticEvidenceStringTest(unittest.TestCase):
             [{'functional_consequence': functional_consequence, 'preferred_name': preferred_name}])
 
     def test_set_known_mutations(self):
-        test_consequence_type = consequence_type.ConsequenceType("ENSG00000008710",
-                                                                 "3_prime_UTR_variant")
+        test_consequence_type = CT.ConsequenceType("ENSG00000008710",
+                                                   CT.SoTerm("3_prime_UTR_variant"))
         self.test_ses._clear_known_mutations()
         self.test_ses.set_known_mutations(test_consequence_type.so_term)
         self.assertEqual(

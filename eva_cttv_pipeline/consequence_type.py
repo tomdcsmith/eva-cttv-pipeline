@@ -4,7 +4,7 @@ from eva_cttv_pipeline import utilities
 
 
 def process_gene(consequence_type_dict, variant_id, ensembl_gene_id, so_term):
-    consequence_type_dict[variant_id].append(ConsequenceType(ensembl_gene_id, so_term))
+    consequence_type_dict[variant_id].append(ConsequenceType(ensembl_gene_id, SoTerm(so_term)))
 
 
 def process_consequence_type_file_tsv(snp_2_gene_filepath):
@@ -174,7 +174,7 @@ class ConsequenceType:
 
     def __init__(self, ensembl_gene_id, so_term):
         self.ensembl_gene_id = ensembl_gene_id
-        self.so_term = SoTerm(so_term)
+        self.so_term = so_term
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__

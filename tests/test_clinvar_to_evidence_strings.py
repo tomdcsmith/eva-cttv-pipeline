@@ -77,7 +77,7 @@ class SkipRecordTest(unittest.TestCase):
     def setUp(self):
         self.clinvar_record = test_clinvar.get_test_record()
         report = clinvar_to_evidence_strings.Report()
-        consequence_type = CT.ConsequenceType("ENSG00000163646", "stop_gained")
+        consequence_type = CT.ConsequenceType("ENSG00000163646", CT.SoTerm("stop_gained"))
         # skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, counters)
         self.args = [self.clinvar_record, self.clinvar_record.measures[0], consequence_type,
                      "germline", ["not provided"], report]
@@ -228,7 +228,7 @@ class TestGetConsequenceTypes(unittest.TestCase):
         cls.consequence_type_dict = CT.process_consequence_type_file(config.snp_2_gene_file)
 
     def test_get_consequence_types(self):
-        test_consequence_type = CT.ConsequenceType("ENSG00000163646", "stop_gained")
+        test_consequence_type = CT.ConsequenceType("ENSG00000163646", CT.SoTerm("stop_gained"))
 
         self.assertEqual(clinvar_to_evidence_strings.get_consequence_types(
             self.test_crm,
