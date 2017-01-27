@@ -22,41 +22,57 @@ def main():
 
 
 def get_output_lines(line_list):
-    chrom = line_list[13]
-    start = line_list[14]
-    stop = line_list[15]
-    ref = line_list[25]
-    alt = line_list[26]
+    start = line_list[19]
+    stop = line_list[20]
+
+    max_var_length = 50000
+
+    if int(stop) - int(start) > max_var_length:
+        return []
+
+    chrom = line_list[18]
+    ref = line_list[21] if line_list[21] != "na" else "-"
+    alt = line_list[22] if line_list[22] != "na" else "-"
     strand = "+"
-    rcvs = line_list[8].split(";")
-    rs = "rs" + line_list[6] if line_list[6] != "-1" else "-1"
-    nsv = line_list[7] if line_list[7] != "-" else "-1"
+    type = line_list[1]
+    svtype = get_svtype(type)
+    rcvs = line_list[11].split(";")
+    rs = "rs" + line_list[9] if line_list[9] != "-1" else "-1"
+    nsv = line_list[10] if line_list[10] != "-" else "-1"
     ncbi_geneid = line_list[3]
 
     output_lines = []
     for rcv in rcvs:
-        output_line = build_output_line(chrom, start, stop, ref, alt, strand, rcv, rs, nsv, ncbi_geneid)
+        output_line = build_output_line(chrom, start, stop, ref, alt, strand, svtype, rcv, rs, nsv, ncbi_geneid, type)
         output_lines.append(output_line)
 
     return output_lines
 
 
-def build_output_line(chrom, start, stop, ref, alt, strand, rcv, rs, nsv, ncbi_geneid):
-    output_line_list = [chrom, start, stop, ref, alt, strand, rs, rcv, ncbi_geneid, nsv]
+def build_output_line(chrom, start, stop, ref, alt, strand, svtype, rcv, rs, nsv, ncbi_geneid, type):
+    output_line_list = [chrom, start, stop, ref, alt, strand, svtype, rs, rcv, ncbi_geneid, nsv, type]
     output_line = "\t".join(output_line_list)
 
     return output_line
+
+
+def get_svtype(type):
+    type_to_svtype_dict = {"deletion": "DEL", "insertion": "INS", "duplication": "DUP"}
+    if type.lower() in type_to_svtype_dict:
+        return type_to_svtype_dict[type]
+    else:
+        return "INS"
 
 
 def skip_varsum_line(line_list):
     if line_list[0].startswith("#"):
         return True
 
-    clin_sig = line_list[5]
-    if "pathogenic" not in clin_sig.lower():
+    clin_sig_simple = line_list[7]
+    if clin_sig_simple != "1":
         return True
 
-    assembly = line_list[12]
+    assembly = line_list[16]
     if assembly.lower() != "grch38":
         return True
 
