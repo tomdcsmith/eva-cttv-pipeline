@@ -12,7 +12,7 @@ def _get_mappings():
                                     'feb16_jul16_combined_trait_to_url.tsv')
     ignore_file = os.path.join(os.path.dirname(__file__), 'resources', 'ignore_file.txt')
     snp_2_gene_file = os.path.join(os.path.dirname(__file__), 'resources',
-                                   'coords_20170117_out_extract.tsv')
+                                   config.snp_2_gene_file)
 
     mappings = clinvar_to_evidence_strings.get_mappings(efo_mapping_file, snp_2_gene_file)
 
