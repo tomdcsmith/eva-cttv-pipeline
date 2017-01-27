@@ -8,7 +8,7 @@ from eva_cttv_pipeline import clinvar_to_evidence_strings
 from eva_cttv_pipeline import evidence_strings
 from eva_cttv_pipeline import consequence_type
 
-import tests.test_config as test_config
+from tests import config
 from tests import test_clinvar_to_evidence_strings
 
 DATE_LAST_UPDATED = 1412982000000
@@ -292,7 +292,7 @@ class CTTVGeneticsEvidenceStringTest(unittest.TestCase):
 class CTTVSomaticEvidenceStringTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.consequence_type_dict = consequence_type.process_consequence_type_file(test_config.snp_2_gene_file)
+        cls.consequence_type_dict = consequence_type.process_consequence_type_file(config.snp_2_gene_file)
 
     def setUp(self):
         test_args = get_args_CTTVSomaticEvidenceString_init()

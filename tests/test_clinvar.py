@@ -7,7 +7,7 @@ from eva_cttv_pipeline import clinvar
 from eva_cttv_pipeline import consequence_type as CT
 from eva_cttv_pipeline import utilities
 
-import tests.test_config as test_config
+from tests import config
 
 
 class TestClinvarRecord(unittest.TestCase):
@@ -48,7 +48,7 @@ class TestClinvarRecordMeasure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.test_crm = get_test_record().measures[0]
-        cls.consequence_type_dict = CT.process_consequence_type_file(test_config.snp_2_gene_file)
+        cls.consequence_type_dict = CT.process_consequence_type_file(config.snp_2_gene_file)
 
     def test_hgvs(self):
         self.assertEqual(self.test_crm.hgvs,
