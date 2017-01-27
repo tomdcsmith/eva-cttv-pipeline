@@ -108,8 +108,8 @@ class ClinvarRecord(UserDict):
     @property
     def allele_origins(self):
         allele_origins = set()
-        for clinvar_assetion_document in self.data['clinVarAssertion']:
-            for observed_in_document in clinvar_assetion_document['observedIn']:
+        for clinvar_assertion_document in self.data['clinVarAssertion']:
+            for observed_in_document in clinvar_assertion_document['observedIn']:
                 allele_origins.add(observed_in_document['sample']['origin'].lower())
 
         return list(allele_origins)
@@ -151,7 +151,7 @@ class ClinvarRecordMeasure(UserDict):
         return self.data['type']
 
     @property
-    def measure_set_pubmed_refs(self):
+    def pubmed_refs(self):
         pubmed_refs_list = []
         if 'citation' in self.data:
             for citation in self.data['citation']:
@@ -162,9 +162,9 @@ class ClinvarRecordMeasure(UserDict):
         return pubmed_refs_list
 
     @property
-    def measure_set_refs_list(self):
+    def refs_list(self):
         return ['http://europepmc.org/abstract/MED/' + str(ref)
-                for ref in self.measure_set_pubmed_refs]
+                for ref in self.pubmed_refs]
 
     @property
     def chr(self):

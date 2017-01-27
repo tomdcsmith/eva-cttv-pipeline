@@ -8,7 +8,6 @@ def process_gene(consequence_type_dict, variant_id, ensembl_gene_id, so_term):
 
 
 def process_consequence_type_file_tsv(snp_2_gene_filepath):
-
     consequence_type_dict = defaultdict(list)
     one_rs_multiple_genes = set()
 

@@ -74,7 +74,7 @@ class TestClinvarRecordMeasure(unittest.TestCase):
         self.assertEqual(self.test_crm.variant_type, "single nucleotide variant")
 
     def test_measure_set_pubmed_refs(self):
-        self.assertEqual(self.test_crm.measure_set_pubmed_refs, [])
+        self.assertEqual(self.test_crm.pubmed_refs, [])
 
 
 def get_test_record():

@@ -43,11 +43,11 @@ CLIN_SIG_TO_ACTIVITY = {'other': 'http://identifiers.org/cttv.activity/unknown',
 def get_cttv_variant_type(clinvar_record_measure):
     if clinvar_record_measure.ref is not None and clinvar_record_measure.alt is not None:
         if len(clinvar_record_measure.ref) < 2 and len(clinvar_record_measure.alt) < 2:
-            cttv_variant_type = 'snp single'
+            cttv_variant_type = "snp single"
         elif len(clinvar_record_measure.ref) > 50 or len(clinvar_record_measure.alt) > 50:
-            cttv_variant_type = 'structural variant'
+            cttv_variant_type = "structural variant"
         else:
-            cttv_variant_type = 'snp single'  # Sam asked for this in his email 21/05/2015
+            cttv_variant_type = "snp single"  # Sam asked for this in his email 21/05/2015
             # cttv_variant_type = 'snp multiple'
     else:
         if clinvar_record_measure.rs_id is not None:
@@ -173,7 +173,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
 
         ref_list = list(set(clinvar_record.trait_refs_list[trait.trait_counter] +
                             clinvar_record.observed_refs_list +
-                            clinvar_record_measure.measure_set_refs_list))
+                            clinvar_record_measure.refs_list))
 
         super().__init__(a_dictionary, clinvar_record, ref_list, consequence_type.ensembl_gene_id, report, trait)
 
@@ -324,7 +324,7 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
         ref_list = list(set(clinvar_record.trait_refs_list[trait.trait_counter] +
                             clinvar_record.observed_refs_list +
-                            clinvar_record_measure.measure_set_refs_list))
+                            clinvar_record_measure.refs_list))
 
         super().__init__(a_dictionary, clinvar_record, ref_list, consequence_type.ensembl_gene_id, report, trait)
 
