@@ -25,7 +25,9 @@ def get_output_lines(line_list):
     start = line_list[19]
     stop = line_list[20]
 
-    if int(stop) - int(start) > 50000:
+    max_var_length = 50000
+
+    if int(stop) - int(start) > max_var_length:
         return []
 
     chrom = line_list[18]
