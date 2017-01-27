@@ -6,9 +6,13 @@ from types import SimpleNamespace
 
 import jsonschema
 
-from eva_cttv_pipeline import cellbase_records, efo_term, config, evidence_strings, clinvar, \
-    utilities
-from eva_cttv_pipeline import consequence_type as ct
+from eva_cttv_pipeline import cellbase_records
+from eva_cttv_pipeline import efo_term
+from eva_cttv_pipeline import config
+from eva_cttv_pipeline import evidence_strings
+from eva_cttv_pipeline import clinvar
+from eva_cttv_pipeline import utilities
+from eva_cttv_pipeline import consequence_type as CT
 from eva_cttv_pipeline.trait import Trait
 
 
@@ -260,7 +264,7 @@ def get_mappings(efo_mapping_file, snp_2_gene_file):
         load_efo_mapping(efo_mapping_file)
 
     mappings.consequence_type_dict = \
-        ct.process_consequence_type_file(snp_2_gene_file)
+        CT.process_consequence_type_file(snp_2_gene_file)
 
     return mappings
 

@@ -1,12 +1,11 @@
 import copy
 import json
-import sys
 
 import jsonschema
 
-from eva_cttv_pipeline import config, utilities, efo_term
-
-__author__ = 'Javier Lopez: javild@gmail.com'
+from eva_cttv_pipeline import config
+from eva_cttv_pipeline import utilities
+from eva_cttv_pipeline import efo_term
 
 
 utilities.check_for_local_schema()

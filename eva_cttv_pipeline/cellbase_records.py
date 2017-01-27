@@ -1,9 +1,6 @@
-import codecs
 import json
-import urllib.request
-import urllib.error
 
-from eva_cttv_pipeline import config, utilities
+from eva_cttv_pipeline import utilities
 
 
 class CellbaseRecords:

@@ -7,7 +7,6 @@ from eva_cttv_pipeline import clinvar
 from eva_cttv_pipeline import consequence_type as CT
 from eva_cttv_pipeline import utilities
 
-from tests import test_clinvar_to_evidence_strings
 import tests.test_config as test_config
 
 

@@ -2,8 +2,6 @@ import os
 
 from eva_cttv_pipeline import config
 
-__author__ = 'Javier Lopez: javild@gmail.com'
-
 
 def get_available_terms(sparqlep, user, password):
     query = """SELECT DISTINCT ?uri sample(?label) AS ?label

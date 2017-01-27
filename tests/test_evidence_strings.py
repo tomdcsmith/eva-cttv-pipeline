@@ -2,8 +2,11 @@ from datetime import datetime
 import unittest
 from types import SimpleNamespace
 
-from eva_cttv_pipeline import clinvar, efo_term, clinvar_to_evidence_strings, \
-    evidence_strings, consequence_type
+from eva_cttv_pipeline import clinvar
+from eva_cttv_pipeline import efo_term
+from eva_cttv_pipeline import clinvar_to_evidence_strings
+from eva_cttv_pipeline import evidence_strings
+from eva_cttv_pipeline import consequence_type
 
 import tests.test_config as test_config
 from tests import test_clinvar_to_evidence_strings

@@ -1,15 +1,5 @@
-import json
-import gzip
-import sys
-import time
-import urllib.error
-import urllib.parse
-import urllib.request
 from datetime import datetime
-import http.client
 from collections import UserDict
-
-from eva_cttv_pipeline import utilities
 
 
 class ClinvarRecord(UserDict):
