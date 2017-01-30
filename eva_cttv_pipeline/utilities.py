@@ -51,17 +51,9 @@ def copy_dir(src, dest):
 
 
 def change_json_refs(local_schema_dir):
-
     command = "find " + local_schema_dir + \
               " -type f -exec sed -i -e " \
-              "\"s/https:\/\/raw.githubusercontent.com\/CTTV\/json_schema\/master/file:\/\/" + \
-              local_schema_dir.replace("/", "\/") + "/g\" {} \;"
-    print("Carrying out command:\n" + command)
-    subprocess.check_output(command, shell=True)
-
-    command = "find " + local_schema_dir + \
-              " -type f -exec sed -i -e " \
-              "\"s/https:\/\/raw.githubusercontent.com\/OpenTargets\/json_schema\/master/file:\/\/" + \
+              "\"s/https:\/\/raw.githubusercontent.com\/opentargets\/json_schema\/master/file:\/\/" + \
               local_schema_dir.replace("/", "\/") + "/g\" {} \;"
     print("Carrying out command:\n" + command)
     subprocess.check_output(command, shell=True)
