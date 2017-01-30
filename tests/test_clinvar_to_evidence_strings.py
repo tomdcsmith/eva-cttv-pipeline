@@ -1,8 +1,10 @@
 import os
 import unittest
 
+from eva_cttv_pipeline import consequence_type as CT
 from eva_cttv_pipeline import clinvar_to_evidence_strings
 from tests import test_clinvar
+from tests import config
 
 
 def _get_mappings():
@@ -10,12 +12,9 @@ def _get_mappings():
                                     'feb16_jul16_combined_trait_to_url.tsv')
     ignore_file = os.path.join(os.path.dirname(__file__), 'resources', 'ignore_file.txt')
     snp_2_gene_file = os.path.join(os.path.dirname(__file__), 'resources',
-                                   'snp2gene_assignment_jul2016_extract.tsv')
-    variant_summary_file = os.path.join(os.path.dirname(__file__), 'resources',
-                                        'variant_summary_2016-05_test_extract.txt')
+                                   config.snp_2_gene_file)
 
-    mappings = clinvar_to_evidence_strings.get_mappings(efo_mapping_file, snp_2_gene_file,
-                                                        variant_summary_file)
+    mappings = clinvar_to_evidence_strings.get_mappings(efo_mapping_file, snp_2_gene_file)
 
     return mappings
 
@@ -40,7 +39,7 @@ class GetMappingsTest(unittest.TestCase):
             ('http://www.orpha.net/ORDO/Orphanet_90791', None))
 
     def test_consequence_type_dict(self):
-        self.assertEqual(len(self.mappings.consequence_type_dict), 56)
+        self.assertEqual(len(self.mappings.consequence_type_dict), 34)
 
         self.assertTrue("rs121908485" in self.mappings.consequence_type_dict)
         self.assertTrue("rs121912888" in self.mappings.consequence_type_dict)
@@ -50,18 +49,6 @@ class GetMappingsTest(unittest.TestCase):
         self.assertFalse("rs0" in self.mappings.consequence_type_dict)
         self.assertFalse("rs5" in self.mappings.consequence_type_dict)
         self.assertFalse("rs9" in self.mappings.consequence_type_dict)
-
-    def test_rcv_to_rs_nsv(self):
-        self.assertEqual(len(self.mappings.rcv_to_rs), 21)
-        self.assertEqual(len(self.mappings.rcv_to_nsv), 6)
-
-        self.assertEqual(self.mappings.rcv_to_nsv["RCV000020147"], "nsv1067916")
-        self.assertEqual(self.mappings.rcv_to_nsv["RCV000004182"], "nsv1067860")
-        self.assertEqual(self.mappings.rcv_to_nsv["RCV000004183"], "nsv1067861")
-
-        self.assertEqual(self.mappings.rcv_to_rs["RCV000000012"], "rs397704705")
-        self.assertEqual(self.mappings.rcv_to_rs["RCV000000204"], "rs121965059")
-        self.assertEqual(self.mappings.rcv_to_rs["RCV000000381"], "rs137854556")
 
 
 class CreateTraitTest(unittest.TestCase):
@@ -84,19 +71,19 @@ class CreateTraitTest(unittest.TestCase):
 
 class SkipRecordTest(unittest.TestCase):
 
+    #clinvar_record, clinvar_record_measure, consequence_type, allele_origin,
+                # allowed_clinical_significance, report
+
     def setUp(self):
         self.clinvar_record = test_clinvar.get_test_record()
         report = clinvar_to_evidence_strings.Report()
+        consequence_type = CT.ConsequenceType("ENSG00000163646", CT.SoTerm("stop_gained"))
         # skip_record(clinvarRecord, cellbase_record, allowed_clinical_significance, counters)
-        self.args = [self.clinvar_record, {"reference": "A", "alternate": "T"},
-                     ["not provided"], report.counters]
+        self.args = [self.clinvar_record, self.clinvar_record.measures[0], consequence_type,
+                     "germline", ["not provided"], report]
         # allowed clin sig changed to just "non provided" to match that in the test record
 
     def test_return_true(self):
-        self.assertTrue(clinvar_to_evidence_strings.skip_record(*self.args))
-
-    def test_ref_eq_alt(self):
-        self.args[1] = {"reference": "A", "alternate": "A"}
         self.assertTrue(clinvar_to_evidence_strings.skip_record(*self.args))
 
     def test_rs_is_none(self):
@@ -233,4 +220,20 @@ class TestConvertAlleleOrigins(unittest.TestCase):
                 orig_allele_origins)
             self.assertListEqual(["somatic", "germline"], converted_allele_origins)
 
+
+class TestGetConsequenceTypes(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.test_crm = test_clinvar.get_test_record().measures[0]
+        cls.consequence_type_dict = CT.process_consequence_type_file(config.snp_2_gene_file)
+
+    def test_get_consequence_types(self):
+        test_consequence_type = CT.ConsequenceType("ENSG00000163646", CT.SoTerm("stop_gained"))
+
+        self.assertEqual(clinvar_to_evidence_strings.get_consequence_types(
+            self.test_crm,
+            self.consequence_type_dict)[0],
+            test_consequence_type)
+        self.assertEqual(clinvar_to_evidence_strings.get_consequence_types(self.test_crm, {}),
+                         [None])
 

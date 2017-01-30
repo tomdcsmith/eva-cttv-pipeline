@@ -1,19 +1,14 @@
+from collections import defaultdict
+
 from eva_cttv_pipeline import utilities
 
-__author__ = 'Javier Lopez: javild@gmail.com'
 
-
-def process_gene(consequence_type_dict, variant_id, ensembl_gene_ids, so_terms):
-    if variant_id in consequence_type_dict:
-        consequence_type_dict[variant_id].ensembl_gene_ids.update(ensembl_gene_ids)
-        consequence_type_dict[variant_id].add_so_terms(so_terms)
-    else:
-        consequence_type_dict[variant_id] = ConsequenceType(ensembl_gene_ids, so_terms)
+def process_gene(consequence_type_dict, variant_id, ensembl_gene_id, so_term):
+    consequence_type_dict[variant_id].append(ConsequenceType(ensembl_gene_id, SoTerm(so_term)))
 
 
 def process_consequence_type_file_tsv(snp_2_gene_filepath):
-
-    consequence_type_dict = {}
+    consequence_type_dict = defaultdict(list)
     one_rs_multiple_genes = set()
 
     with utilities.open_file(snp_2_gene_filepath, "rt") as snp_2_gene_file:
@@ -21,11 +16,14 @@ def process_consequence_type_file_tsv(snp_2_gene_filepath):
             line = line.rstrip()
             line_list = line.split("\t")
 
-            variant_id = line_list[0]
-            ensembl_gene_ids = line_list[1].split(",")
-            so_terms = line_list[3].split(",")
+            if len(line_list) < 6:
+                continue
 
-            process_gene(consequence_type_dict, variant_id, ensembl_gene_ids, so_terms)
+            variant_id = line_list[0]
+            ensembl_gene_id = line_list[2]
+            so_term = line_list[4]
+
+            process_gene(consequence_type_dict, variant_id, ensembl_gene_id, so_term)
 
     return consequence_type_dict, one_rs_multiple_genes
 
@@ -174,36 +172,12 @@ class ConsequenceType:
     with relationship to ensembl gene IDs and SO terms
     """
 
-    def __init__(self, ensembl_gene_ids=None, so_names=None):
-        if ensembl_gene_ids:
-            self.ensembl_gene_ids = set(ensembl_gene_ids)
-        else:
-            self.ensembl_gene_ids = set()
-        self._ensembl_transcript_id = None
-
-        if so_names is not None:
-            self.so_terms = set([SoTerm(so_name) for so_name in so_names])
-        else:
-            self.so_terms = set()
+    def __init__(self, ensembl_gene_id, so_term):
+        self.ensembl_gene_id = ensembl_gene_id
+        self.so_term = so_term
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not self.__eq__(other)
-
-    @property
-    def ensembl_gene_ids(self):
-        return self.__ensembl_gene_ids
-
-    @ensembl_gene_ids.setter
-    def ensembl_gene_ids(self, value):
-        self.__ensembl_gene_ids = value
-
-    def add_so_terms(self, so_terms):
-        for so_name in so_terms:
-            self.so_terms.add(SoTerm(so_name))
-
-    @property
-    def most_severe_so(self):
-        return min(list(self.so_terms), key=lambda x: x.rank)

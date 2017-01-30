@@ -170,9 +170,6 @@ class ArgParser:
         parser.add_argument("-g", "--snp2GeneFile", dest="snp_2_gene_file",
                             help="Path to file with RS id to ensembl gene ID and consequence "
                                  "mappings", required=True)
-        parser.add_argument("-v", "--variantSummaryFile", dest="variant_summary_file",
-                            help="Path to file with RS id to ensembl gene ID and consequence "
-                                 "mappings", required=True)
         parser.add_argument("-j", dest="json_file", help="File containing Clinvar records json "
                                                          "strings in the format of documents in "
                                                          "Cellbase. One record per line.")
@@ -185,7 +182,6 @@ class ArgParser:
         self.out = args.out
         self.efo_mapping_file = args.efo_mapping_file
         self.snp_2_gene_file = args.snp_2_gene_file
-        self.variant_summary_file = args.variant_summary_file
         self.json_file = args.json_file
 
 

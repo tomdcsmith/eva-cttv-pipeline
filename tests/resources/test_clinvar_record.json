@@ -460,6 +460,11 @@
               "id": "121908140",
               "type": "rs",
               "status": "CURRENT"
+            },
+            {
+              "db": "dbvar",
+              "id": "nsv123456",
+              "status": "CURRENT"
             }
           ]
         }

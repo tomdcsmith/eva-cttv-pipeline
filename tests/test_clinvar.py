@@ -7,23 +7,13 @@ from eva_cttv_pipeline import clinvar
 from eva_cttv_pipeline import consequence_type as CT
 from eva_cttv_pipeline import utilities
 
-from tests import test_clinvar_to_evidence_strings
-import tests.test_config as test_config
+from tests import config
 
 
 class TestClinvarRecord(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.test_clinvar_record = get_test_record()
-        cls.rcv_to_rs, cls.rcv_to_nsv = \
-            clinvar.get_rcv_to_rsnsv_mapping(test_config.variant_summary_file)
-        cls.consequence_type_dict = CT.process_consequence_type_file(test_config.snp_2_gene_file)
-
-    def test_gene_id(self):
-        self.assertEqual(self.test_clinvar_record.gene_id, "NM_174878")
-
-    def test_ensembl_id(self):
-        self.assertEqual(self.test_clinvar_record.ensembl_id, "ENSG00000163646")
 
     def test_date(self):
         self.assertEqual(self.test_clinvar_record.date,
@@ -47,11 +37,21 @@ class TestClinvarRecord(unittest.TestCase):
     def test_observed_pubmed_refs(self):
         self.assertEqual(self.test_clinvar_record.observed_pubmed_refs, [11524702, 12145752])
 
-    def test_measure_set_pubmed_refs(self):
-        self.assertEqual(self.test_clinvar_record.measure_set_pubmed_refs, [])
+    def test_clinical_significance(self):
+        self.assertEqual(self.test_clinvar_record.clinical_significance, "pathogenic")
+
+    def test_allele_origins(self):
+        self.assertEqual(self.test_clinvar_record.allele_origins, ['germline'])
+
+
+class TestClinvarRecordMeasure(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.test_crm = get_test_record().measures[0]
+        cls.consequence_type_dict = CT.process_consequence_type_file(config.snp_2_gene_file)
 
     def test_hgvs(self):
-        self.assertEqual(self.test_clinvar_record.hgvs,
+        self.assertEqual(self.test_crm.hgvs,
                          ['NM_174878.2:c.528T>G',
                           'NM_001256819.1:c.*142T>G',
                           'NM_052995.2:c.300T>G',
@@ -66,54 +66,17 @@ class TestClinvarRecord(unittest.TestCase):
                           'NP_777367.1:p.Tyr176Ter',
                           'NP_001182723.1:p.Tyr189Ter'])
 
-    def test_clinical_significance(self):
-        self.assertEqual(self.test_clinvar_record.clinical_significance, "pathogenic")
+    def test_rs(self):
+        self.assertEqual(self.test_crm.rs_id, "rs121908140")
 
-    def test_get_rs(self):
-        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_rs(self.rcv_to_rs), "rs28940313")
-        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_rs({}), None)
-
-    def test_get_nsv(self):
-        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_nsv(self.rcv_to_nsv), None)
-        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_nsv({"RCV000002127": "nsv123test"}),
-                         "nsv123test")
-
-    def test___get_main_consequence_types(self):
-        test_consequence_type = CT.ConsequenceType(ensembl_gene_ids=["ENSG00000139988"],
-                                                   so_names=["sequence_variant"])
-
-        # print([so_name.__dict__ for so_name in self.consequence_type_dict["rs28940313"].so_terms])
-        # print(self.rcv_to_rs)
-
-        self.assertEqual(
-            self.test_clinvar_record._ClinvarRecord__get_main_consequence_types(
-                self.consequence_type_dict, self.rcv_to_rs),
-            test_consequence_type)
-        self.assertEqual(self.test_clinvar_record._ClinvarRecord__get_main_consequence_types(
-            {}, {}),
-            None)
+    def test_nsv(self):
+        self.assertEqual(self.test_crm.nsv_id, "nsv123456")
 
     def test_variant_type(self):
-        self.assertEqual(self.test_clinvar_record.variant_type, "single nucleotide variant")
+        self.assertEqual(self.test_crm.variant_type, "single nucleotide variant")
 
-    def test_allele_origins(self):
-        self.assertEqual(self.test_clinvar_record.allele_origins, ['germline'])
-
-
-class TestGetRcvToRSNSVMapping(unittest.TestCase):
-    variant_summary_file_path = os.path.join(os.path.dirname(__file__), 'resources',
-                                             'variant_summary_2015-05_test_extract.txt')
-    rcv_to_rs, rcv_to_nsv = clinvar.get_rcv_to_rsnsv_mapping(variant_summary_file_path)
-
-    def test_rcv_to_rs(self):
-        self.assertEqual(self.rcv_to_rs["RCV000000012"], "rs397704705")
-        self.assertEqual(self.rcv_to_rs["RCV000000381"], "rs137854556")
-        self.assertEqual(self.rcv_to_rs["RCV000000204"], "rs121965059")
-
-    def test_rcv_to_nsv(self):
-        self.assertEqual(self.rcv_to_nsv["RCV000004182"], "nsv1067860")
-        self.assertEqual(self.rcv_to_nsv["RCV000004183"], "nsv1067861")
-        self.assertEqual(self.rcv_to_nsv["RCV000004554"], "nsv1067916")
+    def test_measure_set_pubmed_refs(self):
+        self.assertEqual(self.test_crm.pubmed_refs, [])
 
 
 def get_test_record():
@@ -121,7 +84,6 @@ def get_test_record():
                                               'test_clinvar_record.json')
     with utilities.open_file(test_clinvar_record_filepath, "rt") as f:
         test_record_dict = json.load(f)
-    test_record = clinvar.ClinvarRecord(test_clinvar_to_evidence_strings.MAPPINGS,
-                                        test_record_dict)
+    test_record = clinvar.ClinvarRecord(test_record_dict)
     return test_record
 

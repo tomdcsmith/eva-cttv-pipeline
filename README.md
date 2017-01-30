@@ -25,15 +25,15 @@ Building and (optional) Setting up virtual environment
 Usage
 -------
 
-python3 bin/main.py --out \<OUTPUT_FILE\> -e \<EFO_MAPPING_FILE\> -g \<SNP_2_GENE_MAPPING_FILE\> -v \<VARIANT_SUMMARY_FILE\> [--clinSig \<CLINICAL_SIGNIFICANCE_LIST\>] [--ignore \<TERM_URL_IGNORE_FILE\>]
+python3 bin/main.py -j \<INPUT_JSON_FILE\> --out \<OUTPUT_FILE\> -e \<EFO_MAPPING_FILE\> -g \<SNP_2_GENE_MAPPING_FILE\> [--clinSig \<CLINICAL_SIGNIFICANCE_LIST\>] [--ignore \<TERM_URL_IGNORE_FILE\>]
+
+INPUT_JSON_FILE: path to a file with one json per line. Each json is in the format of Cellbase ClinVar json.
 
 OUTPUT_FILE: path to output directory
 
 EFO_MAPPING_FILE: file with mappings of Clinvar trait names to URLS (e.g. resources/ClinVar_Traits_EFO_090915.xls)
 
 SNP_2_GENE_MAPPING_FILE: file from CTTV with mappings from rs IDs to Ensembl gene IDs, and to functional consequences (e.g. resources/cttv012_snp2gene_20160222.tsv)
-
-VARIANT_SUMMARY_FILE: variant_summary file from Clinvar (e.g. resources/variant_summary_2015-05.txt)
 
 CLINICAL_SIGNIFICANCE_LIST: comma separated (no spaces) list of clinical significances allowed to generate evidence strings (defaults to "pathogenic,likely pathogenic")
 
