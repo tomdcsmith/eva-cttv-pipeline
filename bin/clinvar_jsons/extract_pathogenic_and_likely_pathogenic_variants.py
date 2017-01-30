@@ -22,7 +22,6 @@ def clinvar_jsons(filepath):
 
 def is_path_or_likely_path(clinvar_json):
     if "description" in clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]:
-        clin_sigs.add(clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]["description"])
         if clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]["description"].lower() in ("pathogenic", "likely pathogenic"):
             return True
     return False
