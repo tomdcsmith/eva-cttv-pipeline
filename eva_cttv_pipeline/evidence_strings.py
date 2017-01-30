@@ -1,5 +1,6 @@
 import copy
 import json
+import sys
 
 import jsonschema
 
@@ -97,7 +98,6 @@ class CTTVEvidenceString(dict):
 
         if trait.ontology_label:
             self.disease_name = trait.ontology_label
-
 
     def add_unique_association_field(self, key, value):
         self['unique_association_fields'][key] = value
