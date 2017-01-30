@@ -1,5 +1,6 @@
 import copy
 import json
+import sys
 
 import jsonschema
 
@@ -98,7 +99,6 @@ class CTTVEvidenceString(dict):
         if trait.ontology_label:
             self.disease_name = trait.ontology_label
 
-
     def add_unique_association_field(self, key, value):
         self['unique_association_fields'][key] = value
 
@@ -106,7 +106,7 @@ class CTTVEvidenceString(dict):
         self['target']['id'] = []
 
     def set_target(self, target_id, activity):
-        self['target']['id'].append(target_id)
+        self['target']['id'] = target_id
         self['target']['activity'] = activity
 
     @property
@@ -127,11 +127,11 @@ class CTTVEvidenceString(dict):
 
     @property
     def disease_id(self):
-        return efo_term.EFOTerm(self['disease']['id'][0])
+        return efo_term.EFOTerm(self['disease']['id'])
 
     @disease_id.setter
     def disease_id(self, value):
-        self['disease']['id'] = [value]
+        self['disease']['id'] = value
 
     @property
     def evidence_codes(self):
@@ -278,7 +278,7 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         self['variant']['type'] = []
 
     def set_variant(self, var_id, var_type):
-        self['variant']['id'].append(var_id)
+        self['variant']['id'] = var_id
         self['variant']['type'] = var_type
 
     @property
