@@ -202,15 +202,7 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
             report.counters["n_nsvs"] += (clinvar_record_measure.nsv_id is not None)
             append_nsv(report.nsv_list, clinvar_record_measure)
 
-            report.counters["n_multiple_allele_origin"] \
-                += (len(clinvar_record.allele_origins) > 1)
-            if set(clinvar_record.allele_origins).difference(
-                    {"biparental", "de novo", "germline",
-                     "inherited", "maternal",
-                     "not applicable", "not provided",
-                     "paternal", "uniparental",
-                     "unknown"}):
-                report.counters["n_records_no_recognised_allele_origin"] += 1
+            report.counters["n_multiple_allele_origin"] += (len(clinvar_record.allele_origins) > 1)
 
             traits = create_traits(clinvar_record.traits, mappings.trait_2_efo, report)
 
@@ -276,11 +268,11 @@ def skip_record(clinvar_record, clinvar_record_measure, consequence_type, allele
             report.counters["n_nsv_skipped_clin_sig"] += 1
         return True
 
-    if clinvar_record_measure.ref == clinvar_record_measure.alt:
-        report.counters["n_same_ref_alt"] += 1
-        if clinvar_record_measure.nsv_id is not None:
-            report.counters["n_nsv_skipped_wrong_ref_alt"] += 1
-        return True
+    # if clinvar_record_measure.ref == clinvar_record_measure.alt:
+    #     report.counters["n_same_ref_alt"] += 1
+    #     if clinvar_record_measure.nsv_id is not None:
+    #         report.counters["n_nsv_skipped_wrong_ref_alt"] += 1
+    #     return True
 
     if consequence_type is None:
         report.counters["no_variant_to_ensg_mapping"] += 1
@@ -397,6 +389,7 @@ def get_default_allowed_clinical_significance():
             'likely benign', 'confers sensitivity', 'uncertain significance',
             'likely pathogenic', 'conflicting data from submitters', 'risk factor',
             'association']
+
 
 def convert_allele_origins(orig_allele_origins):
     orig_allele_origins = [item.lower() for item in orig_allele_origins]

@@ -123,7 +123,7 @@ class ClinvarRecordMeasure(UserDict):
     def nsv_id(self):
         if "xref" in self.data:
             for xref in self.data["xref"]:
-                if xref["db"].lower() == "dbvar":
+                if xref["db"].lower() == "dbvar" and xref["id"].lower()[:3] in ("nsv", "esv"):
                     return xref["id"]
         return None
 
