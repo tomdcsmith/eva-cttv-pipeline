@@ -268,12 +268,6 @@ def skip_record(clinvar_record, clinvar_record_measure, consequence_type, allele
             report.counters["n_nsv_skipped_clin_sig"] += 1
         return True
 
-    # if clinvar_record_measure.ref == clinvar_record_measure.alt:
-    #     report.counters["n_same_ref_alt"] += 1
-    #     if clinvar_record_measure.nsv_id is not None:
-    #         report.counters["n_nsv_skipped_wrong_ref_alt"] += 1
-    #     return True
-
     if consequence_type is None:
         report.counters["no_variant_to_ensg_mapping"] += 1
         return True
