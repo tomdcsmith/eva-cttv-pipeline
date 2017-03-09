@@ -1,7 +1,9 @@
 import itertools
 import json
 import sys
+import os
 from collections import defaultdict
+from time import gmtime, strftime
 from types import SimpleNamespace
 
 import jsonschema
@@ -145,9 +147,27 @@ class Report:
                 fdw.write(json.dumps(evidence_string) + '\n')
 
         with utilities.open_file(dir_out + '/' + config.EVIDENCE_RECORDS_FILE_NAME, 'wt') as fdw:
-            for evidence_record in self.evidence_list:
-                evidence_record_to_output = ['.' if ele is None else ele for ele in evidence_record]
-                fdw.write('\t'.join(evidence_record_to_output) + '\n')
+            with utilities.open_file(os.path.join(dir_out, config.ZOOMA_FILE_NAME), "wt") as zooma_fh:
+                date = strftime("%d/%m/%y %H:%M", gmtime())
+                for evidence_record in self.evidence_list:
+                    evidence_record_to_output = ['.' if ele is None else ele for ele in evidence_record]
+                    fdw.write('\t'.join(evidence_record_to_output) + '\n')
+
+                    if evidence_record_to_output[1] != ".":
+                        rs_for_zooma = evidence_record_to_output[1]
+                    else:
+                        rs_for_zooma = ""
+
+                    zooma_output_list = [evidence_record_to_output[0],
+                                         rs_for_zooma,
+                                         "disease",
+                                         evidence_record_to_output[2],
+                                         evidence_record_to_output[3],
+                                         "eva",
+                                         date]
+
+                    zooma_fh.write('\t'.join(zooma_output_list) + '\n')
+
 
     @staticmethod
     def __get_counters():
