@@ -39,7 +39,7 @@ def main():
         output_file.write("#{}\n".format(parser.filters))
         for trait in traits:
             output_file.write(str(trait))
-            mappings = get_ontology_mappings(trait, parser.filters)
+            mappings = get_ontology_mappings(trait, parser.filters, parser.zooma_host)
             if mappings is not None:
                 for mapping in mappings:
                     output_file.write("\t" + str(mapping))
@@ -89,14 +89,14 @@ def ols_query_helper(url):
         return None
 
 
-def get_ontology_mappings(trait, filters):
+def get_ontology_mappings(trait, filters, zooma_host):
     '''
     First get the URI, label from a selected source, confidence and source:
     http://snarf.ebi.ac.uk:8580/spot/zooma/v2/api/services/annotate?propertyValue=intellectual+disability
     Then the ontology label to replace the label from a source:
     http://www.ebi.ac.uk/ols/api/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0003847
     '''
-    url = build_zooma_query(trait.name, filters)
+    url = build_zooma_query(trait.name, filters, zooma_host)
     json_response_1 = request_retry_helper(zooma_query_helper, 4, url)
 
     if json_response_1 is None:
@@ -119,8 +119,8 @@ def get_ontology_mappings(trait, filters):
     return mappings
 
 
-def build_zooma_query(trait_name, filters):
-    url = "https://www.ebi.ac.uk/spot/zooma/v2/api/services/annotate?propertyValue={}".format(trait_name)
+def build_zooma_query(trait_name, filters, zooma_host):
+    url = "{}/spot/zooma/v2/api/services/annotate?propertyValue={}".format(zooma_host, trait_name)
     url_filters = [
                     "required:[{}]".format(filters["required"]),
                     "ontologies:[{}]".format(filters["ontologies"]),
@@ -165,9 +165,10 @@ class ArgParser:
 
         parser.add_argument("-i", dest="input_filepath", required=True, help="path to input file, with trait names in first column, number of variants the trait name appears in in the second column. delimeted using tab")
         parser.add_argument("-o", dest="output_filepath", required=True, help="path to output file (not just the directory). outputs a file with a header (line starting with \"#\") which shows the filters used. then the first column is trait name, then number of variants for the trait, then zooma label, uri(s), confidence, source. these zooma columns repeat when there are multiple mappings.")
-        parser.add_argument("-n", dest="ontologies", default="efo,hp", help="ontologies to use in query")
+        parser.add_argument("-n", dest="ontologies", default="efo,ordo,hp", help="ontologies to use in query")
         parser.add_argument("-r", dest="required", default="cttv,eva-clinvar,gwas", help="data sources to use in query.")
         parser.add_argument("-p", dest="preferred", default="eva-clinvar,cttv,gwas", help="preference for data sources, with preferred data source first.")
+        parser.add_argument("-z", dest="zooma_host", default="http://snarf.ebi.ac.uk:8580", help="the host to use for querying zooma")  # alternate to default is https://www.ebi.ac.uk
 
         args = parser.parse_args(args=argv[1:])
 
@@ -175,6 +176,8 @@ class ArgParser:
         self.output_filepath = args.output_filepath
 
         self.filters = {"ontologies": args.ontologies, "required": args.required, "preferred": args.preferred}
+
+        self.zooma_host = args.zooma_host
 
 
 if __name__ == "__main__":
