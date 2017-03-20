@@ -27,11 +27,13 @@ class Report:
     One instance of this class is instantiated in the running of the pipeline.
     """
 
-    def __init__(self, unavailable_efo=None):
+    def __init__(self, trait_mappings, unavailable_efo=None):
         if unavailable_efo is None:
             self.unavailable_efo = set()
         else:
             self.unavailable_efo = unavailable_efo
+
+        self.trait_mappings = trait_mappings
 
         self.unrecognised_clin_sigs = set()
         self.ensembl_gene_id_uris = set()
@@ -146,9 +148,9 @@ class Report:
             for evidence_string in self.evidence_string_list:
                 fdw.write(json.dumps(evidence_string) + '\n')
 
-        with utilities.open_file(dir_out + '/' + config.EVIDENCE_RECORDS_FILE_NAME, 'wt') as fdw:
-            with utilities.open_file(os.path.join(dir_out, config.ZOOMA_FILE_NAME), "wt") as zooma_fh:
-                date = strftime("%d/%m/%y %H:%M", gmtime())
+        with utilities.open_file(os.path.join(dir_out, config.ZOOMA_FILE_NAME), "wt") as zooma_fh:
+            date = strftime("%d/%m/%y %H:%M", gmtime())
+            with utilities.open_file(dir_out + '/' + config.EVIDENCE_RECORDS_FILE_NAME, 'wt') as fdw:
                 for evidence_record in self.evidence_list:
                     evidence_record_to_output = ['.' if ele is None else ele for ele in evidence_record]
                     fdw.write('\t'.join(evidence_record_to_output) + '\n')
@@ -167,6 +169,20 @@ class Report:
                                          date]
 
                     zooma_fh.write('\t'.join(zooma_output_list) + '\n')
+
+            for trait_name, ontology_tuple in self.trait_mappings.items():
+                zooma_output_list = ["",
+                                     "",
+                                     "disease",
+                                     trait_name,
+                                     ontology_tuple[0],
+                                     "eva",
+                                     date]
+
+                zooma_fh.write('\t'.join(zooma_output_list) + '\n')
+
+    def remove_trait_mapping(self, trait_name):
+        del self.trait_mappings[trait_name]
 
 
     @staticmethod
@@ -209,7 +225,7 @@ def output(report, dir_out):
 
 def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_file):
 
-    report = Report(mappings.unavailable_efo)
+    report = Report(unavailable_efo=mappings.unavailable_efo, trait_mappings=mappings.trait_2_efo)
 
     cell_recs = cellbase_records.CellbaseRecords(json_file=json_file)
 
@@ -257,6 +273,7 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
                                              trait.ontology_id])
                 report.counters["n_valid_rs_and_nsv"] += (clinvar_record_measure.nsv_id is not None)
                 report.traits.add(trait.ontology_id)
+                report.remove_trait_mapping(trait.clinvar_name)
                 report.ensembl_gene_id_uris.add(
                     evidence_strings.get_ensembl_gene_id_uri(consequence_type.ensembl_gene_id))
 
