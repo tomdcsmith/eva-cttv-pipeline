@@ -27,13 +27,16 @@ class Report:
     One instance of this class is instantiated in the running of the pipeline.
     """
 
-    def __init__(self, trait_mappings, unavailable_efo=None):
+    def __init__(self, trait_mappings=None, unavailable_efo=None):
         if unavailable_efo is None:
             self.unavailable_efo = set()
         else:
             self.unavailable_efo = unavailable_efo
 
-        self.trait_mappings = trait_mappings
+        if trait_mappings is None:
+            self.trait_mappings = {}
+        else:
+            self.trait_mappings = trait_mappings
 
         self.unrecognised_clin_sigs = set()
         self.ensembl_gene_id_uris = set()
