@@ -316,6 +316,8 @@ def create_traits(clinvar_traits, trait_2_efo_dict, report):
 
 def create_new_trait_list(trait_counter, name_list, trait_2_efo_dict):
     trait_string, mappings = trait.map_efo(trait_2_efo_dict, name_list)
+    if mappings is None:
+        return None
     new_trait_list = []
     for mapping in mappings:
         new_trait_list.append(trait.Trait(trait_string, mapping[0], mapping[1], trait_counter))

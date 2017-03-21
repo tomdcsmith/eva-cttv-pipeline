@@ -30,12 +30,12 @@ class GetMappingsTest(unittest.TestCase):
     def test_efo_mapping(self):
         self.assertEqual(len(self.mappings.trait_2_efo), 5283)
 
-        self.assertEqual(self.mappings.trait_2_efo["renal-hepatic-pancreatic dysplasia 2"],
+        self.assertEqual(self.mappings.trait_2_efo["renal-hepatic-pancreatic dysplasia 2"][0],
                          ('http://www.orpha.net/ORDO/Orphanet_294415', None))
-        self.assertEqual(self.mappings.trait_2_efo["frontotemporal dementia"],
-                         ('http://purl.obolibrary.org/obo/HP_0000713', None))
+        self.assertEqual(self.mappings.trait_2_efo["frontotemporal dementia"][0],
+                         ('http://purl.obolibrary.org/obo/HP_0000733', None))
         self.assertEqual(
-            self.mappings.trait_2_efo["3 beta-hydroxysteroid dehydrogenase deficiency"],
+            self.mappings.trait_2_efo["3 beta-hydroxysteroid dehydrogenase deficiency"][0],
             ('http://www.orpha.net/ORDO/Orphanet_90791', None))
 
     def test_consequence_type_dict(self):
@@ -54,8 +54,9 @@ class GetMappingsTest(unittest.TestCase):
 class CreateTraitTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.trait = clinvar_to_evidence_strings.create_trait(9, ["Ciliary dyskinesia, primary, 7"],
-                                                             MAPPINGS.trait_2_efo)
+        cls.trait = clinvar_to_evidence_strings.create_new_trait_list(9,
+                                                                      ["Ciliary dyskinesia, primary, 7"],
+                                                                      MAPPINGS.trait_2_efo)[0]
 
     def test_clinvar_trait_list(self):
         self.assertEqual(self.trait.clinvar_name, 'ciliary dyskinesia, primary, 7')
@@ -64,8 +65,9 @@ class CreateTraitTest(unittest.TestCase):
         self.assertEqual(self.trait.ontology_id, 'http://www.ebi.ac.uk/efo/EFO_0003900')
 
     def test_return_none(self):
-        none_trait = \
-            clinvar_to_evidence_strings.create_trait(9, ["not a real trait"], MAPPINGS.trait_2_efo)
+        none_trait = clinvar_to_evidence_strings.create_new_trait_list(9,
+                                                                       ["not a real trait"],
+                                                                       MAPPINGS.trait_2_efo)
         self.assertIsNone(none_trait)
 
 
