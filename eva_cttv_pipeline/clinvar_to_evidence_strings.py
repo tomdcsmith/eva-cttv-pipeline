@@ -36,7 +36,7 @@ class Report:
         if trait_mappings is None:
             self.trait_mappings = {}
         else:
-            self.trait_mappings = trait_mappings
+            self.trait_mappings = trait_mappings.copy()
 
         self.unrecognised_clin_sigs = set()
         self.ensembl_gene_id_uris = set()
