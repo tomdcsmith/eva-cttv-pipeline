@@ -16,24 +16,21 @@ def map_efo(trait_2_efo_dict, name_list):
     """
     trait_string = name_list[0].lower()  # Try first element, which should be preferred name if it exists
     if trait_string in trait_2_efo_dict:
-        ontology_id = trait_2_efo_dict[trait_string][0]
-        ontology_label = trait_2_efo_dict[trait_string][1]
-        return trait_string, ontology_id, ontology_label
+        return trait_string, trait_2_efo_dict[trait_string]
     else:
         # Otherwise cycle through the list, the first name that is in the dict
         # is returned along with the ontology id and label from the dict
         for trait in name_list[1:]:
             trait_string = trait.lower()
             if trait_string in trait_2_efo_dict:
-                ontology_id = trait_2_efo_dict[trait_string][0]
-                ontology_label = trait_2_efo_dict[trait_string][1]
-                return trait_string, ontology_id, ontology_label
+                return trait_string, trait_2_efo_dict[trait_string]
 
-    return None, None, None  # If none of the names in the list are keys in the dict then None is returned
+    return None  # If none of the names in the list are keys in the dict then None is returned
 
 
 class Trait:
-    def __init__(self, clinvar_trait_name_list, trait_counter, trait_2_efo_dict):
+    def __init__(self, trait_string, ontology_id, ontology_label, trait_counter):
         self.trait_counter = trait_counter  # number of trait for record
-        self.clinvar_name, self.ontology_id, self.ontology_label = map_efo(trait_2_efo_dict,
-                                                                           clinvar_trait_name_list)
+        self.clinvar_name = trait_string
+        self.ontology_id = ontology_id
+        self.ontology_label = ontology_label
