@@ -1,4 +1,5 @@
 import itertools
+import copy
 import json
 import sys
 import os
@@ -36,7 +37,7 @@ class Report:
         if trait_mappings is None:
             self.trait_mappings = {}
         else:
-            self.trait_mappings = trait_mappings.copy()
+            self.trait_mappings = copy.deepcopy(trait_mappings)
 
         self.unrecognised_clin_sigs = set()
         self.ensembl_gene_id_uris = set()
