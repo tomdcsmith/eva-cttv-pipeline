@@ -185,7 +185,8 @@ class Report:
                 zooma_fh.write('\t'.join(zooma_output_list) + '\n')
 
     def remove_trait_mapping(self, trait_name):
-        del self.trait_mappings[trait_name]
+        if trait_name in self.trait_mappings:
+            del self.trait_mappings[trait_name]
 
 
     @staticmethod
