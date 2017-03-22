@@ -54,9 +54,8 @@ class GetMappingsTest(unittest.TestCase):
 class CreateTraitTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.trait = clinvar_to_evidence_strings.create_new_trait_list(9,
-                                                                      ["Ciliary dyskinesia, primary, 7"],
-                                                                      MAPPINGS.trait_2_efo)[0]
+        cls.trait = clinvar_to_evidence_strings.create_trait_list(
+            ["Ciliary dyskinesia, primary, 7"], MAPPINGS.trait_2_efo, 9)[0]
 
     def test_clinvar_trait_list(self):
         self.assertEqual(self.trait.clinvar_name, 'ciliary dyskinesia, primary, 7')
@@ -65,9 +64,8 @@ class CreateTraitTest(unittest.TestCase):
         self.assertEqual(self.trait.ontology_id, 'http://www.ebi.ac.uk/efo/EFO_0003900')
 
     def test_return_none(self):
-        none_trait = clinvar_to_evidence_strings.create_new_trait_list(9,
-                                                                       ["not a real trait"],
-                                                                       MAPPINGS.trait_2_efo)
+        none_trait = clinvar_to_evidence_strings.create_trait_list(["not a real trait"],
+                                                                   MAPPINGS.trait_2_efo, 9)
         self.assertIsNone(none_trait)
 
 

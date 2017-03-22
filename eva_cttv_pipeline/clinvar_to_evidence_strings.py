@@ -304,7 +304,7 @@ def get_consequence_types(clinvar_record_measure, consequence_type_dict):
 def create_traits(clinvar_traits, trait_2_efo_dict, report):
     traits = []
     for trait_counter, name_list in enumerate(clinvar_traits):
-        new_trait_list = create_new_trait_list(trait_counter, name_list, trait_2_efo_dict)
+        new_trait_list = create_trait_list(name_list, trait_2_efo_dict, trait_counter)
         if new_trait_list:
             traits.extend(new_trait_list)
         else:
@@ -314,7 +314,7 @@ def create_traits(clinvar_traits, trait_2_efo_dict, report):
     return traits
 
 
-def create_new_trait_list(trait_counter, name_list, trait_2_efo_dict):
+def create_trait_list(name_list, trait_2_efo_dict, trait_counter):
     trait_string, mappings = trait.map_efo(trait_2_efo_dict, name_list)
     if mappings is None:
         return None
@@ -323,7 +323,7 @@ def create_new_trait_list(trait_counter, name_list, trait_2_efo_dict):
         new_trait_list.append(trait.Trait(trait_string, mapping[0], mapping[1], trait_counter))
     # Only ClinVar records associated to a
     # trait with mapped EFO term will generate evidence_strings
-    if new_trait_list is None:
+    if not new_trait_list:
         return None
     return new_trait_list
 
