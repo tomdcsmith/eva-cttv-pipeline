@@ -10,27 +10,21 @@ def map_efo(trait_2_efo_dict, name_list):
     that id.
     :param name_list: List of clinvar trait names for the trait, with the preferred trait name (if
     one exists) in the first element.
-    :return: The clinvar name, ontology id, and ontology label, for the clinvar name in the
+    :return: The clinvar name, and mapping to an ontology id and term, for the clinvar name in the
     name_list with the lowest element that is in the trait_2_efo_dict. If none of the names in the
     name_list are keys in the trait_2_efo_dict then None is returned in each position.
     """
-    trait_string = name_list[0].lower()  # Try first element, which should be preferred name if it exists
-    if trait_string in trait_2_efo_dict:
-        return trait_string, trait_2_efo_dict[trait_string]
-    else:
-        # Otherwise cycle through the list, the first name that is in the dict
-        # is returned along with the ontology id and label from the dict
-        for trait in name_list[1:]:
-            trait_string = trait.lower()
-            if trait_string in trait_2_efo_dict:
-                return trait_string, trait_2_efo_dict[trait_string]
+    for trait in name_list:
+        trait_string = trait.lower()
+        if trait_string in trait_2_efo_dict:
+            return trait_string, trait_2_efo_dict[trait_string]
 
-    return trait_string, None  # If none of the names in the list are keys in the dict then None is returned
+    return name_list[0].lower(), None  # If none of the names in the list are keys in the dict then None is returned
 
 
 class Trait:
-    def __init__(self, trait_string, ontology_id, ontology_label, trait_counter):
+    def __init__(self, clinvar_name, ontology_id, ontology_label, trait_counter):
         self.trait_counter = trait_counter  # number of trait for record
-        self.clinvar_name = trait_string
+        self.clinvar_name = clinvar_name
         self.ontology_id = ontology_id
         self.ontology_label = ontology_label
