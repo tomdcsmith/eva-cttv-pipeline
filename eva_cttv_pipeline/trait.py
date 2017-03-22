@@ -28,3 +28,15 @@ class Trait:
         self.clinvar_name = clinvar_name
         self.ontology_id = ontology_id
         self.ontology_label = ontology_label
+
+    def __str__(self):
+        return "clinvar name: {} ontology id: {} ontology label: {} trait_counter: {}".format(self.clinvar_name,
+                                                                                              self.ontology_id,
+                                                                                              self.ontology_label,
+                                                                                              self.trait_counter)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.__dict__ == other.__dict__
+        else:
+            return False

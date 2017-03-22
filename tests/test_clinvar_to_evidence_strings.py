@@ -3,6 +3,7 @@ import unittest
 
 from eva_cttv_pipeline import consequence_type as CT
 from eva_cttv_pipeline import clinvar_to_evidence_strings
+from eva_cttv_pipeline import trait as Trait
 from tests import test_clinvar
 from tests import config
 
@@ -38,6 +39,11 @@ class GetMappingsTest(unittest.TestCase):
             self.mappings.trait_2_efo["3 beta-hydroxysteroid dehydrogenase deficiency"][0],
             ('http://www.orpha.net/ORDO/Orphanet_90791', None))
 
+        self.assertEqual(
+            self.mappings.trait_2_efo["coronary artery disease/myocardial infarction"],
+            [('http://www.ebi.ac.uk/efo/EFO_0000612', 'myocardial infarction'),
+             ('http://www.ebi.ac.uk/efo/EFO_0001645', 'coronary heart disease')])
+
     def test_consequence_type_dict(self):
         self.assertEqual(len(self.mappings.consequence_type_dict), 34)
 
@@ -62,6 +68,20 @@ class CreateTraitTest(unittest.TestCase):
 
     def test_efo_list(self):
         self.assertEqual(self.trait.ontology_id, 'http://www.ebi.ac.uk/efo/EFO_0003900')
+
+    def test_multiple_mappings(self):
+        trait1 = Trait.Trait("barrett esophagus/esophageal adenocarcinoma",
+                             "http://www.ebi.ac.uk/efo/EFO_0000478",
+                             "esophageal adenocarcinoma", 1)
+        trait2 = Trait.Trait("barrett esophagus/esophageal adenocarcinoma",
+                             "http://www.ebi.ac.uk/efo/EFO_0000280",
+                             "Barrett's esophagus", 1)
+
+        test_trait_list = clinvar_to_evidence_strings.create_trait_list(
+            ["barrett esophagus/esophageal adenocarcinoma"], MAPPINGS.trait_2_efo, 1)
+
+        self.assertEqual([trait1, trait2], test_trait_list)
+
 
     def test_return_none(self):
         none_trait = clinvar_to_evidence_strings.create_trait_list(["not a real trait"],
