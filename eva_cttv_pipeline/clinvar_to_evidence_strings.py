@@ -13,7 +13,7 @@ from eva_cttv_pipeline import evidence_strings
 from eva_cttv_pipeline import clinvar
 from eva_cttv_pipeline import utilities
 from eva_cttv_pipeline import consequence_type as CT
-from eva_cttv_pipeline.trait import Trait
+from eva_cttv_pipeline import trait
 
 
 class Report:
@@ -304,9 +304,9 @@ def get_consequence_types(clinvar_record_measure, consequence_type_dict):
 def create_traits(clinvar_traits, trait_2_efo_dict, report):
     traits = []
     for trait_counter, name_list in enumerate(clinvar_traits):
-        new_trait = create_trait(trait_counter, name_list, trait_2_efo_dict)
-        if new_trait:
-            traits.append(new_trait)
+        new_trait_list = create_trait_list(name_list, trait_2_efo_dict, trait_counter)
+        if new_trait_list:
+            traits.extend(new_trait_list)
         else:
             report.counters["n_missed_strings_unmapped_traits"] += 1
             for name in name_list:
@@ -314,13 +314,18 @@ def create_traits(clinvar_traits, trait_2_efo_dict, report):
     return traits
 
 
-def create_trait(trait_counter, name_list, trait_2_efo_dict):
-    trait = Trait(name_list, trait_counter, trait_2_efo_dict)
+def create_trait_list(name_list, trait_2_efo_dict, trait_counter):
+    trait_string, mappings = trait.map_efo(trait_2_efo_dict, name_list)
+    if mappings is None:
+        return None
+    new_trait_list = []
+    for mapping in mappings:
+        new_trait_list.append(trait.Trait(trait_string, mapping[0], mapping[1], trait_counter))
     # Only ClinVar records associated to a
     # trait with mapped EFO term will generate evidence_strings
-    if trait.ontology_id is None:
+    if not new_trait_list:
         return None
-    return trait
+    return new_trait_list
 
 
 def write_string_list_to_file(string_list, filename):
@@ -336,7 +341,7 @@ def append_nsv(nsv_list, clinvar_record_measure):
 
 
 def load_efo_mapping(efo_mapping_file):
-    trait_2_efo = {}
+    trait_2_efo = defaultdict(list)
     unavailable_efo = set()
     n_efo_mappings = 0
 
@@ -347,9 +352,10 @@ def load_efo_mapping(efo_mapping_file):
             line_list = line.rstrip().split("\t")
             clinvar_name = line_list[0].lower()
             if len(line_list) > 1:
-                ontology_id = line_list[1]
-                ontology_label = line_list[2] if len(line_list) > 2 else None
-                trait_2_efo[clinvar_name] = (ontology_id, ontology_label)
+                ontology_id_list = line_list[1].split("|")
+                ontology_label_list = line_list[2].split("|") if len(line_list) > 2 else [None] * len(ontology_id_list)
+                for ontology_id, ontology_label in zip(ontology_id_list, ontology_label_list):
+                    trait_2_efo[clinvar_name].append((ontology_id, ontology_label))
                 n_efo_mappings += 1
             else:
                 unavailable_efo.add(clinvar_name)

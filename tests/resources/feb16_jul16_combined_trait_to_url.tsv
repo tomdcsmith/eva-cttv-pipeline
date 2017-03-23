@@ -490,7 +490,6 @@ PAROXYSMAL NOCTURNAL HEMOGLOBINURIA 2	http://www.orpha.net/ORDO/Orphanet_447
 Infantile cortical hyperostosis	http://www.orpha.net/ORDO/Orphanet_1310
 Peroxisome biogenesis disorder 8A	http://www.orpha.net/ORDO/Orphanet_79189
 CONGENITAL HEART DISEASE	http://purl.obolibrary.org/obo/HP_0001682
-CORONARY ARTERY DISEASE/MYOCARDIAL INFARCTION	http://www.ebi.ac.uk/efo/EFO_0000378
 Autosomal recessive cutis laxa type 3B	http://www.orpha.net/ORDO/Orphanet_209
 DIABETES INSIPIDUS	http://www.ebi.ac.uk/efo/EFO_0000400
 Hypotrichosis 12	http://purl.obolibrary.org/obo/HP_0100840
@@ -2419,7 +2418,6 @@ HYPOMAGNESEMIA 6	http://purl.obolibrary.org/obo/HP_0002321
 PROSTATE CANCER SUSCEPTIBILITY	http://www.ebi.ac.uk/efo/EFO_0001663
 Complement 1s deficiency	http://www.orpha.net/ORDO/Orphanet_308400
 Spastic paraplegia 15	http://purl.obolibrary.org/obo/HP_0001258
-BARRETT ESOPHAGUS/ESOPHAGEAL ADENOCARCINOMA	http://www.ebi.ac.uk/efo/EFO_0000311
 Diffuse palmoplantar keratoderma	http://www.orpha.net/ORDO/Orphanet_307141
 NATIVE AMERICAN MYOPATHY	http://www.orpha.net/ORDO/Orphanet_168572
 HARTSFIELD SYNDROME	http://purl.obolibrary.org/obo/HP_0000508
@@ -5439,3 +5437,5 @@ Parathyroid adenoma, somatic	http://www.orpha.net/ORDO/Orphanet_99877
 DIABETES MELLITUS, TYPE II, AUTOSOMAL DOMINANT	http://www.orpha.net/ORDO/Orphanet_99886
 Hydatidiform mole, recurrent, 2	http://www.orpha.net/ORDO/Orphanet_99927
 Esophageal squamous cell carcinoma, somatic	http://www.orpha.net/ORDO/Orphanet_99977
+coronary artery disease/myocardial infarction	http://www.ebi.ac.uk/efo/EFO_0000612|http://www.ebi.ac.uk/efo/EFO_0001645	myocardial infarction|coronary heart disease
+barrett esophagus/esophageal adenocarcinoma	http://www.ebi.ac.uk/efo/EFO_0000478|http://www.ebi.ac.uk/efo/EFO_0000280	esophageal adenocarcinoma|Barrett's esophagus
