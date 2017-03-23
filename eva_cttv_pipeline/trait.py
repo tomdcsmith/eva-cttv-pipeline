@@ -19,7 +19,7 @@ def map_efo(trait_2_efo_dict, name_list):
         if trait_string in trait_2_efo_dict:
             return trait_string, trait_2_efo_dict[trait_string]
 
-    return name_list[0].lower(), None  # If none of the names in the list are keys in the dict then None is returned
+    return None, None  # If none of the names in the list are keys in the dict then None is returned
 
 
 class Trait:
