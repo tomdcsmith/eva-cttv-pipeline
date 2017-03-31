@@ -174,16 +174,17 @@ class Report:
 
                     zooma_fh.write('\t'.join(zooma_output_list) + '\n')
 
-            for trait_name, ontology_tuple in self.trait_mappings.items():
-                zooma_output_list = ["",
-                                     "",
-                                     "disease",
-                                     trait_name,
-                                     ontology_tuple[0],
-                                     "eva",
-                                     date]
+            for trait_name, ontology_tuple_list in self.trait_mappings.items():
+                for ontology_tuple in ontology_tuple_list:
+                    zooma_output_list = ["",
+                                         "",
+                                         "disease",
+                                         trait_name,
+                                         ontology_tuple[0],
+                                         "eva",
+                                         date]
 
-                zooma_fh.write('\t'.join(zooma_output_list) + '\n')
+                    zooma_fh.write('\t'.join(zooma_output_list) + '\n')
 
     def remove_trait_mapping(self, trait_name):
         if trait_name in self.trait_mappings:
