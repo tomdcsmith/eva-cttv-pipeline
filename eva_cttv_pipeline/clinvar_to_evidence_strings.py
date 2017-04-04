@@ -152,28 +152,32 @@ class Report:
             for evidence_string in self.evidence_string_list:
                 fdw.write(json.dumps(evidence_string) + '\n')
 
-        with utilities.open_file(os.path.join(dir_out, config.ZOOMA_FILE_NAME), "wt") as zooma_fh:
+        self.write_zooma_and_record_files(dir_out)
+
+    def write_zooma_and_record_files(self, dir_out):
+        with utilities.open_file(os.path.join(dir_out, config.ZOOMA_FILE_NAME), "wt") as zooma_fh, \
+                utilities.open_file(dir_out + '/' + config.EVIDENCE_RECORDS_FILE_NAME, 'wt') as fdw:
+
             zooma_fh.write("STUDY\tBIOENTITY\tPROPERTY_TYPE\tPROPERTY_VALUE\tSEMANTIC_TAG\tANNOTATOR\tANNOTATION_DATE\n")
             date = strftime("%d/%m/%y %H:%M", gmtime())
-            with utilities.open_file(dir_out + '/' + config.EVIDENCE_RECORDS_FILE_NAME, 'wt') as fdw:
-                for evidence_record in self.evidence_list:
-                    evidence_record_to_output = ['.' if ele is None else ele for ele in evidence_record]
-                    fdw.write('\t'.join(evidence_record_to_output) + '\n')
+            for evidence_record in self.evidence_list:
+                evidence_record_to_output = ['.' if ele is None else ele for ele in evidence_record]
+                fdw.write('\t'.join(evidence_record_to_output) + '\n')
 
-                    if evidence_record_to_output[1] != ".":
-                        rs_for_zooma = evidence_record_to_output[1]
-                    else:
-                        rs_for_zooma = ""
+                if evidence_record_to_output[1] != ".":
+                    rs_for_zooma = evidence_record_to_output[1]
+                else:
+                    rs_for_zooma = ""
 
-                    zooma_output_list = [evidence_record_to_output[0],
-                                         rs_for_zooma,
-                                         "disease",
-                                         evidence_record_to_output[2],
-                                         evidence_record_to_output[3],
-                                         "eva",
-                                         date]
+                zooma_output_list = [evidence_record_to_output[0],
+                                     rs_for_zooma,
+                                     "disease",
+                                     evidence_record_to_output[2],
+                                     evidence_record_to_output[3],
+                                     "eva",
+                                     date]
 
-                    zooma_fh.write('\t'.join(zooma_output_list) + '\n')
+                zooma_fh.write('\t'.join(zooma_output_list) + '\n')
 
             for trait_name, ontology_tuple_list in self.trait_mappings.items():
                 for ontology_tuple in ontology_tuple_list:
