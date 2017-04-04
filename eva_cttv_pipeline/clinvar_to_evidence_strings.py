@@ -155,41 +155,52 @@ class Report:
         self.write_zooma_and_record_files(dir_out)
 
     def write_zooma_and_record_files(self, dir_out):
+        """Write evidence records and zooma records to evidence_records and zooma files"""
         with utilities.open_file(os.path.join(dir_out, config.ZOOMA_FILE_NAME), "wt") as zooma_fh, \
                 utilities.open_file(dir_out + '/' + config.EVIDENCE_RECORDS_FILE_NAME, 'wt') as fdw:
 
             zooma_fh.write("STUDY\tBIOENTITY\tPROPERTY_TYPE\tPROPERTY_VALUE\tSEMANTIC_TAG\tANNOTATOR\tANNOTATION_DATE\n")
             date = strftime("%d/%m/%y %H:%M", gmtime())
             for evidence_record in self.evidence_list:
-                evidence_record_to_output = ['.' if ele is None else ele for ele in evidence_record]
-                fdw.write('\t'.join(evidence_record_to_output) + '\n')
-
-                if evidence_record_to_output[1] != ".":
-                    rs_for_zooma = evidence_record_to_output[1]
-                else:
-                    rs_for_zooma = ""
-
-                zooma_output_list = [evidence_record_to_output[0],
-                                     rs_for_zooma,
-                                     "disease",
-                                     evidence_record_to_output[2],
-                                     evidence_record_to_output[3],
-                                     "eva",
-                                     date]
-
-                zooma_fh.write('\t'.join(zooma_output_list) + '\n')
+                self.write_evidence_record_to_record_zooma_files(evidence_record, fdw, zooma_fh,
+                                                                 date)
 
             for trait_name, ontology_tuple_list in self.trait_mappings.items():
-                for ontology_tuple in ontology_tuple_list:
-                    zooma_output_list = ["",
-                                         "",
-                                         "disease",
-                                         trait_name,
-                                         ontology_tuple[0],
-                                         "eva",
-                                         date]
+                self.write_extra_trait_to_zooma(ontology_tuple_list, trait_name, date, zooma_fh)
 
-                    zooma_fh.write('\t'.join(zooma_output_list) + '\n')
+    def write_evidence_record_to_record_zooma_files(self, evidence_record, fdw, zooma_fh, date):
+        """Write an evidence record to evidence_record file and zooma file"""
+        evidence_record_to_output = ['.' if ele is None else ele for ele in evidence_record]
+        fdw.write('\t'.join(evidence_record_to_output) + '\n')
+
+        if evidence_record_to_output[1] != ".":
+            rs_for_zooma = evidence_record_to_output[1]
+        else:
+            rs_for_zooma = ""
+
+        zooma_output_list = [evidence_record_to_output[0],
+                             rs_for_zooma,
+                             "disease",
+                             evidence_record_to_output[2],
+                             evidence_record_to_output[3],
+                             "eva",
+                             date]
+
+        zooma_fh.write('\t'.join(zooma_output_list) + '\n')
+
+    def write_extra_trait_to_zooma(self, ontology_tuple_list, trait_name, date, zooma_fh):
+        """Write the trait name to ontology mappings, which weren't used in any evidence string, to
+        zooma file """
+        for ontology_tuple in ontology_tuple_list:
+            zooma_output_list = ["",
+                                 "",
+                                 "disease",
+                                 trait_name,
+                                 ontology_tuple[0],
+                                 "eva",
+                                 date]
+
+            zooma_fh.write('\t'.join(zooma_output_list) + '\n')
 
     def remove_trait_mapping(self, trait_name):
         if trait_name in self.trait_mappings:
