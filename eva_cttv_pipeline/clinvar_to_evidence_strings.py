@@ -153,6 +153,7 @@ class Report:
                 fdw.write(json.dumps(evidence_string) + '\n')
 
         with utilities.open_file(os.path.join(dir_out, config.ZOOMA_FILE_NAME), "wt") as zooma_fh:
+            zooma_fh.write("STUDY\tBIOENTITY\tPROPERTY_TYPE\tPROPERTY_VALUE\tSEMANTIC_TAG\tANNOTATOR\tANNOTATION_DATE\n")
             date = strftime("%d/%m/%y %H:%M", gmtime())
             with utilities.open_file(dir_out + '/' + config.EVIDENCE_RECORDS_FILE_NAME, 'wt') as fdw:
                 for evidence_record in self.evidence_list:
