@@ -98,7 +98,8 @@ class SoTerm(object):
                               'protein_altering_variant': 1818,
                               'gene_fusion': 1565,
                               'gene_variant': 1564,
-                              'sequence_variant': 1060}
+                              'sequence_variant': 1060,
+                              'trinucleotide_repeat_microsatellite_feature': 291}
 
     ranked_so_names_list = ['transcript_ablation',
                             'splice_acceptor_variant',

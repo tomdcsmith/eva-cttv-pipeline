@@ -1,7 +1,10 @@
 import itertools
+import copy
 import json
 import sys
+import os
 from collections import defaultdict
+from time import gmtime, strftime
 from types import SimpleNamespace
 
 import jsonschema
@@ -25,11 +28,16 @@ class Report:
     One instance of this class is instantiated in the running of the pipeline.
     """
 
-    def __init__(self, unavailable_efo=None):
+    def __init__(self, trait_mappings=None, unavailable_efo=None):
         if unavailable_efo is None:
             self.unavailable_efo = set()
         else:
             self.unavailable_efo = unavailable_efo
+
+        if trait_mappings is None:
+            self.trait_mappings = {}
+        else:
+            self.trait_mappings = copy.deepcopy(trait_mappings)
 
         self.unrecognised_clin_sigs = set()
         self.ensembl_gene_id_uris = set()
@@ -144,10 +152,57 @@ class Report:
             for evidence_string in self.evidence_string_list:
                 fdw.write(json.dumps(evidence_string) + '\n')
 
-        with utilities.open_file(dir_out + '/' + config.EVIDENCE_RECORDS_FILE_NAME, 'wt') as fdw:
+        self.write_zooma_file(dir_out)
+
+    def write_zooma_file(self, dir_out):
+        """Write zooma records to zooma file"""
+        with utilities.open_file(os.path.join(dir_out, config.ZOOMA_FILE_NAME), "wt") as zooma_fh:
+
+            zooma_fh.write("STUDY\tBIOENTITY\tPROPERTY_TYPE\tPROPERTY_VALUE\tSEMANTIC_TAG\tANNOTATOR\tANNOTATION_DATE\n")
+            date = strftime("%d/%m/%y %H:%M", gmtime())
             for evidence_record in self.evidence_list:
-                evidence_record_to_output = ['.' if ele is None else ele for ele in evidence_record]
-                fdw.write('\t'.join(evidence_record_to_output) + '\n')
+                self.write_zooma_record_to_zooma_file(evidence_record, zooma_fh, date)
+
+            for trait_name, ontology_tuple_list in self.trait_mappings.items():
+                self.write_extra_trait_to_zooma_file(ontology_tuple_list, trait_name, date, zooma_fh)
+
+    def write_zooma_record_to_zooma_file(self, evidence_record, zooma_fh, date):
+        """Write an zooma record to zooma file"""
+        evidence_record_to_output = ['.' if ele is None else ele for ele in evidence_record]
+
+        if evidence_record_to_output[1] != ".":
+            rs_for_zooma = evidence_record_to_output[1]
+        else:
+            rs_for_zooma = ""
+
+        zooma_output_list = [evidence_record_to_output[0],
+                             rs_for_zooma,
+                             "disease",
+                             evidence_record_to_output[2],
+                             evidence_record_to_output[3],
+                             "eva",
+                             date]
+
+        zooma_fh.write('\t'.join(zooma_output_list) + '\n')
+
+    def write_extra_trait_to_zooma_file(self, ontology_tuple_list, trait_name, date, zooma_fh):
+        """Write the trait name to ontology mappings, which weren't used in any evidence string, to
+        zooma file """
+        for ontology_tuple in ontology_tuple_list:
+            zooma_output_list = ["",
+                                 "",
+                                 "disease",
+                                 trait_name,
+                                 ontology_tuple[0],
+                                 "eva",
+                                 date]
+
+            zooma_fh.write('\t'.join(zooma_output_list) + '\n')
+
+    def remove_trait_mapping(self, trait_name):
+        if trait_name in self.trait_mappings:
+            del self.trait_mappings[trait_name]
+
 
     @staticmethod
     def __get_counters():
@@ -189,7 +244,7 @@ def output(report, dir_out):
 
 def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_file):
 
-    report = Report(mappings.unavailable_efo)
+    report = Report(unavailable_efo=mappings.unavailable_efo, trait_mappings=mappings.trait_2_efo)
 
     cell_recs = cellbase_records.CellbaseRecords(json_file=json_file)
 
@@ -237,6 +292,7 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
                                              trait.ontology_id])
                 report.counters["n_valid_rs_and_nsv"] += (clinvar_record_measure.nsv_id is not None)
                 report.traits.add(trait.ontology_id)
+                report.remove_trait_mapping(trait.clinvar_name)
                 report.ensembl_gene_id_uris.add(
                     evidence_strings.get_ensembl_gene_id_uri(consequence_type.ensembl_gene_id))
 
