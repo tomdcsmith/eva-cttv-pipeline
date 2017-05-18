@@ -28,7 +28,6 @@ class OntologyMapping:
         return "{}\t{}\t{}\t{}\t{}".format("|".join(self.labels), "|".join(self.ols_label), "|".join(self.uris), self.confidence, self.source)
 
 
-
 def main():
     parser = ArgParser(sys.argv)
 
@@ -46,7 +45,6 @@ def main():
             else:
                 output_file.write("\tZOOMA_MAPPING_FAILED")
             output_file.write("\n")
-
 
 
 def read_traits(filepath):
