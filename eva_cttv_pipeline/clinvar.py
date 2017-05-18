@@ -93,7 +93,7 @@ class ClinvarRecord(UserDict):
     @property
     def clinical_significance(self):
         return \
-            self.data['referenceClinVarAssertion']['clinicalSignificance']['description'].lower()
+            self.data['referenceClinVarAssertion']['clinicalSignificance']['description']
 
     @property
     def allele_origins(self):
