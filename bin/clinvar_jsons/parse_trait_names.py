@@ -11,12 +11,23 @@ def main():
 
     trait_dict = {}
     for clinvar_json in clinvar_jsons(parser.infile_path):
+        if not is_allowed_clin_sig(clinvar_json):
+            continue
         trait_dict = get_traits_from_json(clinvar_json, trait_dict)
 
     with open(parser.outfile_path, "w", newline="") as outfile:
         writer = csv.writer(outfile, delimiter="\t")
         for trait in trait_dict.values():
             writer.writerow([trait.name, trait.xref_string, trait.count])
+
+
+def is_allowed_clin_sig(clinvar_json):
+    allowed_clin_sigs = ["pathogenic", "likely pathogenic", "protective", "association",
+                         "risk_factor", "affects", "drug response"]
+    if "description" in clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]:
+        if clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]["description"].lower() in allowed_clin_sigs:
+            return True
+    return False
 
 
 def get_traits_from_json(clinvar_json, trait_dict):
