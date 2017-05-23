@@ -142,7 +142,7 @@ class ArgParser:
                             'protective','not provided','likely benign','confers sensitivity',
                             'uncertain significance','likely pathogenic',
                             'conflicting data from submitters','risk factor','association' """,
-                            default="pathogenic,likely pathogenic")
+                            default="pathogenic,likely pathogenic,protective,association,risk_factor,affects,drug response")
         parser.add_argument("--ignore", dest="ignore_terms_file",
                             help="""Optional. String containing full path to a txt file containing
                             a list of term urls which will be ignored during batch processing """,

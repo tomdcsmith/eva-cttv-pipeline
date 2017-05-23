@@ -2,7 +2,7 @@
   "type": "somatic_mutation",
   "access_level": "public",
   "sourceID": "eva_somatic",
-  "validated_against_schema_version": "1.2.5",
+  "validated_against_schema_version": "1.2.6",
   "disease": {
     "id": []
   },
@@ -29,7 +29,7 @@
         "dbxref": {
           "url": null,
           "id": "http://identifiers.org/clinvar",
-          "version": "2015-04"
+          "version": "2017-04"
         },
         "id": "EVA",
         "version": "1.0"

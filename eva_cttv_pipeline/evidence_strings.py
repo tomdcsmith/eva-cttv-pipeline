@@ -207,6 +207,9 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
             # Arbitrarily select only one reference among all
             self.unique_reference = ref_list[0]
 
+        if clinvar_record.clinical_significance:
+            self.clinical_significance = clinvar_record.clinical_significance
+
     @property
     def db_xref_url(self):
         if self['evidence']['gene2variant']['provenance_type']['database']['dbxref']['url'] \
@@ -302,6 +305,14 @@ class CTTVGeneticsEvidenceString(CTTVEvidenceString):
         self['evidence']['gene2variant']['date_asserted'] = date_string
         self['evidence']['variant2disease']['date_asserted'] = date_string
 
+    @property
+    def clinical_significance(self):
+        return self['evidence']['variant2disease']['clinical_significance']
+
+    @clinical_significance.setter
+    def clinical_significance(self, clinical_significance):
+        self['evidence']['variant2disease']['clinical_significance'] = clinical_significance
+
 
 class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
@@ -339,6 +350,9 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
 
         if len(ref_list) > 0:
             self.evidence_literature = ref_list
+
+        if clinvar_record.clinical_significance:
+            self.clinical_significance = clinvar_record.clinical_significance
 
     @property
     def db_xref_url(self):
@@ -403,6 +417,14 @@ class CTTVSomaticEvidenceString(CTTVEvidenceString):
             new_functional_consequence = \
                 'http://targetvalidation.org/sequence/' + so_term.so_name
         self.add_known_mutation(new_functional_consequence, so_term.so_name)
+
+    @property
+    def clinical_significance(self):
+        return self['evidence']['clinical_significance']
+
+    @clinical_significance.setter
+    def clinical_significance(self, clinical_significance):
+        self['evidence']['clinical_significance'] = clinical_significance
 
 
 def get_ensembl_gene_id_uri(ensembl_gene_id):

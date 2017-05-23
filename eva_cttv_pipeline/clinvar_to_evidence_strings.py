@@ -319,7 +319,7 @@ def get_mappings(efo_mapping_file, snp_2_gene_file):
 
 def skip_record(clinvar_record, clinvar_record_measure, consequence_type, allele_origin,
                 allowed_clinical_significance, report):
-    if clinvar_record.clinical_significance not in allowed_clinical_significance:
+    if clinvar_record.clinical_significance.lower() not in allowed_clinical_significance:
         if clinvar_record_measure.nsv_id is not None:
             report.counters["n_nsv_skipped_clin_sig"] += 1
         return True
