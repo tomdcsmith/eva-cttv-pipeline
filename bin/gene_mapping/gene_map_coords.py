@@ -68,8 +68,17 @@ def skip_varsum_line(line_list):
     if line_list[0].startswith("#"):
         return True
 
-    clin_sig_simple = line_list[7]
-    if clin_sig_simple != "1":
+    clin_sig = line_list[6]
+    allowed_clin_sig_list = ["Pathogenic", "Likely pathogenic", "protective", "association",
+                             "risk_factor", "Affects", "drug response"]
+
+    allowed_clin_sig_present = False
+    for entry in allowed_clin_sig_list:
+        if entry.lower() in clin_sig.lower():
+            allowed_clin_sig_present = True
+            break
+
+    if not allowed_clin_sig_present:
         return True
 
     assembly = line_list[16]
