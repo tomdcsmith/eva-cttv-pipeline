@@ -10,7 +10,7 @@ def main():
 
     with gzip.open(parser.outfile_path, "wt") as outfile:
         for clinvar_json in clinvar_jsons(parser.infile_path):
-            if is_path_or_likely_path(clinvar_json):
+            if has_allowed_clinical_significance(clinvar_json):
                 outfile.write(json.dumps(clinvar_json) + "\n")
 
 
@@ -21,7 +21,7 @@ def clinvar_jsons(filepath):
             yield json.loads(line)
 
 
-def is_path_or_likely_path(clinvar_json):
+def has_allowed_clinical_significance(clinvar_json):
     if "description" in clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]:
         if clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]["description"].lower() \
                 in ["pathogenic", "likely pathogenic", "protective", "association", "risk_factor", "affects", "drug response"]:
