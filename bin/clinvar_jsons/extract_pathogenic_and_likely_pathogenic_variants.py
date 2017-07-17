@@ -20,9 +20,11 @@ def clinvar_jsons(filepath):
             line = line.rstrip()
             yield json.loads(line)
 
+
 def is_path_or_likely_path(clinvar_json):
     if "description" in clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]:
-        if clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]["description"].lower() in ("pathogenic", "likely pathogenic"):
+        if clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]["description"].lower() \
+                in ["pathogenic", "likely pathogenic", "protective", "association", "risk_factor", "affects", "drug response"]:
             return True
     return False
 
