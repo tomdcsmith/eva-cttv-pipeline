@@ -1,4 +1,5 @@
 import argparse
+import csv
 import gzip
 import json
 import sys
@@ -7,17 +8,53 @@ import urllib
 import requests
 from collections import Counter
 
+import progressbar
+
 
 ##
 # Classes
 ##
 
 
+class OntologyUri:
+    db_to_uri_dict = {
+        "orphanet": "http://www.orpha.net/ORDO/Orphanet_{}",
+        "omim": "http://identifiers.org/omim/{}",
+        "efo": "http://www.ebi.ac.uk/efo/{}",
+        "mesh": "http://identifiers.org/mesh/{}",
+        "medgen": "http://identifiers.org/medgen/{}",
+        "human phenotype ontology": "http://purl.obolibrary.org/obo/HP_{}"
+    }
+
+    def __init__(self, id_, db):
+        self.id_ = id_
+        self.db = db
+        if self.db.lower() == "human phenotype ontology":
+            self.uri = self.db_to_uri_dict[self.db.lower()].format(self.id_[3:])
+        else:
+            self.uri = self.db_to_uri_dict[self.db.lower()].format(self.id_)
+
+    def __str__(self):
+        return self.uri
+
+
+class OxOMapping:
+    def __init__(self, label, curie, distance):
+        self.label = label
+        self.db, self.id_ = curie.split(":")
+        self.uri = OntologyUri(self.id_, self.db)
+        self.distance = distance
+        self.in_efo = False
+        self.is_current = False
+        self.ontology_label = ""
+
 class OxOResult:
-    def __init__(self, query_id, label):
+    def __init__(self, query_id, label, curie):
         self.query_id = query_id
         self.label = label
-
+        self.db, self.id_ = curie.split(":")
+        self.uri = OntologyUri(self.id_, self.db)
+        self.oxo_mapping_list = []
 
 
 class ZoomaMapping:
@@ -71,19 +108,46 @@ def main():
     trait_names_list = parse_trait_names(parser.input_filepath)
     trait_names_counter = Counter(trait_names_list)
 
-    for trait_name, freq in trait_names_counter.items():
-        trait = Trait(trait_name, freq)
-        trait = process_trait(trait, parser.filters, parser.zooma_host)
+    with open(parser.output_mappings_filepath, "w", newline='') as mapping_file, open(parser.output_curation_filepath, "wt") as curation_file:
+        mapping_writer = csv.writer(mapping_file, delimiter="\t")
+        mapping_writer.writerow(["#clinvar_trait_name", "uri", "label"])
+        curation_writer = csv.writer(curation_file, delimiter="\t")
+
+        bar = progressbar.ProgressBar(max_value=len(trait_names_counter),
+                                      widgets=[progressbar.AdaptiveETA(samples=1000)])
+
+        for trait_name, freq in bar(trait_names_counter.items()):
+            trait = Trait(trait_name, freq)
+            trait = process_trait(trait, parser.filters, parser.zooma_host)
+            output_trait(trait, mapping_writer, curation_writer)
+
+
+def output_trait_mapping(trait, mapping_writer):
+    for ontology_entry in trait.finished_mapping_list:
+        mapping_writer.writerow([trait.name, ontology_entry.uri, ontology_entry.label])
+
+
+def output_for_curation(trait, curation_writer):
+    pass
+
+
+def output_trait(trait, mapping_writer, curation_writer):
+    if trait.is_finished:
+        output_trait_mapping(trait, mapping_writer)
+    else:
+        output_for_curation(trait, curation_writer)
 
 
 def process_trait(trait, filters, zooma_host):
     zooma_mappings = get_ontology_mappings(trait.name, filters, zooma_host)
     trait.zooma_mapping_list = zooma_mappings
     trait.process_zooma_mappings()
-    if trait.is_finished:
+    if (trait.is_finished
+            or len(trait.zooma_mapping_list) == 0
+            or any([is_current for mapping in trait.zooma_mapping_list for is_current in mapping.uri_current_list])):
         return trait
-
-
+    oxo_input_id_list = uris_to_oxo_format([uri for mapping in trait.zooma_mapping_list for uri in mapping.uri_list])
+    # get_oxo_results(oxo_input_id_list, oxo_target_list, oxo_distance)
 
 
 ##
@@ -191,7 +255,7 @@ def get_ontology_mappings(trait_name, filters, zooma_host):
                 mapping.label_list[idx] = label
             else:
                 print(
-                    "Couldn't retrieve ontology label from OLS for trait '{}', will use the one from Zooma".format(
+                    "Couldn't retrieve ontology label from OLS for trait '{}'".format(
                         trait_name))
 
             uri_is_current_and_in_efo = is_current_and_in_efo(uri)
@@ -244,6 +308,18 @@ def build_ols_query(ontology_uri):
 ##
 
 
+def uri_to_oxo_format(uri):
+    pass
+
+
+def uris_to_oxo_format(uri_list):
+    oxo_id_list = []
+    for uri in uri_list:
+        oxo_id = uri_to_oxo_format(uri)
+        oxo_id_list.append(oxo_id)
+    return oxo_id_list
+
+
 def build_oxo_payload(id_list, target_list, distance):
     payload = {}
     payload["ids"] = id_list
@@ -269,6 +345,52 @@ def oxo_request_retry_helper(retry_count, url, id_list, target_list, distance):
         print("attempt {}: failed running function oxo_query_helper with url {}".format(retry_num, url))
     print("error on last attempt, skipping")
     return None
+
+
+def get_oxo_results_from_response(oxo_response):
+    oxo_result_list = []
+    results = oxo_response["_embedded"]["searchResults"]
+    for result in results:
+        query_id = result["queryId"]
+        label = result["label"]
+        curie = result["curie"]
+        oxo_result = OxOResult(query_id, label, curie)
+        for mapping_response in result["mappingResponseList"]:
+            mapping_label = mapping_response["label"]
+            mapping_curie = mapping_response["curie"]
+            mapping_distance = mapping_response["distance"]
+            oxo_mapping = OxOMapping(mapping_label, mapping_curie, mapping_distance)
+
+            uri = str(oxo_mapping.uri)
+
+            ontology_label = get_ontology_label_from_ols(uri)
+            if ontology_label is not None:
+                oxo_mapping.ontology_label = ontology_label
+
+            uri_is_current_and_in_efo = is_current_and_in_efo(uri)
+            if not uri_is_current_and_in_efo:
+                uri_is_in_efo = is_in_efo(uri)
+                oxo_mapping.in_efo = uri_is_in_efo
+            else:
+                oxo_mapping.in_efo = uri_is_current_and_in_efo
+                oxo_mapping.is_current = uri_is_current_and_in_efo
+
+            oxo_result.oxo_mapping_list.append(oxo_mapping)
+
+        oxo_result_list.append(oxo_result)
+
+    return oxo_result_list
+
+
+def get_oxo_results(id_list, target_list, distance):
+    url = "http://www.ebi.ac.uk/spot/oxo/api/search?size=5000"
+    oxo_response = oxo_request_retry_helper(4, url, id_list, target_list, distance)
+
+    if oxo_response is None:
+        return None
+
+    oxo_results = get_oxo_results_from_response(oxo_response)
+    return oxo_results
 
 
 # http://www.ebi.ac.uk/spot/oxo/api/search
@@ -300,7 +422,7 @@ def ols_efo_query(uri):
 
 def is_current_and_in_efo(uri):
     response = ols_efo_query(uri)
-    if response.status_code == 400:
+    if response.status_code != 200:
         return False
     response_json = response.json()
     return not response_json["is_obsolete"]
@@ -326,7 +448,8 @@ class ArgParser:
         parser = argparse.ArgumentParser(description=description)
 
         parser.add_argument("-i", dest="input_filepath", required=True, help="ClinVar json file. One record per line.")
-        parser.add_argument("-o", dest="output_filepath", required=True, help="path to output file")
+        parser.add_argument("-o", dest="output_mappings_filepath", required=True, help="path to output file for mappings")
+        parser.add_argument("-c", dest="output_curation_filepath", required=True, help="path to output file for curation")
         parser.add_argument("-n", dest="ontologies", default="efo,ordo,hp", help="ontologies to use in query")
         parser.add_argument("-r", dest="required", default="cttv,eva-clinvar,gwas", help="data sources to use in query.")
         parser.add_argument("-p", dest="preferred", default="eva-clinvar,cttv,gwas", help="preference for data sources, with preferred data source first.")
@@ -335,7 +458,8 @@ class ArgParser:
         args = parser.parse_args(args=argv[1:])
 
         self.input_filepath = args.input_filepath
-        self.output_filepath = args.output_filepath
+        self.output_mappings_filepath = args.output_mappings_filepath
+        self.output_curation_filepath = args.output_curation_filepath
 
         self.filters = {"ontologies": args.ontologies, "required": args.required, "preferred": args.preferred}
 
