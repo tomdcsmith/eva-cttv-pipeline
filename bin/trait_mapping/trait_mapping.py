@@ -50,6 +50,7 @@ class OxOMapping:
         self.is_current = False
         self.ontology_label = ""
 
+
 class OxOResult:
     def __init__(self, query_id, label, curie):
         self.query_id = query_id
@@ -75,6 +76,16 @@ class OntologyEntry:
         self.uri = uri
         self.label = label
 
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        if self.uri != other.uri or self.label != other.label:
+            return False
+        return True
+
+    def __hash__(self):
+        return hash((self.uri, self.label))
+
 
 class Trait:
     def __init__(self, name, frequency):
@@ -82,21 +93,32 @@ class Trait:
         self.frequency = frequency
         self.zooma_mapping_list = []
         self.oxo_xref_list = []
-        self.finished_mapping_list = []
+        self.finished_mapping_set = set()
 
     @property
     def is_finished(self):
-        return len(self.finished_mapping_list) > 0
+        return len(self.finished_mapping_set) > 0
 
     def process_zooma_mappings(self):
         for mapping in self.zooma_mapping_list:
+            if mapping.confidence.lower() != "high":
+                continue
             for uri, uri_is_in_efo, uri_is_current, label in zip(mapping.uri_list,
                                                                  mapping.uri_in_efo_list,
                                                                  mapping.uri_current_list,
                                                                  mapping.label_list):
                 if uri_is_in_efo and uri_is_current:
                     ontology_entry = OntologyEntry(uri, label)
-                    self.finished_mapping_list.append(ontology_entry)
+                    self.finished_mapping_set.add(ontology_entry)
+
+    def process_oxo_mappings(self):
+        for result in self.oxo_xref_list:
+            for mapping in result.oxo_mapping_list:
+                if mapping.in_efo and mapping.is_current and mapping.distance == 1:
+                    uri = str(mapping.uri)
+                    ontology_label = mapping.ontology_label
+                    ontology_entry = OntologyEntry(uri, ontology_label)
+                    self.finished_mapping_set.add(ontology_entry)
 
 
 ##
@@ -126,7 +148,7 @@ def main():
 
 
 def output_trait_mapping(trait, mapping_writer):
-    for ontology_entry in trait.finished_mapping_list:
+    for ontology_entry in trait.finished_mapping_set:
         mapping_writer.writerow([trait.name, ontology_entry.uri, ontology_entry.label])
 
 
@@ -141,6 +163,16 @@ def output_trait(trait, mapping_writer, curation_writer):
         output_for_curation(trait, curation_writer)
 
 
+def get_uris_for_oxo(zooma_mapping_list):
+    uri_set = set()
+    for mapping in zooma_mapping_list:
+        # Only use high confidence Zooma mappings for querying OxO
+        if mapping.confidence.lower() != "high":
+            continue
+        uri_set.update(mapping.uri_list)
+    return uri_set
+
+
 def process_trait(trait, filters, zooma_host, oxo_target_list, oxo_distance):
     zooma_mappings = get_ontology_mappings(trait.name, filters, zooma_host)
     trait.zooma_mapping_list = zooma_mappings
@@ -149,11 +181,13 @@ def process_trait(trait, filters, zooma_host, oxo_target_list, oxo_distance):
             or len(trait.zooma_mapping_list) == 0
             or any([is_current for mapping in trait.zooma_mapping_list for is_current in mapping.uri_current_list])):
         return trait
-    oxo_input_id_list = uris_to_oxo_format([uri for mapping in trait.zooma_mapping_list for uri in mapping.uri_list])
+    uris_for_oxo_set = get_uris_for_oxo(trait.zooma_mapping_list)
+    if len(uris_for_oxo_set) == 0:
+        return trait
+    oxo_input_id_list = uris_to_oxo_format(uris_for_oxo_set)
     oxo_result_list = get_oxo_results(oxo_input_id_list, oxo_target_list, oxo_distance)
     trait.oxo_xref_list = oxo_result_list
-
-
+    trait.process_oxo_mappings()
 
     return trait
 
@@ -333,7 +367,7 @@ def uri_to_oxo_format(uri):
     uri = uri.rstrip("/")
     uri_list = uri.split("/")
     id_ = NON_NUMERIC_RE.sub("", uri_list[-1])
-    db = URI_DB_TO_DB_DICT[uri_list[-2]]
+    db = URI_DB_TO_DB_DICT[uri_list[-2].lower()]
     return "{}:{}".format(db, id_)
 
 
@@ -377,6 +411,8 @@ def get_oxo_results_from_response(oxo_response):
     oxo_result_list = []
     results = oxo_response["_embedded"]["searchResults"]
     for result in results:
+        if len(result["mappingResponseList"]) == 0:
+            continue
         query_id = result["queryId"]
         label = result["label"]
         curie = result["curie"]
