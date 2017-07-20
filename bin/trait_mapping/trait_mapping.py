@@ -2,6 +2,7 @@ import argparse
 import csv
 import gzip
 import json
+import re
 import sys
 import urllib
 
@@ -23,7 +24,8 @@ class OntologyUri:
         "efo": "http://www.ebi.ac.uk/efo/{}",
         "mesh": "http://identifiers.org/mesh/{}",
         "medgen": "http://identifiers.org/medgen/{}",
-        "human phenotype ontology": "http://purl.obolibrary.org/obo/HP_{}"
+        "human phenotype ontology": "http://purl.obolibrary.org/obo/HP_{}",
+        "hp": "http://purl.obolibrary.org/obo/HP_{}"
     }
 
     def __init__(self, id_, db):
@@ -118,7 +120,8 @@ def main():
 
         for trait_name, freq in bar(trait_names_counter.items()):
             trait = Trait(trait_name, freq)
-            trait = process_trait(trait, parser.filters, parser.zooma_host)
+            trait = process_trait(trait, parser.filters, parser.zooma_host, parser.oxo_target_list,
+                                  parser.oxo_distance)
             output_trait(trait, mapping_writer, curation_writer)
 
 
@@ -138,7 +141,7 @@ def output_trait(trait, mapping_writer, curation_writer):
         output_for_curation(trait, curation_writer)
 
 
-def process_trait(trait, filters, zooma_host):
+def process_trait(trait, filters, zooma_host, oxo_target_list, oxo_distance):
     zooma_mappings = get_ontology_mappings(trait.name, filters, zooma_host)
     trait.zooma_mapping_list = zooma_mappings
     trait.process_zooma_mappings()
@@ -147,7 +150,12 @@ def process_trait(trait, filters, zooma_host):
             or any([is_current for mapping in trait.zooma_mapping_list for is_current in mapping.uri_current_list])):
         return trait
     oxo_input_id_list = uris_to_oxo_format([uri for mapping in trait.zooma_mapping_list for uri in mapping.uri_list])
-    # get_oxo_results(oxo_input_id_list, oxo_target_list, oxo_distance)
+    oxo_result_list = get_oxo_results(oxo_input_id_list, oxo_target_list, oxo_distance)
+    trait.oxo_xref_list = oxo_result_list
+
+
+
+    return trait
 
 
 ##
@@ -308,15 +316,33 @@ def build_ols_query(ontology_uri):
 ##
 
 
+URI_DB_TO_DB_DICT = {
+    "ordo": "Orphanet",
+    "omim": "OMIM",
+    "efo": "EFO",
+    "mesh": "MeSH",
+    "obo": "HP"
+}
+
+NON_NUMERIC_RE = re.compile(r'[^\d]+')
+
+
 def uri_to_oxo_format(uri):
-    pass
+    if not any(x in uri.lower() for x in URI_DB_TO_DB_DICT.keys()):
+        return None
+    uri = uri.rstrip("/")
+    uri_list = uri.split("/")
+    id_ = NON_NUMERIC_RE.sub("", uri_list[-1])
+    db = URI_DB_TO_DB_DICT[uri_list[-2]]
+    return "{}:{}".format(db, id_)
 
 
 def uris_to_oxo_format(uri_list):
     oxo_id_list = []
     for uri in uri_list:
         oxo_id = uri_to_oxo_format(uri)
-        oxo_id_list.append(oxo_id)
+        if oxo_id is not None:
+            oxo_id_list.append(oxo_id)
     return oxo_id_list
 
 
@@ -454,6 +480,8 @@ class ArgParser:
         parser.add_argument("-r", dest="required", default="cttv,eva-clinvar,gwas", help="data sources to use in query.")
         parser.add_argument("-p", dest="preferred", default="eva-clinvar,cttv,gwas", help="preference for data sources, with preferred data source first.")
         parser.add_argument("-z", dest="zooma_host", default="https://www.ebi.ac.uk", help="the host to use for querying zooma")
+        parser.add_argument("-t", dest="oxo_target_list", default="Orphanet,efo,hp", help="target ontologies to use with OxO")
+        parser.add_argument("-d", dest="oxo_distance", default=3, help="distance to use to query OxO.")
 
         args = parser.parse_args(args=argv[1:])
 
@@ -464,6 +492,8 @@ class ArgParser:
         self.filters = {"ontologies": args.ontologies, "required": args.required, "preferred": args.preferred}
 
         self.zooma_host = args.zooma_host
+        self.oxo_target_list = [target.strip() for target in args.oxo_target_list.split(",")]
+        self.oxo_distance = args.oxo_distance
 
 
 if __name__ == '__main__':
