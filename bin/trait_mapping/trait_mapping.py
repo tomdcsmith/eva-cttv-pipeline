@@ -13,6 +13,13 @@ from collections import Counter
 ##
 
 
+class OxOResult:
+    def __init__(self, query_id, label):
+        self.query_id = query_id
+        self.label = label
+
+
+
 class ZoomaMapping:
     def __init__(self, uri_list, zooma_label, confidence, source):
         self.uri_list = uri_list
@@ -66,15 +73,15 @@ def main():
 
     for trait_name, freq in trait_names_counter.items():
         trait = Trait(trait_name, freq)
-        process_trait_name(trait, parser.filters, parser.zooma_host)
+        trait = process_trait(trait, parser.filters, parser.zooma_host)
 
 
-def process_trait_name(trait, filters, zooma_host):
+def process_trait(trait, filters, zooma_host):
     zooma_mappings = get_ontology_mappings(trait.name, filters, zooma_host)
     trait.zooma_mapping_list = zooma_mappings
     trait.process_zooma_mappings()
     if trait.is_finished:
-        return
+        return trait
 
 
 
@@ -231,6 +238,49 @@ def build_ols_query(ontology_uri):
     url = "http://www.ebi.ac.uk/ols/api/terms?iri={}".format(ontology_uri)
     return url
 
+
+##
+# OxO functions
+##
+
+
+def build_oxo_payload(id_list, target_list, distance):
+    payload = {}
+    payload["ids"] = id_list
+    payload["mappingTarget"] = target_list
+    payload["distance"] = distance
+    return payload
+
+
+def oxo_query_helper(url, payload):
+    try:
+        json_response = requests.post(url, data=payload).json()
+        return json_response
+    except json.decoder.JSONDecodeError as e:
+        return None
+
+
+def oxo_request_retry_helper(retry_count, url, id_list, target_list, distance):
+    payload = build_oxo_payload(id_list, target_list, distance)
+    for retry_num in range(retry_count):
+        return_value = oxo_query_helper(url, payload)
+        if return_value is not None:
+            return return_value
+        print("attempt {}: failed running function oxo_query_helper with url {}".format(retry_num, url))
+    print("error on last attempt, skipping")
+    return None
+
+
+# http://www.ebi.ac.uk/spot/oxo/api/search
+# ?size=1000
+# POST
+# payload:
+# {"ids":["EFO:0001360","DOID:162","OMIM:180200","MESH:D009202","UBERON_0002107","HP_0005978"],"mappingTarget":[],"distance":"2"}
+
+# Targets:
+# "Orphanet"
+# "efo"
+# "hp"
 
 
 ##
