@@ -1,5 +1,6 @@
 import argparse
 import csv
+from functools import lru_cache, total_ordering
 import gzip
 import json
 import re
@@ -21,7 +22,7 @@ class OntologyUri:
     db_to_uri_dict = {
         "orphanet": "http://www.orpha.net/ORDO/Orphanet_{}",
         "omim": "http://identifiers.org/omim/{}",
-        "efo": "http://www.ebi.ac.uk/efo/{}",
+        "efo": "http://www.ebi.ac.uk/efo/EFO_{}",
         "mesh": "http://identifiers.org/mesh/{}",
         "medgen": "http://identifiers.org/medgen/{}",
         "human phenotype ontology": "http://purl.obolibrary.org/obo/HP_{}",
@@ -40,6 +41,7 @@ class OntologyUri:
         return self.uri
 
 
+@total_ordering
 class OxOMapping:
     def __init__(self, label, curie, distance):
         self.label = label
@@ -50,6 +52,21 @@ class OxOMapping:
         self.is_current = False
         self.ontology_label = ""
 
+    def __eq__(self, other):
+        if not self._is_valid_operand(other):
+            return NotImplemented
+        if not isinstance(other, type(self)):
+            return False
+        return (self.label == other.label, self.db == other.db, self.id_ == other.id_,
+                self.distance == other.distance, self.in_efo == other.in_efo,
+                self.is_current == other.is_current, self.ontology_label == other.ontology_label)
+
+    def __lt__(self, other):
+        if not self._is_valid_operand(other):
+            return NotImplemented
+        return ((self.distance, self.in_efo, self.is_current) <
+                (other.distance, other.in_efo, other.is_current))
+
 
 class OxOResult:
     def __init__(self, query_id, label, curie):
@@ -58,6 +75,14 @@ class OxOResult:
         self.db, self.id_ = curie.split(":")
         self.uri = OntologyUri(self.id_, self.db)
         self.oxo_mapping_list = []
+
+
+class ZoomaEntry:
+    def __init__(self, uri, ontology_label, in_efo, is_current):
+        self.uri = uri
+        self.ontology_label = ontology_label
+        self.in_efo = in_efo
+        self.is_current = is_current
 
 
 class ZoomaMapping:
@@ -153,7 +178,24 @@ def output_trait_mapping(trait, mapping_writer):
 
 
 def output_for_curation(trait, curation_writer):
-    pass
+    output_row = []
+    output_row.extend([trait.name, trait.frequency])
+    for zooma_mapping in trait.zooma_mapping_list:
+        for uri, ontology_label, in_efo, is_current in zip(zooma_mapping.uri_list,
+                                                           zooma_mapping.label_list,
+                                                           zooma_mapping.uri_in_efo_list,
+                                                           zooma_mapping.uri_current_list):
+            cell = [uri, ontology_label, str(in_efo), str(is_current),
+                    zooma_mapping.confidence, zooma_mapping.source]
+            output_row.append("|".join(cell))
+
+    for oxo_result in trait.oxo_xref_list:
+        for oxo_mapping in oxo_result.oxo_mapping_list:
+            cell = [str(oxo_mapping.uri), oxo_mapping.ontology_label, str(oxo_mapping.in_efo),
+                    str(oxo_mapping.is_current), str(oxo_mapping.distance), oxo_result.query_id]
+            output_row.append("|".join(cell))
+
+    curation_writer.writerow(output_row)
 
 
 def output_trait(trait, mapping_writer, curation_writer):
@@ -334,10 +376,11 @@ def get_mappings_for_trait(zooma_response):
     return mappings
 
 
-def get_ontology_label_from_ols(uri_mapping):
-    url = build_ols_query(uri_mapping)
-    json_response_1 = request_retry_helper(ols_query_helper, 4, url)
-    return json_response_1
+@lru_cache(maxsize=8192)
+def get_ontology_label_from_ols(ontology_uri):
+    url = build_ols_query(ontology_uri)
+    label = request_retry_helper(ols_query_helper, 4, url)
+    return label
 
 
 def build_ols_query(ontology_uri):
@@ -482,6 +525,7 @@ def ols_efo_query(uri):
         "http://www.ebi.ac.uk/ols/api/ontologies/efo/terms/{}".format(double_encoded_uri))
 
 
+@lru_cache(maxsize=8192)
 def is_current_and_in_efo(uri):
     response = ols_efo_query(uri)
     if response.status_code != 200:
