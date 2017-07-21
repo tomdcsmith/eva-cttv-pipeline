@@ -78,22 +78,22 @@ class OxOResult:
 
 
 class ZoomaEntry:
-    def __init__(self, uri, ontology_label, in_efo, is_current):
+    def __init__(self, uri, confidence):
         self.uri = uri
-        self.ontology_label = ontology_label
-        self.in_efo = in_efo
-        self.is_current = is_current
+        self.confidence = confidence
+        self.ontology_label = ""
+        self.in_efo = False
+        self.is_current = False
 
 
 class ZoomaMapping:
     def __init__(self, uri_list, zooma_label, confidence, source):
-        self.uri_list = uri_list
         self.zooma_label = zooma_label
-        self.label_list = ["" for _ in range(len(uri_list))]
-        self.uri_in_efo_list = [False for _ in range(len(uri_list))]
-        self.uri_current_list = [False for _ in range(len(uri_list))]
         self.confidence = confidence
         self.source = source
+        self.zooma_entry_list = []
+        for uri in uri_list:
+            self.zooma_entry_list.append(ZoomaEntry(uri, confidence))
 
 
 class OntologyEntry:
@@ -128,12 +128,10 @@ class Trait:
         for mapping in self.zooma_mapping_list:
             if mapping.confidence.lower() != "high":
                 continue
-            for uri, uri_is_in_efo, uri_is_current, label in zip(mapping.uri_list,
-                                                                 mapping.uri_in_efo_list,
-                                                                 mapping.uri_current_list,
-                                                                 mapping.label_list):
-                if uri_is_in_efo and uri_is_current:
-                    ontology_entry = OntologyEntry(uri, label)
+
+            for entry in mapping.zooma_entry_list:
+                if entry.in_efo and entry.is_current:
+                    ontology_entry = OntologyEntry(entry.uri, entry.ontology_label)
                     self.finished_mapping_set.add(ontology_entry)
 
     def process_oxo_mappings(self):
@@ -181,12 +179,9 @@ def output_for_curation(trait, curation_writer):
     output_row = []
     output_row.extend([trait.name, trait.frequency])
     for zooma_mapping in trait.zooma_mapping_list:
-        for uri, ontology_label, in_efo, is_current in zip(zooma_mapping.uri_list,
-                                                           zooma_mapping.label_list,
-                                                           zooma_mapping.uri_in_efo_list,
-                                                           zooma_mapping.uri_current_list):
-            cell = [uri, ontology_label, str(in_efo), str(is_current),
-                    zooma_mapping.confidence, zooma_mapping.source]
+        for zooma_entry in zooma_mapping.zooma_entry_list:
+            cell = [zooma_entry.uri, zooma_entry.ontology_label, str(zooma_entry.in_efo),
+                    str(zooma_entry.is_current), zooma_mapping.confidence, zooma_mapping.source]
             output_row.append("|".join(cell))
 
     for oxo_result in trait.oxo_xref_list:
@@ -211,7 +206,7 @@ def get_uris_for_oxo(zooma_mapping_list):
         # Only use high confidence Zooma mappings for querying OxO
         if mapping.confidence.lower() != "high":
             continue
-        uri_set.update(mapping.uri_list)
+        uri_set.update([entry.uri for entry in mapping.zooma_entry_list])
     return uri_set
 
 
@@ -221,7 +216,7 @@ def process_trait(trait, filters, zooma_host, oxo_target_list, oxo_distance):
     trait.process_zooma_mappings()
     if (trait.is_finished
             or len(trait.zooma_mapping_list) == 0
-            or any([is_current for mapping in trait.zooma_mapping_list for is_current in mapping.uri_current_list])):
+            or any([entry.is_current for mapping in trait.zooma_mapping_list for entry in mapping.zooma_entry_list])):
         return trait
     uris_for_oxo_set = get_uris_for_oxo(trait.zooma_mapping_list)
     if len(uris_for_oxo_set) == 0:
@@ -332,23 +327,23 @@ def get_ontology_mappings(trait_name, filters, zooma_host):
     mappings = get_mappings_for_trait(zooma_response)
 
     for mapping in mappings:
-        for idx, uri in enumerate(mapping.uri_list):
-            label = get_ontology_label_from_ols(uri)
+        for zooma_entry in mapping.zooma_entry_list:
+            label = get_ontology_label_from_ols(zooma_entry.uri)
             # If no label is returned (shouldn't really happen) keep the existing one
             if label is not None:
-                mapping.label_list[idx] = label
+                zooma_entry.ontology_label = label
             else:
                 print(
                     "Couldn't retrieve ontology label from OLS for trait '{}'".format(
                         trait_name))
 
-            uri_is_current_and_in_efo = is_current_and_in_efo(uri)
+            uri_is_current_and_in_efo = is_current_and_in_efo(zooma_entry.uri)
             if not uri_is_current_and_in_efo:
-                uri_is_in_efo = is_in_efo(uri)
-                mapping.uri_in_efo_list[idx] = uri_is_in_efo
+                uri_is_in_efo = is_in_efo(zooma_entry.uri)
+                zooma_entry.in_efo = uri_is_in_efo
             else:
-                mapping.uri_in_efo_list[idx] = uri_is_current_and_in_efo
-                mapping.uri_current_list[idx] = uri_is_current_and_in_efo
+                zooma_entry.in_efo = uri_is_current_and_in_efo
+                zooma_entry.is_current = uri_is_current_and_in_efo
 
     return mappings
 
