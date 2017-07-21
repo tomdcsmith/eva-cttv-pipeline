@@ -1,5 +1,7 @@
 import argparse
 import csv
+from enum import Enum
+
 from functools import lru_cache, total_ordering
 import gzip
 import json
@@ -43,18 +45,17 @@ class OntologyUri:
 
 @total_ordering
 class OxOMapping:
-    def __init__(self, label, curie, distance):
+    def __init__(self, label, curie, distance, query_id):
         self.label = label
         self.db, self.id_ = curie.split(":")
         self.uri = OntologyUri(self.id_, self.db)
         self.distance = distance
+        self.query_id = query_id
         self.in_efo = False
         self.is_current = False
         self.ontology_label = ""
 
     def __eq__(self, other):
-        if not self._is_valid_operand(other):
-            return NotImplemented
         if not isinstance(other, type(self)):
             return False
         return (self.label == other.label, self.db == other.db, self.id_ == other.id_,
@@ -62,8 +63,6 @@ class OxOMapping:
                 self.is_current == other.is_current, self.ontology_label == other.ontology_label)
 
     def __lt__(self, other):
-        if not self._is_valid_operand(other):
-            return NotImplemented
         return ((self.distance, self.in_efo, self.is_current) <
                 (other.distance, other.in_efo, other.is_current))
 
@@ -77,13 +76,47 @@ class OxOResult:
         self.oxo_mapping_list = []
 
 
+@total_ordering
+class ZoomaConfidence(Enum):
+    LOW = 1
+    MEDIUM = 2
+    GOOD = 3
+    HIGH = 4
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        return self.value == other.value
+
+    def __lt__(self, other):
+        return self.value < other.value
+
+    def __str__(self):
+        return self.name
+
+
+@total_ordering
 class ZoomaEntry:
-    def __init__(self, uri, confidence):
+    def __init__(self, uri, confidence, source):
         self.uri = uri
-        self.confidence = confidence
+        self.confidence = ZoomaConfidence[confidence.upper()]
+        self.source = source
         self.ontology_label = ""
         self.in_efo = False
         self.is_current = False
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        if (self.uri != other.uri or self.confidence != other.confidence
+                or self.ontology_label != other.ontology_label or self.in_efo != other.in_efo
+                or self.is_current != other.is_current):
+            return False
+        return True
+
+    def __lt__(self, other):
+        return ((self.confidence, self.in_efo, self.is_current) <
+                (other.confidence, other.in_efo, other.is_current))
 
 
 class ZoomaMapping:
@@ -93,7 +126,7 @@ class ZoomaMapping:
         self.source = source
         self.zooma_entry_list = []
         for uri in uri_list:
-            self.zooma_entry_list.append(ZoomaEntry(uri, confidence))
+            self.zooma_entry_list.append(ZoomaEntry(uri, confidence, source))
 
 
 class OntologyEntry:
@@ -178,17 +211,22 @@ def output_trait_mapping(trait, mapping_writer):
 def output_for_curation(trait, curation_writer):
     output_row = []
     output_row.extend([trait.name, trait.frequency])
-    for zooma_mapping in trait.zooma_mapping_list:
-        for zooma_entry in zooma_mapping.zooma_entry_list:
-            cell = [zooma_entry.uri, zooma_entry.ontology_label, str(zooma_entry.in_efo),
-                    str(zooma_entry.is_current), zooma_mapping.confidence, zooma_mapping.source]
-            output_row.append("|".join(cell))
 
-    for oxo_result in trait.oxo_xref_list:
-        for oxo_mapping in oxo_result.oxo_mapping_list:
-            cell = [str(oxo_mapping.uri), oxo_mapping.ontology_label, str(oxo_mapping.in_efo),
-                    str(oxo_mapping.is_current), str(oxo_mapping.distance), oxo_result.query_id]
-            output_row.append("|".join(cell))
+    zooma_entry_list = [zooma_entry for zooma_mapping in trait.zooma_mapping_list for zooma_entry in zooma_mapping.zooma_entry_list]
+    zooma_entry_list.sort(reverse=True)
+
+    for zooma_entry in zooma_entry_list:
+        cell = [zooma_entry.uri, zooma_entry.ontology_label, str(zooma_entry.in_efo),
+                str(zooma_entry.is_current), str(zooma_entry.confidence), zooma_entry.source]
+        output_row.append("|".join(cell))
+
+    oxo_mapping_list = [oxo_mapping for oxo_result in trait.oxo_xref_list for oxo_mapping in oxo_result.oxo_mapping_list]
+    oxo_mapping_list.sort(reverse=True)
+
+    for oxo_mapping in oxo_mapping_list:
+        cell = [str(oxo_mapping.uri), oxo_mapping.ontology_label, str(oxo_mapping.in_efo),
+                str(oxo_mapping.is_current), str(oxo_mapping.distance), oxo_mapping.query_id]
+        output_row.append("|".join(cell))
 
     curation_writer.writerow(output_row)
 
@@ -459,7 +497,7 @@ def get_oxo_results_from_response(oxo_response):
             mapping_label = mapping_response["label"]
             mapping_curie = mapping_response["curie"]
             mapping_distance = mapping_response["distance"]
-            oxo_mapping = OxOMapping(mapping_label, mapping_curie, mapping_distance)
+            oxo_mapping = OxOMapping(mapping_label, mapping_curie, mapping_distance, query_id)
 
             uri = str(oxo_mapping.uri)
 
