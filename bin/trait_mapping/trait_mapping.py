@@ -276,6 +276,13 @@ def output_for_curation(trait, curation_writer):
 
 
 def output_trait(trait, mapping_writer, curation_writer):
+    """
+    Output either any finished ontology mappings of a trait, or any non-finished mappings, if any.
+
+    :param trait: A trait which has been used to query Zooma and possibly OxO.
+    :param mapping_writer: A csv.writer to write the finished mappings
+    :param curation_writer: A csv.writer to write non-finished ontology mappings for manual curation
+    """
     if trait.is_finished:
         output_trait_mapping(trait, mapping_writer)
     else:
@@ -283,6 +290,10 @@ def output_trait(trait, mapping_writer, curation_writer):
 
 
 def get_uris_for_oxo(zooma_mapping_list):
+    """
+    :param zooma_mapping_list:
+    :return:
+    """
     uri_set = set()
     for mapping in zooma_mapping_list:
         # Only use high confidence Zooma mappings for querying OxO
