@@ -1,7 +1,7 @@
 import argparse
+from collections import Counter
 import csv
 from enum import Enum
-
 from functools import lru_cache, total_ordering
 import gzip
 import json
@@ -10,8 +10,6 @@ import sys
 import urllib
 
 import requests
-from collections import Counter
-
 import progressbar
 
 
@@ -45,6 +43,10 @@ class OntologyUri:
 
 @total_ordering
 class OxOMapping:
+    """
+    Individual mapping for an ontology ID mapped to one other ontology ID. An OxO result can consist
+    of multiple mappings.
+    """
     def __init__(self, label, curie, distance, query_id):
         self.label = label
         self.db, self.id_ = curie.split(":")
@@ -68,6 +70,10 @@ class OxOMapping:
 
 
 class OxOResult:
+    """
+    A single result from querying OxO for one ID. A result can contain multiple mappings. A response
+    from OxO can contain multiple results- one per queried ID.
+    """
     def __init__(self, query_id, label, curie):
         self.query_id = query_id
         self.label = label
@@ -78,6 +84,7 @@ class OxOResult:
 
 @total_ordering
 class ZoomaConfidence(Enum):
+    """Enum to represent the confidence of a mapping in Zooma."""
     LOW = 1
     MEDIUM = 2
     GOOD = 3
@@ -97,6 +104,7 @@ class ZoomaConfidence(Enum):
 
 @total_ordering
 class ZoomaEntry:
+    """Representation of one ontology term in a mapping in Zooma."""
     def __init__(self, uri, confidence, source):
         self.uri = uri
         self.confidence = ZoomaConfidence[confidence.upper()]
@@ -120,6 +128,10 @@ class ZoomaEntry:
 
 
 class ZoomaMapping:
+    """
+    A mapping in Zooma from one term, which can contain multiple ontology IDs mapped to. One
+    term can be mapped to multiple mappings.
+    """
     def __init__(self, uri_list, zooma_label, confidence, source):
         self.zooma_label = zooma_label
         self.confidence = confidence
@@ -130,6 +142,10 @@ class ZoomaMapping:
 
 
 class OntologyEntry:
+    """
+    A representation of an ontology term mapped to using this pipeline. Includes a uri and a label
+    which are the two details needed in a finished mapping, in addition to the ClinVar trait name.
+    """
     def __init__(self, uri, label):
         self.uri = uri
         self.label = label
@@ -146,6 +162,10 @@ class OntologyEntry:
 
 
 class Trait:
+    """
+    Object to hold data for one trait name. Including the number of ClinVar record's traits it
+    appears in, any Zooma and OxO mappings, and any mappings which are ready to be output.
+    """
     def __init__(self, name, frequency):
         self.name = name
         self.frequency = frequency
@@ -155,9 +175,16 @@ class Trait:
 
     @property
     def is_finished(self):
+        """
+        Return boolean which confirms whether the trait has finished mappings ready to be output
+        """
         return len(self.finished_mapping_set) > 0
 
     def process_zooma_mappings(self):
+        """
+        Check whether any Zooma mappings can be output as a finished ontology mapping.
+        Put any finished mappings in finished_mapping_set
+        """
         for mapping in self.zooma_mapping_list:
             if mapping.confidence.lower() != "high":
                 continue
@@ -168,6 +195,10 @@ class Trait:
                     self.finished_mapping_set.add(ontology_entry)
 
     def process_oxo_mappings(self):
+        """
+        Check whether any OxO mappings can be output as a finished ontology mapping.
+        Put any finished mappings in finished_mapping_set
+        """
         for result in self.oxo_xref_list:
             for mapping in result.oxo_mapping_list:
                 if mapping.in_efo and mapping.is_current and mapping.distance == 1:
@@ -204,11 +235,24 @@ def main():
 
 
 def output_trait_mapping(trait, mapping_writer):
+    """
+    Write any finished ontology mappings for a trait to a csv file writer.
+
+    :param trait: A trait with finished ontology mappings in finished_mapping_set
+    :param mapping_writer: A csv.writer to write the finished mappings
+    """
     for ontology_entry in trait.finished_mapping_set:
         mapping_writer.writerow([trait.name, ontology_entry.uri, ontology_entry.label])
 
 
 def output_for_curation(trait, curation_writer):
+    """
+    Write any non-finished Zooma or OxO mappings of a trait to a file for manual curation.
+    Also outputs traits without any ontology mappings.
+
+    :param trait: A trait with no finished ontology mappings in finished_mapping_set
+    :param curation_writer: A csv.writer to write non-finished ontology mappings for manual curation
+    """
     output_row = []
     output_row.extend([trait.name, trait.frequency])
 
