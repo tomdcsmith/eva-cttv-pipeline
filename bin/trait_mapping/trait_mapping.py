@@ -234,7 +234,7 @@ def main():
             output_trait(trait, mapping_writer, curation_writer)
 
 
-def output_trait_mapping(trait, mapping_writer):
+def output_trait_mapping(trait: Trait, mapping_writer: csv.writer):
     """
     Write any finished ontology mappings for a trait to a csv file writer.
 
@@ -245,7 +245,7 @@ def output_trait_mapping(trait, mapping_writer):
         mapping_writer.writerow([trait.name, ontology_entry.uri, ontology_entry.label])
 
 
-def output_for_curation(trait, curation_writer):
+def output_for_curation(trait: Trait, curation_writer: csv.writer):
     """
     Write any non-finished Zooma or OxO mappings of a trait to a file for manual curation.
     Also outputs traits without any ontology mappings.
@@ -275,7 +275,7 @@ def output_for_curation(trait, curation_writer):
     curation_writer.writerow(output_row)
 
 
-def output_trait(trait, mapping_writer, curation_writer):
+def output_trait(trait: Trait, mapping_writer: csv.writer, curation_writer: csv.writer):
     """
     Output either any finished ontology mappings of a trait, or any non-finished mappings, if any.
 
@@ -289,7 +289,7 @@ def output_trait(trait, mapping_writer, curation_writer):
         output_for_curation(trait, curation_writer)
 
 
-def get_uris_for_oxo(zooma_mapping_list):
+def get_uris_for_oxo(zooma_mapping_list: list) -> set:
     """
     :param zooma_mapping_list:
     :return:
@@ -303,7 +303,8 @@ def get_uris_for_oxo(zooma_mapping_list):
     return uri_set
 
 
-def process_trait(trait, filters, zooma_host, oxo_target_list, oxo_distance):
+def process_trait(trait: Trait, filters: dict, zooma_host: str, oxo_target_list: list,
+                  oxo_distance: int) -> Trait:
     zooma_mappings = get_ontology_mappings(trait.name, filters, zooma_host)
     trait.zooma_mapping_list = zooma_mappings
     trait.process_zooma_mappings()
@@ -327,14 +328,14 @@ def process_trait(trait, filters, zooma_host, oxo_target_list, oxo_distance):
 ##
 
 
-def clinvar_jsons(filepath):
+def clinvar_jsons(filepath: str) -> dict:
     with gzip.open(filepath, "rt") as f:
         for line in f:
             line = line.rstrip()
             yield json.loads(line)
 
 
-def get_trait_names(clinvar_json):
+def get_trait_names(clinvar_json: dict) -> list:
     # This if-else block is due to the change in the format of the CellBase JSON that holds the
     # ClinVar data. Originally "clinvarSet" was the top level, but this level was removed and
     # referenceClinVarAssertion is now the top level.
@@ -363,7 +364,7 @@ def get_trait_names(clinvar_json):
     return trait_names_to_return
 
 
-def parse_trait_names(filepath):
+def parse_trait_names(filepath: str) -> list:
     trait_name_list = []
     for clinvar_json in clinvar_jsons(filepath):
         new_trait_names = get_trait_names(clinvar_json)
@@ -376,7 +377,7 @@ def parse_trait_names(filepath):
 ##
 
 
-def request_retry_helper(function, retry_count, url):
+def request_retry_helper(function, retry_count: int, url: str) -> dict:
     for retry_num in range(retry_count):
         return_value = function(url)
         if return_value is not None:
@@ -386,7 +387,7 @@ def request_retry_helper(function, retry_count, url):
     return None
 
 
-def zooma_query_helper(url):
+def zooma_query_helper(url: str) -> dict:
     try:
         json_response_1 = requests.get(url).json()
         return json_response_1
@@ -394,7 +395,7 @@ def zooma_query_helper(url):
         return None
 
 
-def ols_query_helper(url):
+def ols_query_helper(url: str) -> str:
     try:
         json_response = requests.get(url).json()
         for term in json_response["_embedded"]["terms"]:
@@ -404,7 +405,7 @@ def ols_query_helper(url):
         return None
 
 
-def get_ontology_mappings(trait_name, filters, zooma_host):
+def get_ontology_mappings(trait_name: str, filters: dict, zooma_host: str) -> list:
     '''
     First get the URI, label from a selected source, confidence and source:
     http://snarf.ebi.ac.uk:8580/spot/zooma/v2/api/services/annotate?propertyValue=intellectual+disability
@@ -441,7 +442,7 @@ def get_ontology_mappings(trait_name, filters, zooma_host):
     return mappings
 
 
-def build_zooma_query(trait_name, filters, zooma_host):
+def build_zooma_query(trait_name: str, filters: dict, zooma_host: str) -> str:
     url = "{}/spot/zooma/v2/api/services/annotate?propertyValue={}".format(zooma_host, trait_name)
     url_filters = [
                     "required:[{}]".format(filters["required"]),
@@ -452,7 +453,7 @@ def build_zooma_query(trait_name, filters, zooma_host):
     return url
 
 
-def get_mappings_for_trait(zooma_response):
+def get_mappings_for_trait(zooma_response: dict) -> list:
     mappings = []
     for result in zooma_response:
         # uri_list = ",".join(result["semanticTags"])
@@ -465,13 +466,13 @@ def get_mappings_for_trait(zooma_response):
 
 
 @lru_cache(maxsize=8192)
-def get_ontology_label_from_ols(ontology_uri):
+def get_ontology_label_from_ols(ontology_uri: str) -> str:
     url = build_ols_query(ontology_uri)
     label = request_retry_helper(ols_query_helper, 4, url)
     return label
 
 
-def build_ols_query(ontology_uri):
+def build_ols_query(ontology_uri: str) -> str:
     url = "http://www.ebi.ac.uk/ols/api/terms?iri={}".format(ontology_uri)
     return url
 
@@ -492,7 +493,7 @@ URI_DB_TO_DB_DICT = {
 NON_NUMERIC_RE = re.compile(r'[^\d]+')
 
 
-def uri_to_oxo_format(uri):
+def uri_to_oxo_format(uri: str ) -> str:
     if not any(x in uri.lower() for x in URI_DB_TO_DB_DICT.keys()):
         return None
     uri = uri.rstrip("/")
@@ -502,7 +503,7 @@ def uri_to_oxo_format(uri):
     return "{}:{}".format(db, id_)
 
 
-def uris_to_oxo_format(uri_list):
+def uris_to_oxo_format(uri_list: list) -> list:
     oxo_id_list = []
     for uri in uri_list:
         oxo_id = uri_to_oxo_format(uri)
@@ -511,7 +512,7 @@ def uris_to_oxo_format(uri_list):
     return oxo_id_list
 
 
-def build_oxo_payload(id_list, target_list, distance):
+def build_oxo_payload(id_list: list, target_list: list, distance: int) -> dict:
     payload = {}
     payload["ids"] = id_list
     payload["mappingTarget"] = target_list
@@ -519,7 +520,7 @@ def build_oxo_payload(id_list, target_list, distance):
     return payload
 
 
-def oxo_query_helper(url, payload):
+def oxo_query_helper(url: str, payload: dict) -> dict:
     try:
         json_response = requests.post(url, data=payload).json()
         return json_response
@@ -527,7 +528,8 @@ def oxo_query_helper(url, payload):
         return None
 
 
-def oxo_request_retry_helper(retry_count, url, id_list, target_list, distance):
+def oxo_request_retry_helper(retry_count: int, url: str, id_list: list, target_list: list,
+                             distance: int) -> dict:
     payload = build_oxo_payload(id_list, target_list, distance)
     for retry_num in range(retry_count):
         return_value = oxo_query_helper(url, payload)
@@ -538,7 +540,7 @@ def oxo_request_retry_helper(retry_count, url, id_list, target_list, distance):
     return None
 
 
-def get_oxo_results_from_response(oxo_response):
+def get_oxo_results_from_response(oxo_response: dict) -> list:
     oxo_result_list = []
     results = oxo_response["_embedded"]["searchResults"]
     for result in results:
@@ -575,7 +577,7 @@ def get_oxo_results_from_response(oxo_response):
     return oxo_result_list
 
 
-def get_oxo_results(id_list, target_list, distance):
+def get_oxo_results(id_list: list, target_list: list, distance: int) -> list:
     url = "http://www.ebi.ac.uk/spot/oxo/api/search?size=5000"
     oxo_response = oxo_request_retry_helper(4, url, id_list, target_list, distance)
 
@@ -603,18 +605,18 @@ def get_oxo_results(id_list, target_list, distance):
 ##
 
 
-def double_encode_uri(uri):
+def double_encode_uri(uri: str) -> str:
     return urllib.parse.quote(urllib.parse.quote(uri, safe=""), safe="")
 
 
-def ols_efo_query(uri):
+def ols_efo_query(uri: str) -> requests.Response:
     double_encoded_uri = double_encode_uri(uri)
     return requests.get(
         "http://www.ebi.ac.uk/ols/api/ontologies/efo/terms/{}".format(double_encoded_uri))
 
 
 @lru_cache(maxsize=8192)
-def is_current_and_in_efo(uri):
+def is_current_and_in_efo(uri: str) -> bool:
     response = ols_efo_query(uri)
     if response.status_code != 200:
         return False
@@ -622,7 +624,7 @@ def is_current_and_in_efo(uri):
     return not response_json["is_obsolete"]
 
 
-def is_in_efo(uri):
+def is_in_efo(uri: str) -> bool:
     response = ols_efo_query(uri)
     return response.status_code == 200
 
