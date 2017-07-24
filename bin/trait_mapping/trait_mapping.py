@@ -291,8 +291,11 @@ def output_trait(trait: Trait, mapping_writer: csv.writer, curation_writer: csv.
 
 def get_uris_for_oxo(zooma_mapping_list: list) -> set:
     """
-    :param zooma_mapping_list:
-    :return:
+    For a list of Zooma mappings return a list of uris for the mappings in that list with a high
+    confidence but not in EFO.
+
+    :param zooma_mapping_list: List with elements of class ZoomaMapping
+    :return: set of uris from high confidence Zooma mappings, for which to query OxO
     """
     uri_set = set()
     for mapping in zooma_mapping_list:
@@ -305,6 +308,19 @@ def get_uris_for_oxo(zooma_mapping_list: list) -> set:
 
 def process_trait(trait: Trait, filters: dict, zooma_host: str, oxo_target_list: list,
                   oxo_distance: int) -> Trait:
+    """
+    Process a single trait. Find any mappings in Zooma. If there are no high confidence Zooma
+    mappings that are in EFO then query OxO with any high confidence mappings not in EFO.
+
+    :param trait: A trait of class Trait.
+    :param filters: A dictionary of filters to use for querying Zooma.
+    :param zooma_host: A string with the hostname to use for querying Zooma
+    :param oxo_target_list: A list of strings, each being an OxO ID for an ontology. Used to specify
+                            which ontologies should be queried using OxO.
+    :param oxo_distance: int specifying the maximum number of steps to use to query OxO. i.e. OxO's
+                         "distance" parameter.
+    :return: The original trait after querying Zooma and possibly OxO, with any results found.
+    """
     zooma_mappings = get_ontology_mappings(trait.name, filters, zooma_host)
     trait.zooma_mapping_list = zooma_mappings
     trait.process_zooma_mappings()
@@ -329,6 +345,13 @@ def process_trait(trait: Trait, filters: dict, zooma_host: str, oxo_target_list:
 
 
 def clinvar_jsons(filepath: str) -> dict:
+    """
+    Yields a dict object, parsed from a file with one json per line of ClinVar records
+
+    :param filepath: String giving the path to a gzipped file containing jsons of ClinVar records,
+                     one per line.
+    :return: Yields a dictionary for each json.
+    """
     with gzip.open(filepath, "rt") as f:
         for line in f:
             line = line.rstrip()
@@ -336,6 +359,14 @@ def clinvar_jsons(filepath: str) -> dict:
 
 
 def get_trait_names(clinvar_json: dict) -> list:
+    """
+    Given a dictionary for a ClinVar record parse the strings for the trait name of each trait in
+    the record, prioritising trait names which are specified as being "Preferred". Return a list of
+    there strings.
+
+    :param clinvar_json: A dict object containing a ClinVar record
+    :return: List of strings, the elements being one trait name for each trait in the input record.
+    """
     # This if-else block is due to the change in the format of the CellBase JSON that holds the
     # ClinVar data. Originally "clinvarSet" was the top level, but this level was removed and
     # referenceClinVarAssertion is now the top level.
@@ -365,6 +396,16 @@ def get_trait_names(clinvar_json: dict) -> list:
 
 
 def parse_trait_names(filepath: str) -> list:
+    """
+    For a file containing ClinVar records in the format of one json per line, return a list of the
+    trait names for the records in the file.
+
+    :param filepath: String giving the path to a gzipped file containing jsons of ClinVar records,
+                     one per line.
+    :return: List (important that it is a list and not a set, it is used to calculate the
+             frequencies) containing the trait names of the traits of the records in the file
+             containing ClinVar records.
+    """
     trait_name_list = []
     for clinvar_json in clinvar_jsons(filepath):
         new_trait_names = get_trait_names(clinvar_json)
@@ -377,7 +418,17 @@ def parse_trait_names(filepath: str) -> list:
 ##
 
 
-def request_retry_helper(function, retry_count: int, url: str) -> dict:
+def request_retry_helper(function, retry_count: int, url: str):
+    """
+    Given a function make a number of attempts to call function for it to successfully return a
+    non-None value, subsequently returning this value. Makes the number of tries specified in
+    retry_count parameter.
+
+    :param function: Function that could need multiple attempts to return a non-None value
+    :param retry_count: Number of attempts to make
+    :param url: String specifying the url to make a request.
+    :return: Returned value of the function.
+    """
     for retry_num in range(retry_count):
         return_value = function(url)
         if return_value is not None:
@@ -388,6 +439,13 @@ def request_retry_helper(function, retry_count: int, url: str) -> dict:
 
 
 def zooma_query_helper(url: str) -> dict:
+    """
+    Make a get request to provided url and return the response, assumed to be a json response, in
+    a dict.
+
+    :param url: String of Zooma url used to make a request
+    :return: Zooma response in a dict
+    """
     try:
         json_response_1 = requests.get(url).json()
         return json_response_1
@@ -396,6 +454,13 @@ def zooma_query_helper(url: str) -> dict:
 
 
 def ols_query_helper(url: str) -> str:
+    """
+    Given a url for OLS, make a get request and return the label for the term, from the response
+    from OLS.
+
+    :param url: OLS url to which to make a get request to query for a term.
+    :return: The ontology label of the term specified in the url.
+    """
     try:
         json_response = requests.get(url).json()
         for term in json_response["_embedded"]["terms"]:
@@ -406,12 +471,20 @@ def ols_query_helper(url: str) -> str:
 
 
 def get_ontology_mappings(trait_name: str, filters: dict, zooma_host: str) -> list:
-    '''
+    """
+    Given a trait name, Zooma filters in a dict and a hostname to use, query Zooma and return a list
+    of Zooma mappings for this trait.
+
     First get the URI, label from a selected source, confidence and source:
     http://snarf.ebi.ac.uk:8580/spot/zooma/v2/api/services/annotate?propertyValue=intellectual+disability
     Then the ontology label to replace the label from a source:
     http://www.ebi.ac.uk/ols/api/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0003847
-    '''
+
+    :param trait_name: A string containing a trait name from a ClinVar record.
+    :param filters: A dictionary containing filters used when querying OxO
+    :param zooma_host: Hostname of a Zooma instance to query.
+    :return: List of ZoomaMappings
+    """
     url = build_zooma_query(trait_name, filters, zooma_host)
     zooma_response = request_retry_helper(zooma_query_helper, 4, url)
 
@@ -443,6 +516,15 @@ def get_ontology_mappings(trait_name: str, filters: dict, zooma_host: str) -> li
 
 
 def build_zooma_query(trait_name: str, filters: dict, zooma_host: str) -> str:
+    """
+    Given a trait name, filters and hostname, create a url with which to query Zooma. Return this
+    url.
+
+    :param trait_name: A string containing a trait name from a ClinVar record.
+    :param filters: A dictionary containing filters used when querying OxO
+    :param zooma_host: Hostname of a Zooma instance to query.
+    :return: String of a url which can be requested
+    """
     url = "{}/spot/zooma/v2/api/services/annotate?propertyValue={}".format(zooma_host, trait_name)
     url_filters = [
                     "required:[{}]".format(filters["required"]),
@@ -454,6 +536,12 @@ def build_zooma_query(trait_name: str, filters: dict, zooma_host: str) -> str:
 
 
 def get_mappings_for_trait(zooma_response: dict) -> list:
+    """
+    Given a response from a Zooma request return ZoomaMappings based upon the data in that request.
+
+    :param zooma_response: A json (dict) response from a Zooma request.
+    :return: List of ZoomaMappings in the Zooma response.
+    """
     mappings = []
     for result in zooma_response:
         # uri_list = ",".join(result["semanticTags"])
@@ -467,12 +555,20 @@ def get_mappings_for_trait(zooma_response: dict) -> list:
 
 @lru_cache(maxsize=8192)
 def get_ontology_label_from_ols(ontology_uri: str) -> str:
+    """
+    Using provided ontology uri, build an OLS url with which to make a request for the uri to find
+    the term label for this uri.
+
+    :param ontology_uri: A uri for a term in an ontology.
+    :return: Term label for the ontology uri provided in the parameters.
+    """
     url = build_ols_query(ontology_uri)
     label = request_retry_helper(ols_query_helper, 4, url)
     return label
 
 
 def build_ols_query(ontology_uri: str) -> str:
+    """Build a url to query OLS for a given ontology uri."""
     url = "http://www.ebi.ac.uk/ols/api/terms?iri={}".format(ontology_uri)
     return url
 
@@ -493,7 +589,13 @@ URI_DB_TO_DB_DICT = {
 NON_NUMERIC_RE = re.compile(r'[^\d]+')
 
 
-def uri_to_oxo_format(uri: str ) -> str:
+def uri_to_oxo_format(uri: str) -> str:
+    """
+    Convert an ontology uri to a DB:ID format with which to query OxO
+
+    :param uri: Ontology uri for a term
+    :return: String in the format "DB:ID" with which to query OxO
+    """
     if not any(x in uri.lower() for x in URI_DB_TO_DB_DICT.keys()):
         return None
     uri = uri.rstrip("/")
@@ -503,9 +605,10 @@ def uri_to_oxo_format(uri: str ) -> str:
     return "{}:{}".format(db, id_)
 
 
-def uris_to_oxo_format(uri_list: list) -> list:
+def uris_to_oxo_format(uri_set: set) -> list:
+    """For each ontology uri in a set convert to the format of an ID suitable for querying OxO"""
     oxo_id_list = []
-    for uri in uri_list:
+    for uri in uri_set:
         oxo_id = uri_to_oxo_format(uri)
         if oxo_id is not None:
             oxo_id_list.append(oxo_id)
@@ -513,6 +616,15 @@ def uris_to_oxo_format(uri_list: list) -> list:
 
 
 def build_oxo_payload(id_list: list, target_list: list, distance: int) -> dict:
+    """
+    Build a dict containing the payload with which to make a POST request to OxO for finding xrefs
+    for IDs in provided id_list, with the constraints provided in target_list and distance.
+
+    :param id_list: List of IDs with which to find xrefs using OxO
+    :param target_list: List of ontology datasources
+    :param distance:
+    :return:
+    """
     payload = {}
     payload["ids"] = id_list
     payload["mappingTarget"] = target_list
