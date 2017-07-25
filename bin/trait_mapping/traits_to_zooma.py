@@ -6,12 +6,13 @@ import sys
 
 class Trait:
 
-    def __init__(self, name, frequency):
+    def __init__(self, name, xref_string, frequency):
         self.name = name
+        self.xref_string = xref_string
         self.frequency = frequency
 
     def __str__(self):
-        return "{}\t{}".format(self.name, self.frequency)
+        return "{}\t{}\t{}".format(self.name, self.xref_string, self.frequency)
 
 
 class OntologyMapping:
@@ -26,7 +27,6 @@ class OntologyMapping:
 
     def __str__(self):
         return "{}\t{}\t{}\t{}\t{}".format("|".join(self.labels), "|".join(self.ols_label), "|".join(self.uris), self.confidence, self.source)
-
 
 
 def main():
@@ -48,16 +48,15 @@ def main():
             output_file.write("\n")
 
 
-
 def read_traits(filepath):
     traits = []
     with open(filepath) as f:
         for line in f:
-            line = line.rstrip()
-            line_list = line.split("\t")
+            line_list = line.rstrip().split("\t")
             name = line_list[0]
-            frequency = line_list[1]
-            traits.append(Trait(name, frequency))
+            xref_string = line_list[1]
+            frequency = line_list[2]
+            traits.append(Trait(name, xref_string, frequency))
     return traits
 
 
@@ -102,7 +101,7 @@ def get_ontology_mappings(trait, filters, zooma_host):
     if json_response_1 is None:
         return None
 
-    mappings = get_mappings_for_trait(json_response_1, trait)
+    mappings = get_mappings_for_trait(json_response_1)
 
     for mapping in mappings:
         for idx, uri in enumerate(mapping.uris):
@@ -130,7 +129,7 @@ def build_zooma_query(trait_name, filters, zooma_host):
     return url
 
 
-def get_mappings_for_trait(zooma_response, trait):
+def get_mappings_for_trait(zooma_response):
     mappings = []
     for result in zooma_response:
         # uris = ",".join(result["semanticTags"])
@@ -151,7 +150,6 @@ def get_ontology_label_from_ols(uri_mapping):
 def build_ols_query(ontology_uri):
     url = "http://www.ebi.ac.uk/ols/api/terms?iri={}".format(ontology_uri)
     return url
-
 
 
 class ArgParser:
