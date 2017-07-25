@@ -271,7 +271,7 @@ def output_for_curation(trait: Trait, curation_writer: csv.writer):
     Write any non-finished Zooma or OxO mappings of a trait to a file for manual curation.
     Also outputs traits without any ontology mappings.
 
-    :param trait: A trait with no finished ontology mappings in finished_mapping_set
+    :param trait: A Trait with no finished ontology mappings in finished_mapping_set
     :param curation_writer: A csv.writer to write non-finished ontology mappings for manual curation
     """
     output_row = []
@@ -280,15 +280,15 @@ def output_for_curation(trait: Trait, curation_writer: csv.writer):
     zooma_entry_list = get_zooma_mappings_for_curation(trait)
 
     for zooma_entry in zooma_entry_list:
-        cell = [zooma_entry.uri, zooma_entry.ontology_label, str(zooma_entry.in_efo),
-                str(zooma_entry.is_current), str(zooma_entry.confidence), zooma_entry.source]
+        cell = [zooma_entry.uri, zooma_entry.ontology_label, str(zooma_entry.confidence),
+                zooma_entry.source]
         output_row.append("|".join(cell))
 
     oxo_mapping_list = get_oxo_mappings_for_curation(trait)
 
     for oxo_mapping in oxo_mapping_list:
-        cell = [str(oxo_mapping.uri), oxo_mapping.ontology_label, str(oxo_mapping.in_efo),
-                str(oxo_mapping.is_current), str(oxo_mapping.distance), oxo_mapping.query_id]
+        cell = [str(oxo_mapping.uri), oxo_mapping.ontology_label, str(oxo_mapping.distance),
+                oxo_mapping.query_id]
         output_row.append("|".join(cell))
 
     curation_writer.writerow(output_row)
