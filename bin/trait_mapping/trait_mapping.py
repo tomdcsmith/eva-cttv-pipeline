@@ -219,7 +219,8 @@ def main():
     trait_names_list = parse_trait_names(parser.input_filepath)
     trait_names_counter = Counter(trait_names_list)
 
-    with open(parser.output_mappings_filepath, "w", newline='') as mapping_file, open(parser.output_curation_filepath, "wt") as curation_file:
+    with open(parser.output_mappings_filepath, "w", newline='') as mapping_file, \
+            open(parser.output_curation_filepath, "wt") as curation_file:
         mapping_writer = csv.writer(mapping_file, delimiter="\t")
         mapping_writer.writerow(["#clinvar_trait_name", "uri", "label"])
         curation_writer = csv.writer(curation_file, delimiter="\t")
@@ -345,7 +346,9 @@ def process_trait(trait: Trait, filters: dict, zooma_host: str, oxo_target_list:
     trait.process_zooma_mappings()
     if (trait.is_finished
             or len(trait.zooma_mapping_list) == 0
-            or any([entry.is_current for mapping in trait.zooma_mapping_list for entry in mapping.zooma_entry_list])):
+            or any([entry.is_current
+                    for mapping in trait.zooma_mapping_list
+                    for entry in mapping.zooma_entry_list])):
         return trait
     uris_for_oxo_set = get_uris_for_oxo(trait.zooma_mapping_list)
     if len(uris_for_oxo_set) == 0:
@@ -687,7 +690,8 @@ def oxo_request_retry_helper(retry_count: int, url: str, id_list: list, target_l
         return_value = oxo_query_helper(url, payload)
         if return_value is not None:
             return return_value
-        print("attempt {}: failed running function oxo_query_helper with url {}".format(retry_num, url))
+        print("attempt {}: failed running function oxo_query_helper with url {}".format(retry_num,
+                                                                                        url))
     print("error on last attempt, skipping")
     return None
 
@@ -830,15 +834,24 @@ class ArgParser:
                 """
         parser = argparse.ArgumentParser(description=description)
 
-        parser.add_argument("-i", dest="input_filepath", required=True, help="ClinVar json file. One record per line.")
-        parser.add_argument("-o", dest="output_mappings_filepath", required=True, help="path to output file for mappings")
-        parser.add_argument("-c", dest="output_curation_filepath", required=True, help="path to output file for curation")
-        parser.add_argument("-n", dest="ontologies", default="efo,ordo,hp", help="ontologies to use in query")
-        parser.add_argument("-r", dest="required", default="cttv,eva-clinvar,gwas", help="data sources to use in query.")
-        parser.add_argument("-p", dest="preferred", default="eva-clinvar,cttv,gwas", help="preference for data sources, with preferred data source first.")
-        parser.add_argument("-z", dest="zooma_host", default="https://www.ebi.ac.uk", help="the host to use for querying zooma")
-        parser.add_argument("-t", dest="oxo_target_list", default="Orphanet,efo,hp", help="target ontologies to use with OxO")
-        parser.add_argument("-d", dest="oxo_distance", default=3, help="distance to use to query OxO.")
+        parser.add_argument("-i", dest="input_filepath", required=True,
+                            help="ClinVar json file. One record per line.")
+        parser.add_argument("-o", dest="output_mappings_filepath", required=True,
+                            help="path to output file for mappings")
+        parser.add_argument("-c", dest="output_curation_filepath", required=True,
+                            help="path to output file for curation")
+        parser.add_argument("-n", dest="ontologies", default="efo,ordo,hp",
+                            help="ontologies to use in query")
+        parser.add_argument("-r", dest="required", default="cttv,eva-clinvar,gwas",
+                            help="data sources to use in query.")
+        parser.add_argument("-p", dest="preferred", default="eva-clinvar,cttv,gwas",
+                            help="preference for data sources, with preferred data source first.")
+        parser.add_argument("-z", dest="zooma_host", default="https://www.ebi.ac.uk",
+                            help="the host to use for querying zooma")
+        parser.add_argument("-t", dest="oxo_target_list", default="Orphanet,efo,hp",
+                            help="target ontologies to use with OxO")
+        parser.add_argument("-d", dest="oxo_distance", default=3,
+                            help="distance to use to query OxO.")
 
         args = parser.parse_args(args=argv[1:])
 
@@ -846,7 +859,9 @@ class ArgParser:
         self.output_mappings_filepath = args.output_mappings_filepath
         self.output_curation_filepath = args.output_curation_filepath
 
-        self.filters = {"ontologies": args.ontologies, "required": args.required, "preferred": args.preferred}
+        self.filters = {"ontologies": args.ontologies,
+                        "required": args.required,
+                        "preferred": args.preferred}
 
         self.zooma_host = args.zooma_host
         self.oxo_target_list = [target.strip() for target in args.oxo_target_list.split(",")]
