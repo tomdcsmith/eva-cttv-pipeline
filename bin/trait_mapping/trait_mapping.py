@@ -640,9 +640,9 @@ def build_oxo_payload(id_list: list, target_list: list, distance: int) -> dict:
     for IDs in provided id_list, with the constraints provided in target_list and distance.
 
     :param id_list: List of IDs with which to find xrefs using OxO
-    :param target_list: List of ontology datasources
-    :param distance:
-    :return:
+    :param target_list: List of ontology datasources to include
+    :param distance: Number of steps to take through xrefs to find mappings
+    :return: dict containing payload to be used in POST request with OxO
     """
     payload = {}
     payload["ids"] = id_list
@@ -652,6 +652,14 @@ def build_oxo_payload(id_list: list, target_list: list, distance: int) -> dict:
 
 
 def oxo_query_helper(url: str, payload: dict) -> dict:
+    """
+    Make post request to OxO url using provided payload, returning json response, or None if there
+    is an error in decoding.
+
+    :param url: url to make request
+    :param payload: Payload to use to make POST request
+    :return: json response from OxO
+    """
     try:
         json_response = requests.post(url, data=payload).json()
         return json_response
@@ -661,6 +669,17 @@ def oxo_query_helper(url: str, payload: dict) -> dict:
 
 def oxo_request_retry_helper(retry_count: int, url: str, id_list: list, target_list: list,
                              distance: int) -> dict:
+    """
+    Make a number of attempts to query OxO for it to successfully return a non-None value,
+    subsequently returning this value. Makes the number of tries specified in retry_count parameter.
+
+    :param retry_count: Number of attempts to make
+    :param url: String specifying the url to make a request.
+    :param id_list: List of IDs with which to find xrefs using OxO
+    :param target_list: List of ontology datasources to include
+    :param distance: Number of steps to take through xrefs to find mappings
+    :return: Returned value from OxO request.
+    """
     payload = build_oxo_payload(id_list, target_list, distance)
     for retry_num in range(retry_count):
         return_value = oxo_query_helper(url, payload)
@@ -672,6 +691,12 @@ def oxo_request_retry_helper(retry_count: int, url: str, id_list: list, target_l
 
 
 def get_oxo_results_from_response(oxo_response: dict) -> list:
+    """
+    For a json(/dict) response from an OxO request, parse the data into a list of OxOResults
+
+    :param oxo_response: Response from OxO request
+    :return: List of OxOResults based upon the response from OxO
+    """
     oxo_result_list = []
     results = oxo_response["_embedded"]["searchResults"]
     for result in results:
@@ -709,6 +734,15 @@ def get_oxo_results_from_response(oxo_response: dict) -> list:
 
 
 def get_oxo_results(id_list: list, target_list: list, distance: int) -> list:
+    """
+    Use list of ontology IDs, datasource targets and distance call function to query OxO and return
+    a list of OxOResults.
+
+    :param id_list: List of ontology IDs with which to find xrefs using OxO
+    :param target_list: List of ontology datasources to include
+    :param distance: Number of steps to take through xrefs to find mappings
+    :return: List of OxOResults based upon results from request made to OxO
+    """
     url = "http://www.ebi.ac.uk/spot/oxo/api/search?size=5000"
     oxo_response = oxo_request_retry_helper(4, url, id_list, target_list, distance)
 
@@ -737,10 +771,17 @@ def get_oxo_results(id_list: list, target_list: list, distance: int) -> list:
 
 
 def double_encode_uri(uri: str) -> str:
+    """Double encode a given uri."""
     return urllib.parse.quote(urllib.parse.quote(uri, safe=""), safe="")
 
 
 def ols_efo_query(uri: str) -> requests.Response:
+    """
+    Query EFO using OLS for a given ontology uri, returning the response from the request.
+
+    :param uri: Ontology uri to use in querying EFO using OLS
+    :return: Response from OLS
+    """
     double_encoded_uri = double_encode_uri(uri)
     return requests.get(
         "http://www.ebi.ac.uk/ols/api/ontologies/efo/terms/{}".format(double_encoded_uri))
@@ -748,6 +789,12 @@ def ols_efo_query(uri: str) -> requests.Response:
 
 @lru_cache(maxsize=8192)
 def is_current_and_in_efo(uri: str) -> bool:
+    """
+    Checks whether given ontology uri is a valid and non-obsolete term in EFO.
+
+    :param uri: Ontology uri to use in querying EFO using OLS
+    :return: Boolean value, true if ontology uri is valid and non-obsolete term in EFO
+    """
     response = ols_efo_query(uri)
     if response.status_code != 200:
         return False
@@ -756,6 +803,12 @@ def is_current_and_in_efo(uri: str) -> bool:
 
 
 def is_in_efo(uri: str) -> bool:
+    """
+    Checks whether given ontology uri is a valid term in EFO.
+
+    :param uri: Ontology uri to use in querying EFO using OLS
+    :return: Boolean value, true if ontology uri is valid and non-obsolete term in EFO
+    """
     response = ols_efo_query(uri)
     return response.status_code == 200
 
