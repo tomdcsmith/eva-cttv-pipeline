@@ -457,6 +457,7 @@ def request_retry_helper(function, retry_count: int, url: str):
     return None
 
 
+@lru_cache(maxsize=16384)
 def zooma_query_helper(url: str) -> dict:
     """
     Make a get request to provided url and return the response, assumed to be a json response, in
@@ -572,7 +573,7 @@ def get_mappings_for_trait(zooma_response: dict) -> list:
     return mappings
 
 
-@lru_cache(maxsize=8192)
+@lru_cache(maxsize=16384)
 def get_ontology_label_from_ols(ontology_uri: str) -> str:
     """
     Using provided ontology uri, build an OLS url with which to make a request for the uri to find
@@ -608,6 +609,7 @@ URI_DB_TO_DB_DICT = {
 NON_NUMERIC_RE = re.compile(r'[^\d]+')
 
 
+@lru_cache(maxsize=16384)
 def uri_to_oxo_format(uri: str) -> str:
     """
     Convert an ontology uri to a DB:ID format with which to query OxO
@@ -787,7 +789,7 @@ def ols_efo_query(uri: str) -> requests.Response:
         "http://www.ebi.ac.uk/ols/api/ontologies/efo/terms/{}".format(double_encoded_uri))
 
 
-@lru_cache(maxsize=8192)
+@lru_cache(maxsize=16384)
 def is_current_and_in_efo(uri: str) -> bool:
     """
     Checks whether given ontology uri is a valid and non-obsolete term in EFO.
@@ -802,6 +804,7 @@ def is_current_and_in_efo(uri: str) -> bool:
     return not response_json["is_obsolete"]
 
 
+@lru_cache(maxsize=16384)
 def is_in_efo(uri: str) -> bool:
     """
     Checks whether given ontology uri is a valid term in EFO.
