@@ -2,6 +2,8 @@ import argparse
 import gzip
 import itertools
 import json
+from functools import lru_cache
+
 import requests
 import sys
 from time import gmtime, strftime
@@ -21,7 +23,8 @@ def main():
     with open(parser.outfile_path, "wt") as outfile:
         outfile.write("STUDY\tBIOENTITY\tPROPERTY_TYPE\tPROPERTY_VALUE\tSEMANTIC_TAG\tANNOTATOR\tANNOTATION_DATE\n")
         line_count = file_len(parser.infile_path)
-        bar = progressbar.ProgressBar(max_value=line_count, widgets=[progressbar.AdaptiveETA(samples=1000)])
+        bar = progressbar.ProgressBar(max_value=line_count,
+                                      widgets=[progressbar.AdaptiveETA(samples=1000)])
         is_zooma_mapping_dict = {}
         for clinvar_json in bar(clinvar_jsons(parser.infile_path)):
             if not has_allowed_clinical_significance(clinvar_json):
@@ -139,6 +142,7 @@ def request_retry_helper(function, retry_count, url):
     return None
 
 
+@lru_cache(maxsize=16384)
 def zooma_query_helper(url):
     try:
         json_response = requests.get(url).json()
