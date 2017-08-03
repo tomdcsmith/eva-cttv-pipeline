@@ -34,7 +34,7 @@ def main():
 
 
 def process_clinvar_json(clinvar_json, outfile, zooma_host, filters, is_zooma_mapping_dict):
-    clinvar_acc = get_clinvar_acc(clinvar_json)
+    clinvar_acc = get_clinvar_accession(clinvar_json)
     variant_id_list = get_variant_ids(clinvar_json)
 
     trait_dict = {}
@@ -42,8 +42,7 @@ def process_clinvar_json(clinvar_json, outfile, zooma_host, filters, is_zooma_ma
 
     for variant_id, trait_dict_item in itertools.product(variant_id_list,
                                                          trait_dict.items()):
-        trait_dict_key, trait_dict_value = trait_dict_item
-        trait_name = trait_dict_key
+        trait_name, trait_obj = trait_dict_item
         if trait_name == "not provided":
             continue
 
@@ -51,16 +50,17 @@ def process_clinvar_json(clinvar_json, outfile, zooma_host, filters, is_zooma_ma
             is_zooma_mapping = is_zooma_mapping_dict[trait_name]
         else:
             zooma_uri_set = get_zooma_uris(trait_name, zooma_host, filters)
-            is_zooma_mapping = len(zooma_uri_set) > 0
+            is_zooma_mapping = (zooma_uri_set is not None
+                                and len(zooma_uri_set) > 0)
             is_zooma_mapping_dict[trait_name] = is_zooma_mapping
 
-        for xref in trait_dict_value.xref_set:
+        if is_zooma_mapping:
+            continue
+
+        for xref in trait_obj.xref_set:
             if xref.status.lower() != "current" or xref.db.lower() not in OntologyUri.db_to_uri_dict:
                 continue
             ontology_uri = OntologyUri(xref.id_, xref.db)
-
-            if is_zooma_mapping:
-                continue
 
             write_zooma_record(clinvar_acc, variant_id, trait_name, ontology_uri, DATE, outfile)
 
@@ -102,7 +102,7 @@ def get_sv_ids(clinvar_json):
     return sv_id_list
 
 
-def get_clinvar_acc(clinvar_json):
+def get_clinvar_accession(clinvar_json):
     return clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinVarAccession"]["acc"]
 
 
@@ -178,6 +178,8 @@ class OntologyUri:
     def __init__(self, id_, db):
         self.id_ = id_
         self.db = db
+        # This separate condition for "human phenotype ontology" is needed because these IDs are
+        # prefixed with "HP:" which should be ignored when creating uri
         if self.db.lower() == "human phenotype ontology":
             self.uri = self.db_to_uri_dict[self.db.lower()].format(self.id_[3:])
         else:
