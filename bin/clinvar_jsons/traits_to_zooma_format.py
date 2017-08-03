@@ -75,29 +75,15 @@ def write_zooma_record(clinvar_acc, variant_id, trait_name, ontology_uri, date, 
 
 
 def get_variant_ids(clinvar_json):
-    rs_id_list = get_rs_ids(clinvar_json)
-    sv_id_list = get_sv_ids(clinvar_json)
-    return rs_id_list + sv_id_list
-
-
-def get_rs_ids(clinvar_json):
-    rs_id_list = []
+    variant_id_list = []
     for measure in clinvar_json["clinvarSet"]['referenceClinVarAssertion']["measureSet"]["measure"]:
         if "xref" in measure:
             for xref in measure["xref"]:
                 if xref["db"].lower() == "dbsnp":
-                    rs_id_list.append("rs{}".format(xref["id"]))
-    return rs_id_list
-
-
-def get_sv_ids(clinvar_json):
-    sv_id_list = []
-    for measure in clinvar_json["clinvarSet"]['referenceClinVarAssertion']["measureSet"]["measure"]:
-        if "xref" in measure:
-            for xref in measure["xref"]:
-                if xref["db"].lower() == "dbvar" and xref["id"].lower()[:3] in ("nsv", "esv"):
-                    sv_id_list.append(xref["id"])
-    return sv_id_list
+                    variant_id_list.append("rs{}".format(xref["id"]))
+                elif xref["db"].lower() == "dbvar" and xref["id"].lower()[:3] in ("nsv", "esv"):
+                    variant_id_list.append(xref["id"])
+    return variant_id_list
 
 
 def get_clinvar_accession(clinvar_json):
@@ -220,5 +206,4 @@ def parse_args(argv):
 
 
 if __name__ == '__main__':
-    args = parse_args(sys.argv)
-    main(args)
+    main(parse_args(sys.argv))
