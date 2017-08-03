@@ -17,19 +17,17 @@ from extract_pathogenic_and_likely_pathogenic_variants import has_allowed_clinic
 DATE = strftime("%d/%m/%y %H:%M", gmtime())
 
 
-def main():
-    parser = ArgParser(sys.argv)
-
-    with open(parser.outfile_path, "wt") as outfile:
+def main(args):
+    with open(args.outfile_path, "wt") as outfile:
         outfile.write("STUDY\tBIOENTITY\tPROPERTY_TYPE\tPROPERTY_VALUE\tSEMANTIC_TAG\tANNOTATOR\tANNOTATION_DATE\n")
-        line_count = file_len(parser.infile_path)
+        line_count = file_len(args.infile_path)
         bar = progressbar.ProgressBar(max_value=line_count,
                                       widgets=[progressbar.AdaptiveETA(samples=1000)])
         is_zooma_mapping_dict = {}
-        for clinvar_json in bar(clinvar_jsons(parser.infile_path)):
+        for clinvar_json in bar(clinvar_jsons(args.infile_path)):
             if not has_allowed_clinical_significance(clinvar_json):
                 continue
-            process_clinvar_json(clinvar_json, outfile, parser.zooma_host, parser.filters,
+            process_clinvar_json(clinvar_json, outfile, args.zooma_host, args.filters,
                                  is_zooma_mapping_dict)
 
 
@@ -189,36 +187,38 @@ class OntologyUri:
         return self.uri
 
 
-class ArgParser:
-    def __init__(self, argv):
-        description = """
-                Script for extracting the trait names of ClinVar records from a file with a list
-                of CellBase, ClinVar JSONs, and the number of traits with this trait name.
-                """
-        parser = argparse.ArgumentParser(description=description)
+def parse_args(argv):
+    description = """
+            Script for extracting the trait names of ClinVar records from a file with a list
+            of CellBase, ClinVar JSONs, and the number of traits with this trait name.
+            """
+    parser = argparse.ArgumentParser(description=description)
 
-        parser.add_argument("-i", dest="infile_path", required=True, help="Path to a file containing one CellBase ClinVar JSON per line.'")
-        parser.add_argument("-o", dest="outfile_path", required=True, help="Path to file to output trait names in the zooma-accepted format")
+    parser.add_argument("-i", dest="infile_path", required=True, help="Path to a file containing one CellBase ClinVar JSON per line.'")
+    parser.add_argument("-o", dest="outfile_path", required=True, help="Path to file to output trait names in the zooma-accepted format")
 
-        parser.add_argument("-n", dest="ontologies", default="efo,ordo,hp",
-                            help="ontologies to use in query")
-        parser.add_argument("-r", dest="required", default="cttv,eva-clinvar,gwas",
-                            help="data sources to use in query.")
-        parser.add_argument("-p", dest="preferred", default="eva-clinvar,cttv,gwas",
-                            help="preference for data sources, with preferred data source first.")
-        parser.add_argument("-z", dest="zooma_host", default="https://www.ebi.ac.uk",
-                            help="the host to use for querying zooma")
+    parser.add_argument("-n", dest="ontologies", default="efo,ordo,hp",
+                        help="ontologies to use in query")
+    parser.add_argument("-r", dest="required", default="cttv,eva-clinvar,gwas",
+                        help="data sources to use in query.")
+    parser.add_argument("-p", dest="preferred", default="eva-clinvar,cttv,gwas",
+                        help="preference for data sources, with preferred data source first.")
+    parser.add_argument("-z", dest="zooma_host", default="https://www.ebi.ac.uk",
+                        help="the host to use for querying zooma")
 
-        args = parser.parse_args(args=argv[1:])
+    args = parser.parse_args(args=argv[1:])
 
-        self.infile_path = args.infile_path
-        self.outfile_path = args.outfile_path
+    args.infile_path = args.infile_path
+    args.outfile_path = args.outfile_path
 
-        self.filters = {"ontologies": args.ontologies, "required": args.required,
-                        "preferred": args.preferred}
+    args.filters = {"ontologies": args.ontologies, "required": args.required,
+                    "preferred": args.preferred}
 
-        self.zooma_host = args.zooma_host
+    args.zooma_host = args.zooma_host
+
+    return args
 
 
 if __name__ == '__main__':
-    main()
+    args = parse_args(sys.argv)
+    main(args)
