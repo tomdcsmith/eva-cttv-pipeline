@@ -3,15 +3,13 @@ import gzip
 import itertools
 import json
 from functools import lru_cache
-
-import requests
 import sys
 from time import gmtime, strftime
 
 import progressbar
+import requests
 
-from parse_trait_names import clinvar_jsons, get_traits_from_json
-from extract_pathogenic_and_likely_pathogenic_variants import has_allowed_clinical_significance
+from clinvar_jsons_shared_lib import clinvar_jsons, get_traits_from_json, has_allowed_clinical_significance
 
 
 DATE = strftime("%d/%m/%y %H:%M", gmtime())

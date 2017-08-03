@@ -2,7 +2,8 @@ import argparse
 import json
 import gzip
 import sys
-from collections import defaultdict
+
+from clinvar_jsons_shared_lib import clinvar_jsons, get_traits_from_json, has_allowed_clinical_significance
 
 
 def main():
@@ -12,21 +13,6 @@ def main():
         for clinvar_json in clinvar_jsons(parser.infile_path):
             if has_allowed_clinical_significance(clinvar_json):
                 outfile.write(json.dumps(clinvar_json) + "\n")
-
-
-def clinvar_jsons(filepath):
-    with gzip.open(filepath, "rt") as f:
-        for line in f:
-            line = line.rstrip()
-            yield json.loads(line)
-
-
-def has_allowed_clinical_significance(clinvar_json):
-    if "description" in clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]:
-        if clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["clinicalSignificance"]["description"].lower() \
-                in ["pathogenic", "likely pathogenic", "protective", "association", "risk_factor", "affects", "drug response"]:
-            return True
-    return False
 
 
 class ArgParser:
