@@ -40,8 +40,7 @@ def clinvar_jsons(filepath):
             yield json.loads(line)
 
 
-def get_traits_from_json(clinvar_json, trait_dict):
-
+def get_trait_set(clinvar_json):
     # This if-else block is due to the change in the format of the CellBase JSON that holds the
     # ClinVar data. Originally "clinvarSet" was the top level, but this level was removed and
     # referenceClinVarAssertion is now the top level.
@@ -49,6 +48,11 @@ def get_traits_from_json(clinvar_json, trait_dict):
         trait_set = clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["traitSet"]
     else:
         trait_set = clinvar_json["referenceClinVarAssertion"]["traitSet"]
+    return trait_set
+
+
+def get_traits_from_json(clinvar_json, trait_dict):
+    trait_set = get_trait_set(clinvar_json)
     for trait_doc in trait_set['trait']:
         preferred_trait_name = None
         non_preferred_names = []
