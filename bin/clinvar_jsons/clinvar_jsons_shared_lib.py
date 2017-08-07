@@ -9,18 +9,6 @@ class Trait:
         self.xref_set = set()
         self.count = 1
 
-    # def __eq__(self, other):
-    #     if isinstance(other, Trait):
-    #         return self.name == other.name and set(self.xref_set) == set(other.xref_set)
-    #     else:
-    #         return False
-    #
-    # def __hash__(self):
-    #     return hash((self.name, self.xref_set))
-    #
-    # def __ne__(self, other):
-    #     return not (self == other)
-
     @property
     def xref_string(self):
         return "|".join(["{}/{}".format(xref.db, xref.id_)
