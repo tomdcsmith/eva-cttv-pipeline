@@ -12,14 +12,13 @@ Building and (optional) Setting up virtual environment
 
 1. "git clone --recursive git@github.com:EBIvariation/eva-cttv-pipeline.git"
 2. "cd eva-cttv-pipeline"
-3. [OPTIONAL] "virtualenv -p python3.4 venv"
+3. [OPTIONAL] "virtualenv -p python3.5 venv"
 4. [OPTIONAL] "source venv/bin/activate" ("venv/bin/deactivate" to deactivate virtualenv)
 5. pip install -r requirements.txt
-6. and then:
-	7. to install: "python3 setup.py install"
-	8. to install to develop: "python3 setup.py develop"
-	9. to build a source distribution: "python3 setup.py sdist"
-7. Fill in CTTV sparql login details in file eva_cttv_pipeline/config.py
+6. and then one of:
+7. to install: "python3 setup.py install"
+8. to install to develop: "python3 setup.py develop"
+9. to build a source distribution: "python3 setup.py sdist"
 
 
 Usage
