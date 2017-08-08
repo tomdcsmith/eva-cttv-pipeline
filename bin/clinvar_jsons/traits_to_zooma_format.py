@@ -23,10 +23,22 @@ def main(args):
                                       widgets=[progressbar.AdaptiveETA(samples=1000)])
         is_zooma_mapping_dict = {}
         for clinvar_json in bar(clinvar_jsons(args.infile_path)):
-            if not has_allowed_clinical_significance(clinvar_json):
-                continue
-            process_clinvar_json(clinvar_json, outfile, args.zooma_host, args.filters,
-                                 is_zooma_mapping_dict)
+            if has_allowed_clinical_significance(clinvar_json):
+                is_zooma_mapping_dict = process_clinvar_json(clinvar_json, outfile, args.zooma_host,
+                                                             args.filters, is_zooma_mapping_dict)
+
+
+def check_if_zooma_mapping(trait_name, is_zooma_mapping_dict, zooma_host, filters):
+
+    if trait_name in is_zooma_mapping_dict:
+        is_zooma_mapping = is_zooma_mapping_dict[trait_name]
+    else:
+        zooma_uri_set = get_zooma_uris(trait_name, zooma_host, filters)
+        is_zooma_mapping = (zooma_uri_set is not None
+                            and len(zooma_uri_set) > 0)
+        is_zooma_mapping_dict[trait_name] = is_zooma_mapping
+
+    return is_zooma_mapping
 
 
 def process_clinvar_json(clinvar_json, outfile, zooma_host, filters, is_zooma_mapping_dict):
@@ -42,14 +54,8 @@ def process_clinvar_json(clinvar_json, outfile, zooma_host, filters, is_zooma_ma
         if trait_name == "not provided":
             continue
 
-        if trait_name in is_zooma_mapping_dict:
-            is_zooma_mapping = is_zooma_mapping_dict[trait_name]
-        else:
-            zooma_uri_set = get_zooma_uris(trait_name, zooma_host, filters)
-            is_zooma_mapping = (zooma_uri_set is not None
-                                and len(zooma_uri_set) > 0)
-            is_zooma_mapping_dict[trait_name] = is_zooma_mapping
-
+        is_zooma_mapping = check_if_zooma_mapping(trait_name, is_zooma_mapping_dict, zooma_host,
+                                                  filters)
         if is_zooma_mapping:
             continue
 
@@ -59,6 +65,8 @@ def process_clinvar_json(clinvar_json, outfile, zooma_host, filters, is_zooma_ma
             ontology_uri = OntologyUri(xref.id_, xref.db)
 
             write_zooma_record(clinvar_acc, variant_id, trait_name, ontology_uri, DATE, outfile)
+
+    return is_zooma_mapping_dict
 
 
 def write_zooma_record(clinvar_acc, variant_id, trait_name, ontology_uri, date, outfile):
