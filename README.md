@@ -16,24 +16,12 @@ Building and (optional) Setting up virtual environment
 4. [OPTIONAL] "source venv/bin/activate" ("venv/bin/deactivate" to deactivate virtualenv)
 5. pip install -r requirements.txt
 6. and then one of:
-7. to install: "python3 setup.py install"
-8. to install to develop: "python3 setup.py develop"
-9. to build a source distribution: "python3 setup.py sdist"
+    7. to install: "python3 setup.py install"
+    8. to install to develop: "python3 setup.py develop"
+    9. to build a source distribution: "python3 setup.py sdist"
 
 
 Usage
 -------
 
-python3 bin/main.py -j \<INPUT_JSON_FILE\> --out \<OUTPUT_FILE\> -e \<EFO_MAPPING_FILE\> -g \<SNP_2_GENE_MAPPING_FILE\> [--clinSig \<CLINICAL_SIGNIFICANCE_LIST\>] [--ignore \<TERM_URL_IGNORE_FILE\>]
-
-INPUT_JSON_FILE: path to a file with one json per line. Each json is in the format of Cellbase ClinVar json.
-
-OUTPUT_FILE: path to output directory
-
-EFO_MAPPING_FILE: file with mappings of Clinvar trait names to URLS (e.g. resources/ClinVar_Traits_EFO_090915.xls)
-
-SNP_2_GENE_MAPPING_FILE: file from CTTV with mappings from rs IDs to Ensembl gene IDs, and to functional consequences (e.g. resources/cttv012_snp2gene_20160222.tsv)
-
-CLINICAL_SIGNIFICANCE_LIST: comma separated (no spaces) list of clinical significances allowed to generate evidence strings (defaults to "pathogenic,likely pathogenic")
-
-TERM_URL_IGNORE_FILE: path to file containing list of invalid EFO URLs which will be used to filter out evidence strings with matching URLs; file should contain list of URLs, one on each line
+Please see the [GitHub wiki](https://github.com/EBIvariation/eva-cttv-pipeline/wiki/How-to-submit-an-OpenTargets-batch) for usage
