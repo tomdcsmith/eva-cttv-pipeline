@@ -2,7 +2,7 @@
 
 import sys
 
-from eva_cttv_pipeline import utilities, clinvar_to_evidence_strings
+from eva_cttv_pipeline.evidence_string_generation import utilities, clinvar_to_evidence_strings
 
 
 def main():

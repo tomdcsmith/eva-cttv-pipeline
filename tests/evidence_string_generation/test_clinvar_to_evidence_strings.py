@@ -1,11 +1,12 @@
-import os
 import unittest
 
-from eva_cttv_pipeline import consequence_type as CT
-from eva_cttv_pipeline import clinvar_to_evidence_strings
-from eva_cttv_pipeline import trait as Trait
-from tests import test_clinvar
-from tests import config
+import os
+
+from eva_cttv_pipeline.evidence_string_generation import clinvar_to_evidence_strings
+from eva_cttv_pipeline.evidence_string_generation import consequence_type as CT
+from eva_cttv_pipeline.evidence_string_generation import trait
+from tests.evidence_string_generation import test_clinvar
+from tests.evidence_string_generation import config
 
 
 def _get_mappings():
@@ -70,10 +71,10 @@ class CreateTraitTest(unittest.TestCase):
         self.assertEqual(self.trait.ontology_id, 'http://www.ebi.ac.uk/efo/EFO_0003900')
 
     def test_multiple_mappings(self):
-        trait1 = Trait.Trait("barrett esophagus/esophageal adenocarcinoma",
+        trait1 = trait.Trait("barrett esophagus/esophageal adenocarcinoma",
                              "http://www.ebi.ac.uk/efo/EFO_0000478",
                              "esophageal adenocarcinoma", 1)
-        trait2 = Trait.Trait("barrett esophagus/esophageal adenocarcinoma",
+        trait2 = trait.Trait("barrett esophagus/esophageal adenocarcinoma",
                              "http://www.ebi.ac.uk/efo/EFO_0000280",
                              "Barrett's esophagus", 1)
 

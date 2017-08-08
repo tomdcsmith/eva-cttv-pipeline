@@ -4,9 +4,9 @@ import sys
 
 import jsonschema
 
-from eva_cttv_pipeline import config
-from eva_cttv_pipeline import utilities
-from eva_cttv_pipeline import efo_term
+from eva_cttv_pipeline.evidence_string_generation import config
+from eva_cttv_pipeline.evidence_string_generation import utilities
+from eva_cttv_pipeline.evidence_string_generation import efo_term
 
 
 utilities.check_for_local_schema()

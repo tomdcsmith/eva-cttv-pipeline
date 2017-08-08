@@ -2,7 +2,7 @@ import os
 import unittest
 import shutil
 
-from eva_cttv_pipeline import utilities
+from eva_cttv_pipeline.evidence_string_generation import utilities
 
 
 class GetResourceFileTest(unittest.TestCase):

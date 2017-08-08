@@ -1,3 +1,3 @@
-import eva_cttv_pipeline.utilities as utilities
+import eva_cttv_pipeline.evidence_string_generation.utilities as utilities
 
 utilities.check_for_local_schema()

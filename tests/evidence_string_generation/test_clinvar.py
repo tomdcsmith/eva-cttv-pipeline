@@ -1,13 +1,13 @@
-from datetime import datetime
 import json
-import os
 import unittest
+from datetime import datetime
 
-from eva_cttv_pipeline import clinvar
-from eva_cttv_pipeline import consequence_type as CT
-from eva_cttv_pipeline import utilities
+import os
 
-from tests import config
+from eva_cttv_pipeline.evidence_string_generation import clinvar
+from eva_cttv_pipeline.evidence_string_generation import consequence_type as CT
+from eva_cttv_pipeline.evidence_string_generation import utilities
+from tests.evidence_string_generation import config
 
 
 class TestClinvarRecord(unittest.TestCase):

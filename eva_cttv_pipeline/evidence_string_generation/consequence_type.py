@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from eva_cttv_pipeline import utilities
+from eva_cttv_pipeline.evidence_string_generation import utilities
 
 
 def process_gene(consequence_type_dict, variant_id, ensembl_gene_id, so_term):

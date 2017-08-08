@@ -9,14 +9,14 @@ from types import SimpleNamespace
 
 import jsonschema
 
-from eva_cttv_pipeline import cellbase_records
-from eva_cttv_pipeline import efo_term
-from eva_cttv_pipeline import config
-from eva_cttv_pipeline import evidence_strings
-from eva_cttv_pipeline import clinvar
-from eva_cttv_pipeline import utilities
-from eva_cttv_pipeline import consequence_type as CT
-from eva_cttv_pipeline import trait
+from eva_cttv_pipeline.evidence_string_generation import cellbase_records
+from eva_cttv_pipeline.evidence_string_generation import efo_term
+from eva_cttv_pipeline.evidence_string_generation import config
+from eva_cttv_pipeline.evidence_string_generation import evidence_strings
+from eva_cttv_pipeline.evidence_string_generation import clinvar
+from eva_cttv_pipeline.evidence_string_generation import utilities
+from eva_cttv_pipeline.evidence_string_generation import consequence_type as CT
+from eva_cttv_pipeline.evidence_string_generation import trait
 
 
 class Report:

@@ -1,6 +1,6 @@
 import unittest
 
-from eva_cttv_pipeline import efo_term
+from eva_cttv_pipeline.evidence_string_generation import efo_term
 
 
 # TODO test get_available_terms, execute_query, get_obsolete_terms

@@ -9,7 +9,7 @@ import importlib.util
 import os
 import shutil
 
-import eva_cttv_pipeline.config as config
+from eva_cttv_pipeline.evidence_string_generation import config
 
 
 def open_file(file_path, mode):
