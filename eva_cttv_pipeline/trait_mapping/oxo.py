@@ -38,6 +38,7 @@ class OxOMapping:
     """
     def __init__(self, label, curie, distance, query_id):
         self.label = label
+        self.curie = curie
         self.db, self.id_ = curie.split(":")
         self.uri = OntologyUri(self.id_, self.db)
         self.distance = distance
@@ -57,6 +58,9 @@ class OxOMapping:
         return ((other.distance, self.in_efo, self.is_current) <
                 (self.distance, other.in_efo, other.is_current))
 
+    def __str__(self):
+        return "{}, {}, {}, {}".format(self.label, self.curie, self.distance, self.query_id)
+
 
 class OxOResult:
     """
@@ -66,9 +70,20 @@ class OxOResult:
     def __init__(self, query_id, label, curie):
         self.query_id = query_id
         self.label = label
+        self.curie = curie
         self.db, self.id_ = curie.split(":")
         self.uri = OntologyUri(self.id_, self.db)
         self.oxo_mapping_list = []
+
+    def __str__(self):
+        return "{}, {}, {}".format(self.query_id, self.label, self.curie)
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        return (self.query_id == other.query_id, self.label == other.label,
+                self.curie == other.curie, self.db == other.db, self.id_ == other.id_,
+                self.uri == other.uri, self.oxo_mapping_list == other.oxo_mapping_list)
 
 
 URI_DB_TO_DB_DICT = {

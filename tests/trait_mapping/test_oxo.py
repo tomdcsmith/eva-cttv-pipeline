@@ -38,6 +38,16 @@ class TestBuildOxoPayload(unittest.TestCase):
                          {"ids": id_list, "mappingTarget": target_list, "distance": distance})
 
 
+class TestGetOxoResultsFromResponse(unittest.TestCase):
+    def test_get_oxo_results_from_response(self):
+        oxo_response = {'_embedded': {'searchResults': [{'curie': 'HP:0001537', '_links': {'self': {'href': 'http://www.ebi.ac.uk/spot/oxo/api/terms/HP:0001537'}, 'mappings': {'href': 'http://www.ebi.ac.uk/spot/oxo/api/mappings?fromId=HP:0001537'}}, 'label': 'Umbilical hernia', 'querySource': None, 'queryId': 'HP:0001537', 'mappingResponseList': [{'curie': 'Orphanet:660', 'targetPrefix': 'Orphanet', 'distance': 3, 'sourcePrefixes': ['ONTONEO', 'Orphanet', 'DOID', 'UMLS'], 'label': 'Omphalocele'}, {'curie': 'Orphanet:3164', 'targetPrefix': 'Orphanet', 'distance': 3, 'sourcePrefixes': ['ONTONEO', 'EFO', 'Orphanet', 'DOID'], 'label': 'Omphalocele syndrome, Shprintzen-Goldberg type'}]}]}, 'page': {'totalPages': 1, 'size': 1000, 'number': 0, 'totalElements': 1}, '_links': {'self': {'href': 'http://www.ebi.ac.uk/spot/oxo/api/search'}}}
+        expected_oxo_result = oxo.OxOResult("HP:0001537", "Umbilical hernia", "HP:0001537")
+        expected_oxo_result.oxo_mapping_list = [oxo.OxOMapping("Omphalocele", "Orphanet:660", 3, "HP:0001537"),
+                                                oxo.OxOMapping("Omphalocele syndrome, Shprintzen-Goldberg type", "Orphanet:3164", 3, "HP:0001537")]
+        expected_oxo_results = [expected_oxo_result]
+
+        self.assertEqual(oxo.get_oxo_results_from_response(oxo_response),
+                         expected_oxo_results)
 
 
 
