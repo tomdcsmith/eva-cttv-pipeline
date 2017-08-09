@@ -59,12 +59,24 @@ class ZoomaMapping:
     term can be mapped to multiple mappings.
     """
     def __init__(self, uri_list, zooma_label, confidence, source):
+        self.uri_list = uri_list
         self.zooma_label = zooma_label
         self.confidence = confidence
         self.source = source
         self.zooma_entry_list = []
         for uri in uri_list:
             self.zooma_entry_list.append(ZoomaEntry(uri, confidence, source))
+
+    def __str__(self):
+        return "{}, {}, {}, {}".format(self.zooma_label, self.confidence, self.source,
+                                       self.zooma_entry_list)
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        return (self.uri_list == other.uri_list, self.zooma_label == other.zooma_label,
+                self.confidence == other.confidence, self.source == other.source,
+                self.zooma_entry_list == other.zooma_entry_list)
 
 
 @lru_cache(maxsize=16384)
@@ -99,12 +111,12 @@ def get_ontology_mappings(trait_name: str, filters: dict, zooma_host: str) -> li
     :return: List of ZoomaMappings
     """
     url = build_zooma_query(trait_name, filters, zooma_host)
-    zooma_response = request_retry_helper(zooma_query_helper, 4, url)
+    zooma_response_list = request_retry_helper(zooma_query_helper, 4, url)
 
-    if zooma_response is None:
+    if zooma_response_list is None:
         return None
 
-    mappings = get_mappings_for_trait(zooma_response)
+    mappings = get_mappings_for_trait(zooma_response_list)
 
     for mapping in mappings:
         for zooma_entry in mapping.zooma_entry_list:
@@ -148,15 +160,15 @@ def build_zooma_query(trait_name: str, filters: dict, zooma_host: str) -> str:
     return url
 
 
-def get_mappings_for_trait(zooma_response: dict) -> list:
+def get_mappings_for_trait(zooma_response_list: list) -> list:
     """
     Given a response from a Zooma request return ZoomaMappings based upon the data in that request.
 
-    :param zooma_response: A json (dict) response from a Zooma request.
+    :param zooma_response_list: A json (dict) response from a Zooma request.
     :return: List of ZoomaMappings in the Zooma response.
     """
     mappings = []
-    for result in zooma_response:
+    for result in zooma_response_list:
         # uri_list = ",".join(result["semanticTags"])
         uris = result["semanticTags"]
         zooma_label = result["annotatedProperty"]["propertyValue"]
