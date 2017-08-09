@@ -72,11 +72,11 @@ class OxOResult:
 
 
 URI_DB_TO_DB_DICT = {
-    "ordo": "Orphanet",
+    "orphanet": "Orphanet",
     "omim": "OMIM",
     "efo": "EFO",
     "mesh": "MeSH",
-    "obo": "HP"
+    "hp": "HP"
 }
 
 
@@ -95,8 +95,8 @@ def uri_to_oxo_format(uri: str) -> str:
         return None
     uri = uri.rstrip("/")
     uri_list = uri.split("/")
-    id_ = NON_NUMERIC_RE.sub("", uri_list[-1])
-    db = URI_DB_TO_DB_DICT[uri_list[-2].lower()]
+    db, id_ = uri_list[-1].split("_")
+    db = URI_DB_TO_DB_DICT[db.lower()]
     return "{}:{}".format(db, id_)
 
 
