@@ -1,7 +1,7 @@
 def map_efo(trait_2_efo_dict, name_list):
     """
     Function accepts a dict with mappings from clinvar trait names to tuples containing ontology
-    ids and label_list, and a list with clinvar trait names for one trait. Returns the clinvar trait
+    ids and labels, and a list with clinvar trait names for one trait. Returns the clinvar trait
     name (in lowercase) that is earliest in the list and has a mapping in the dict, along with the
     ontology id and label.
 
