@@ -15,7 +15,8 @@ class OntologyUri:
         "mesh": "http://identifiers.org/mesh/{}",
         "medgen": "http://identifiers.org/medgen/{}",
         "human phenotype ontology": "http://purl.obolibrary.org/obo/HP_{}",
-        "hp": "http://purl.obolibrary.org/obo/HP_{}"
+        "hp": "http://purl.obolibrary.org/obo/HP_{}",
+        "doid": "http://purl.obolibrary.org/obo/DOID_{}"
     }
 
     def __init__(self, id_, db):
@@ -87,11 +88,13 @@ class OxOResult:
 
 
 URI_DB_TO_DB_DICT = {
+    "ordo": "Orphanet",
     "orphanet": "Orphanet",
     "omim": "OMIM",
     "efo": "EFO",
     "mesh": "MeSH",
-    "hp": "HP"
+    "hp": "HP",
+    "doid": "DOID"
 }
 
 
@@ -110,7 +113,11 @@ def uri_to_oxo_format(uri: str) -> str:
         return None
     uri = uri.rstrip("/")
     uri_list = uri.split("/")
-    db, id_ = uri_list[-1].split("_")
+    if "identifiers.org" in uri:
+        db = uri_list[-2]
+        id_ = uri_list[-1]
+    else:
+        db, id_ = uri_list[-1].split("_")
     db = URI_DB_TO_DB_DICT[db.lower()]
     return "{}:{}".format(db, id_)
 
