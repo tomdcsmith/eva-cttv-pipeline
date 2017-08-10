@@ -5,7 +5,7 @@ import urllib
 from eva_cttv_pipeline.trait_mapping.utils import request_retry_helper
 
 
-def ols_query_helper(url: str) -> str:
+def get_label_from_ols(url: str) -> str:
     """
     Given a url for OLS, make a get request and return the label for the term, from the response
     from OLS.
@@ -32,7 +32,7 @@ def get_ontology_label_from_ols(ontology_uri: str) -> str:
     :return: Term label for the ontology uri provided in the parameters.
     """
     url = build_ols_query(ontology_uri)
-    label = request_retry_helper(ols_query_helper, 4, url)
+    label = request_retry_helper(get_label_from_ols, 4, url)
     return label
 
 
