@@ -15,10 +15,10 @@ Building and (optional) Setting up virtual environment
 3. [OPTIONAL] "virtualenv -p python3.5 venv"
 4. [OPTIONAL] "source venv/bin/activate" ("venv/bin/deactivate" to deactivate virtualenv)
 5. pip install -r requirements.txt
-6. and then one of:
-    7. to install: "python3 setup.py install"
-    8. to install to develop: "python3 setup.py develop"
-    9. to build a source distribution: "python3 setup.py sdist"
+6. And then one of:
+   * To install: "python3 setup.py install"
+   * To install to develop: "python3 setup.py develop"
+   * To build a source distribution: "python3 setup.py sdist"
 
 
 Usage
