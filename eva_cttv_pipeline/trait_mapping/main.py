@@ -103,9 +103,9 @@ class ArgParser:
                             help="path to output file for curation")
         parser.add_argument("-n", dest="ontologies", default="efo,ordo,hp",
                             help="ontologies to use in query")
-        parser.add_argument("-r", dest="required", default="cttv,eva-clinvar,gwas",
+        parser.add_argument("-r", dest="required", default="cttv,eva-clinvar,clinvar-xrefs,gwas",
                             help="data sources to use in query.")
-        parser.add_argument("-p", dest="preferred", default="eva-clinvar,cttv,gwas",
+        parser.add_argument("-p", dest="preferred", default="eva-clinvar,cttv,gwas,clinvar-xrefs",
                             help="preference for data sources, with preferred data source first.")
         parser.add_argument("-z", dest="zooma_host", default="https://www.ebi.ac.uk",
                             help="the host to use for querying zooma")
