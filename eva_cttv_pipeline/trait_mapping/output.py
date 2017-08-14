@@ -45,8 +45,7 @@ def output_for_curation(trait: Trait, curation_writer: csv.writer):
     :param trait: A Trait with no finished ontology mappings in finished_mapping_set
     :param curation_writer: A csv.writer to write non-finished ontology mappings for manual curation
     """
-    output_row = []
-    output_row.extend([trait.name, trait.frequency])
+    output_row = [trait.name, trait.frequency]
 
     zooma_entry_list = get_zooma_mappings_for_curation(trait)
 
@@ -67,7 +66,7 @@ def output_for_curation(trait: Trait, curation_writer: csv.writer):
 
 def output_trait(trait: Trait, mapping_writer: csv.writer, curation_writer: csv.writer):
     """
-    Output either any finished ontology mappings of a trait, or any non-finished mappings, if any.
+    Output finished ontology mappings of a trait, or non-finished mappings (if any) for curation.
 
     :param trait: A trait which has been used to query Zooma and possibly OxO.
     :param mapping_writer: A csv.writer to write the finished mappings

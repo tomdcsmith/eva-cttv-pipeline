@@ -1,6 +1,7 @@
 from enum import Enum
 from functools import total_ordering, lru_cache
 import json
+import logging
 import requests
 
 from eva_cttv_pipeline.trait_mapping.ols import get_ontology_label_from_ols, \
@@ -125,9 +126,7 @@ def get_ontology_mappings(trait_name: str, filters: dict, zooma_host: str) -> li
             if label is not None:
                 zooma_entry.ontology_label = label
             else:
-                print(
-                    "Couldn't retrieve ontology label from OLS for trait '{}'".format(
-                        trait_name))
+                logging.warning("Couldn't retrieve ontology label from OLS for trait '{}'".format(trait_name))
 
             uri_is_current_and_in_efo = is_current_and_in_efo(zooma_entry.uri)
             if not uri_is_current_and_in_efo:
