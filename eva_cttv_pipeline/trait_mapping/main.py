@@ -1,8 +1,6 @@
-import argparse
 from collections import Counter
 import csv
 import progressbar
-import sys
 
 from eva_cttv_pipeline.trait_mapping.output import output_trait
 from eva_cttv_pipeline.trait_mapping.oxo import get_oxo_results
@@ -15,7 +13,7 @@ from eva_cttv_pipeline.trait_mapping.zooma import get_ontology_mappings
 def get_uris_for_oxo(zooma_mapping_list: list) -> set:
     """
     For a list of Zooma mappings return a list of uris for the mappings in that list with a high
-    confidence but not in EFO.
+    confidence.
 
     :param zooma_mapping_list: List with elements of class ZoomaMapping
     :return: set of uris from high confidence Zooma mappings, for which to query OxO
@@ -35,7 +33,7 @@ def process_trait(trait: Trait, filters: dict, zooma_host: str, oxo_target_list:
     Process a single trait. Find any mappings in Zooma. If there are no high confidence Zooma
     mappings that are in EFO then query OxO with any high confidence mappings not in EFO.
 
-    :param trait: A trait of class Trait.
+    :param trait: The trait to be processed.
     :param filters: A dictionary of filters to use for querying Zooma.
     :param zooma_host: A string with the hostname to use for querying Zooma
     :param oxo_target_list: A list of strings, each being an OxO ID for an ontology. Used to specify
