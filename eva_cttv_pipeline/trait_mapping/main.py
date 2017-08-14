@@ -64,14 +64,13 @@ def process_trait(trait: Trait, filters: dict, zooma_host: str, oxo_target_list:
     return trait
 
 
-def main():
-    parser = ArgParser(sys.argv)
-
-    trait_names_list = parse_trait_names(parser.input_filepath)
+def main(input_filepath, output_mappings_filepath, output_curation_filepath, filters, zooma_host,
+         oxo_target_list, oxo_distance):
+    trait_names_list = parse_trait_names(input_filepath)
     trait_names_counter = Counter(trait_names_list)
 
-    with open(parser.output_mappings_filepath, "w", newline='') as mapping_file, \
-            open(parser.output_curation_filepath, "wt") as curation_file:
+    with open(output_mappings_filepath, "w", newline='') as mapping_file, \
+            open(output_curation_filepath, "wt") as curation_file:
         mapping_writer = csv.writer(mapping_file, delimiter="\t")
         mapping_writer.writerow(["#clinvar_trait_name", "uri", "label"])
         curation_writer = csv.writer(curation_file, delimiter="\t")
@@ -81,53 +80,6 @@ def main():
 
         for trait_name, freq in bar(trait_names_counter.items()):
             trait = Trait(trait_name, freq)
-            trait = process_trait(trait, parser.filters, parser.zooma_host, parser.oxo_target_list,
-                                  parser.oxo_distance)
+            trait = process_trait(trait, filters, zooma_host, oxo_target_list,
+                                  oxo_distance)
             output_trait(trait, mapping_writer, curation_writer)
-
-
-class ArgParser:
-
-    def __init__(self, argv):
-        description = """
-                Script for running terms through Zooma, retrieving mapped uri, label from OLS,
-                confidence of the mapping, and source of the mapping.
-                """
-        parser = argparse.ArgumentParser(description=description)
-
-        parser.add_argument("-i", dest="input_filepath", required=True,
-                            help="ClinVar json file. One record per line.")
-        parser.add_argument("-o", dest="output_mappings_filepath", required=True,
-                            help="path to output file for mappings")
-        parser.add_argument("-c", dest="output_curation_filepath", required=True,
-                            help="path to output file for curation")
-        parser.add_argument("-n", dest="ontologies", default="efo,ordo,hp",
-                            help="ontologies to use in query")
-        parser.add_argument("-r", dest="required", default="cttv,eva-clinvar,clinvar-xrefs,gwas",
-                            help="data sources to use in query.")
-        parser.add_argument("-p", dest="preferred", default="eva-clinvar,cttv,gwas,clinvar-xrefs",
-                            help="preference for data sources, with preferred data source first.")
-        parser.add_argument("-z", dest="zooma_host", default="https://www.ebi.ac.uk",
-                            help="the host to use for querying zooma")
-        parser.add_argument("-t", dest="oxo_target_list", default="Orphanet,efo,hp",
-                            help="target ontologies to use with OxO")
-        parser.add_argument("-d", dest="oxo_distance", default=3,
-                            help="distance to use to query OxO.")
-
-        args = parser.parse_args(args=argv[1:])
-
-        self.input_filepath = args.input_filepath
-        self.output_mappings_filepath = args.output_mappings_filepath
-        self.output_curation_filepath = args.output_curation_filepath
-
-        self.filters = {"ontologies": args.ontologies,
-                        "required": args.required,
-                        "preferred": args.preferred}
-
-        self.zooma_host = args.zooma_host
-        self.oxo_target_list = [target.strip() for target in args.oxo_target_list.split(",")]
-        self.oxo_distance = args.oxo_distance
-
-
-if __name__ == '__main__':
-    main()
