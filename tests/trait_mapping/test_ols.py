@@ -37,13 +37,3 @@ class TestIsInEfo(unittest.TestCase):
 
             self.assertEqual(ols.is_in_efo("http://www.orpha.net/ORDO/Orphanet_425"),
                              True)
-
-
-
-
-
-
-
-
-
-
