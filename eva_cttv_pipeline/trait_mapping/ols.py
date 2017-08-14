@@ -19,7 +19,8 @@ def get_label_from_ols(url: str) -> str:
             if term["is_defining_ontology"]:
                 return term["label"]
     except:
-        return None
+        pass
+    return None
 
 
 @lru_cache(maxsize=16384)
@@ -38,8 +39,7 @@ def get_ontology_label_from_ols(ontology_uri: str) -> str:
 
 def build_ols_query(ontology_uri: str) -> str:
     """Build a url to query OLS for a given ontology uri."""
-    url = "http://www.ebi.ac.uk/ols/api/terms?iri={}".format(ontology_uri)
-    return url
+    return "http://www.ebi.ac.uk/ols/api/terms?iri={}".format(ontology_uri)
 
 
 def double_encode_uri(uri: str) -> str:

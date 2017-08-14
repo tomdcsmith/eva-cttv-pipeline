@@ -15,6 +15,7 @@ def output_trait_mapping(trait: Trait, mapping_writer: csv.writer):
 
 
 def get_zooma_mappings_for_curation(trait: Trait) -> list:
+    """Sorted in reverse so the highest ranked zooma entries are shown first"""
     zooma_entry_list = []
     for zooma_mapping in trait.zooma_mapping_list:
         for zooma_entry in zooma_mapping.zooma_entry_list:
@@ -26,6 +27,7 @@ def get_zooma_mappings_for_curation(trait: Trait) -> list:
 
 # TODO best way to unite this and the above very similar method?
 def get_oxo_mappings_for_curation(trait: Trait) -> list:
+    """Sorted in reverse so the highest ranked oxo mappings are shown first"""
     oxo_mapping_list = []
     for oxo_result in trait.oxo_xref_list:
         for oxo_mapping in oxo_result.oxo_mapping_list:
