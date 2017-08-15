@@ -27,7 +27,7 @@ class Trait:
         self.name = name
         self.frequency = frequency
         self.zooma_result_list = []
-        self.oxo_xref_list = []
+        self.oxo_result_list = []
         self.finished_mapping_set = set()
 
     @property
@@ -56,8 +56,8 @@ class Trait:
         Check whether any OxO mappings can be output as a finished ontology mapping.
         Put any finished mappings in finished_mapping_set
         """
-        for result in self.oxo_xref_list:
-            for mapping in result.oxo_mapping_list:
+        for result in self.oxo_result_list:
+            for mapping in result.mapping_list:
                 if mapping.in_efo and mapping.is_current and mapping.distance == 1:
                     uri = str(mapping.uri)
                     ontology_label = mapping.ontology_label

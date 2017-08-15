@@ -74,7 +74,7 @@ class OxOResult:
         self.curie = curie
         self.db, self.id_ = curie.split(":")
         self.uri = OntologyUri(self.id_, self.db)
-        self.oxo_mapping_list = []
+        self.mapping_list = []
 
     def __str__(self):
         return "{}, {}, {}".format(self.query_id, self.label, self.curie)
@@ -84,7 +84,7 @@ class OxOResult:
             return False
         return (self.query_id == other.query_id, self.label == other.label,
                 self.curie == other.curie, self.db == other.db, self.id_ == other.id_,
-                self.uri == other.uri, self.oxo_mapping_list == other.oxo_mapping_list)
+                self.uri == other.uri, self.mapping_list == other.mapping_list)
 
 
 URI_DB_TO_DB_DICT = {
@@ -225,7 +225,7 @@ def get_oxo_results_from_response(oxo_response: dict) -> list:
                 oxo_mapping.in_efo = uri_is_current_and_in_efo
                 oxo_mapping.is_current = uri_is_current_and_in_efo
 
-            oxo_result.oxo_mapping_list.append(oxo_mapping)
+            oxo_result.mapping_list.append(oxo_mapping)
 
         oxo_result_list.append(oxo_result)
 

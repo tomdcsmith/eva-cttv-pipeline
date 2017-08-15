@@ -29,8 +29,8 @@ def get_zooma_mappings_for_curation(trait: Trait) -> list:
 def get_oxo_mappings_for_curation(trait: Trait) -> list:
     """Sorted in reverse so the highest ranked oxo mappings are shown first"""
     oxo_mapping_list = []
-    for oxo_result in trait.oxo_xref_list:
-        for oxo_mapping in oxo_result.oxo_mapping_list:
+    for oxo_result in trait.oxo_result_list:
+        for oxo_mapping in oxo_result.mapping_list:
             if oxo_mapping.in_efo and oxo_mapping.is_current:
                 oxo_mapping_list.append(oxo_mapping)
     oxo_mapping_list.sort(reverse=True)

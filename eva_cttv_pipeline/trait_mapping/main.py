@@ -56,7 +56,7 @@ def process_trait(trait: Trait, filters: dict, zooma_host: str, oxo_target_list:
         return trait
     oxo_input_id_list = uris_to_oxo_format(uris_for_oxo_set)
     oxo_result_list = get_oxo_results(oxo_input_id_list, oxo_target_list, oxo_distance)
-    trait.oxo_xref_list = oxo_result_list
+    trait.oxo_result_list = oxo_result_list
     trait.process_oxo_mappings()
 
     return trait
