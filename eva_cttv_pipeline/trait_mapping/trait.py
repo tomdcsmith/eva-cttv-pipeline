@@ -26,7 +26,7 @@ class Trait:
     def __init__(self, name, frequency):
         self.name = name
         self.frequency = frequency
-        self.zooma_mapping_list = []
+        self.zooma_result_list = []
         self.oxo_xref_list = []
         self.finished_mapping_set = set()
 
@@ -37,18 +37,18 @@ class Trait:
         """
         return len(self.finished_mapping_set) > 0
 
-    def process_zooma_mappings(self):
+    def process_zooma_results(self):
         """
         Check whether any Zooma mappings can be output as a finished ontology mapping.
         Put any finished mappings in finished_mapping_set
         """
-        for mapping in self.zooma_mapping_list:
+        for mapping in self.zooma_result_list:
             if mapping.confidence.lower() != "high":
                 continue
 
-            for entry in mapping.zooma_entry_list:
-                if entry.in_efo and entry.is_current:
-                    ontology_entry = OntologyEntry(entry.uri, entry.ontology_label)
+            for mapping in mapping.mapping_list:
+                if mapping.in_efo and mapping.is_current:
+                    ontology_entry = OntologyEntry(mapping.uri, mapping.ontology_label)
                     self.finished_mapping_set.add(ontology_entry)
 
     def process_oxo_mappings(self):

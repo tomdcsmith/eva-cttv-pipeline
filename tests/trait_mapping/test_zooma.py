@@ -17,12 +17,12 @@ class TestBuildZoomaQuery(unittest.TestCase):
                          expected_url)
 
 
-class TestGetMappingsForTrait(unittest.TestCase):
-    def test_get_mappings_for_trait(self):
+class TestGetZoomaResultsForTrait(unittest.TestCase):
+    def test_get_zooma_results_for_trait(self):
         zooma_response_list = [{'confidence': 'HIGH', 'semanticTags': ['http://purl.obolibrary.org/obo/HP_0001892'], 'provenance': {'source': {'uri': 'http://www.ebi.ac.uk/spot/zooma', 'type': 'DATABASE', 'name': 'zooma'}, 'generatedDate': 1502287637052, 'accuracy': None, 'generator': 'ZOOMA', 'annotator': 'ZOOMA', 'evidence': 'ZOOMA_INFERRED_FROM_CURATED', 'annotationDate': 1502287637052}, '_links': {'olslinks': [{'href': 'http://www.ebi.ac.uk/ols/api/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FHP_0001892', 'semanticTag': 'http://purl.obolibrary.org/obo/HP_0001892'}]}, 'annotatedBiologicalEntities': [], 'annotatedProperty': {'uri': 'http://rdf.ebi.ac.uk/resource/zooma/8EAA9C1095AD18A90D557D7086084B64', 'propertyValue': 'abnormal bleeding', 'propertyType': 'disease'}, 'uri': None, 'derivedFrom': {'semanticTags': ['http://purl.obolibrary.org/obo/HP_0001892'], 'provenance': {'source': {'uri': 'http://www.ebi.ac.uk/eva', 'type': 'DATABASE', 'name': 'eva-clinvar'}, 'generatedDate': 1502442040000, 'accuracy': 'NOT_SPECIFIED', 'generator': 'http://www.ebi.ac.uk/eva', 'annotator': 'eva', 'evidence': 'MANUAL_CURATED', 'annotationDate': -61612629390000}, '_links': {'olslinks': [{'href': 'http://purl.obolibrary.org/obo/HP_0001892', 'semanticTag': 'http://purl.obolibrary.org/obo/HP_0001892'}]}, 'annotatedBiologicalEntities': [], 'annotatedProperty': {'uri': 'http://rdf.ebi.ac.uk/resource/zooma/8EAA9C1095AD18A90D557D7086084B64', 'propertyValue': 'abnormal bleeding', 'propertyType': 'disease'}, 'uri': 'http://rdf.ebi.ac.uk/resource/zooma/eva-clinvar/2D66457AE8F4E9A31CDD27E66F5B4607', 'replaces': [], 'replacedBy': []}, 'replaces': [], 'replacedBy': []}]
-        expected_zooma_mapping = zooma.ZoomaMapping(['http://purl.obolibrary.org/obo/HP_0001892'],
+        expected_zooma_result = zooma.ZoomaResult(['http://purl.obolibrary.org/obo/HP_0001892'],
                                                     'abnormal bleeding', 'HIGH', 'eva-clinvar')
-        entry = expected_zooma_mapping.zooma_entry_list[0]
+        entry = expected_zooma_result.mapping_list[0]
         entry.confidence = zooma.ZoomaConfidence.HIGH
         entry.in_efo = False
         entry.is_current = False
@@ -30,9 +30,9 @@ class TestGetMappingsForTrait(unittest.TestCase):
         entry.source = 'eva-clinvar'
         entry.uri = 'http://purl.obolibrary.org/obo/HP_0000483'
 
-        expected_mappings = [expected_zooma_mapping]
+        expected_mappings = [expected_zooma_result]
 
-        self.assertEqual(zooma.get_mappings_for_trait(zooma_response_list),
+        self.assertEqual(zooma.get_zooma_results_for_trait(zooma_response_list),
                          expected_mappings)
 
 

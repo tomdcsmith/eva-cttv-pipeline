@@ -16,13 +16,13 @@ def output_trait_mapping(trait: Trait, mapping_writer: csv.writer):
 
 def get_zooma_mappings_for_curation(trait: Trait) -> list:
     """Sorted in reverse so the highest ranked zooma entries are shown first"""
-    zooma_entry_list = []
-    for zooma_mapping in trait.zooma_mapping_list:
-        for zooma_entry in zooma_mapping.zooma_entry_list:
-            if zooma_entry.in_efo and zooma_entry.is_current:
-                zooma_entry_list.append(zooma_entry)
-    zooma_entry_list.sort(reverse=True)
-    return zooma_entry_list
+    mapping_list = []
+    for zooma_result in trait.zooma_result_list:
+        for zooma_mapping in zooma_result.mapping_list:
+            if zooma_mapping.in_efo and zooma_mapping.is_current:
+                mapping_list.append(zooma_mapping)
+    mapping_list.sort(reverse=True)
+    return mapping_list
 
 
 # TODO best way to unite this and the above very similar method?
@@ -47,11 +47,11 @@ def output_for_curation(trait: Trait, curation_writer: csv.writer):
     """
     output_row = [trait.name, trait.frequency]
 
-    zooma_entry_list = get_zooma_mappings_for_curation(trait)
+    zooma_mapping_list = get_zooma_mappings_for_curation(trait)
 
-    for zooma_entry in zooma_entry_list:
-        cell = [zooma_entry.uri, zooma_entry.ontology_label, str(zooma_entry.confidence),
-                zooma_entry.source]
+    for zooma_mapping in zooma_mapping_list:
+        cell = [zooma_mapping.uri, zooma_mapping.ontology_label, str(zooma_mapping.confidence),
+                zooma_mapping.source]
         output_row.append("|".join(cell))
 
     oxo_mapping_list = get_oxo_mappings_for_curation(trait)
