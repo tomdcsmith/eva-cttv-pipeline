@@ -21,9 +21,8 @@ def get_uris_for_oxo(zooma_result_list: list) -> set:
     uri_set = set()
     for mapping in zooma_result_list:
         # Only use high confidence Zooma mappings for querying OxO
-        if mapping.confidence.lower() != "high":
-            continue
-        uri_set.update([entry.uri for entry in mapping.mapping_list])
+        if mapping.confidence.lower() == "high":
+            uri_set.update([entry.uri for entry in mapping.mapping_list])
     return uri_set
 
 
