@@ -34,8 +34,3 @@ class TestGetZoomaResultsForTrait(unittest.TestCase):
 
         self.assertEqual(zooma.get_zooma_results_for_trait(zooma_response_list),
                          expected_mappings)
-
-
-
-
-
