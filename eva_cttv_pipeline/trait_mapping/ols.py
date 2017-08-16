@@ -1,4 +1,5 @@
 from functools import lru_cache
+import logging
 import requests
 import urllib
 
@@ -18,8 +19,8 @@ def get_label_from_ols(url: str) -> str:
         for term in json_response["_embedded"]["terms"]:
             if term["is_defining_ontology"]:
                 return term["label"]
-    except:
-        pass
+    except Exception as e:
+        logging.warning(e)
     return None
 
 

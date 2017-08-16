@@ -32,23 +32,19 @@ def get_trait_names(clinvar_json: dict) -> list:
         trait_set = clinvar_json["clinvarSet"]["referenceClinVarAssertion"]["traitSet"]
     else:
         trait_set = clinvar_json["referenceClinVarAssertion"]["traitSet"]
-    trait_list = []
+    trait_names_to_return = []
     for trait in trait_set['trait']:
-        trait_list.append([])
+        trait_name = None
         for name in trait['name']:
             # First trait name in the list will always be the "Preferred" one
             if name['elementValue']['type'] == 'Preferred':
-                trait_list[-1] = [name['elementValue']['value']] + trait_list[-1]
+                trait_name = name['elementValue']['value']
             elif name['elementValue']['type'] in ["EFO URL", "EFO id", "EFO name"]:
                 continue  # if the trait name not originally from clinvar
-            else:
-                trait_list[-1].append(name['elementValue']['value'])
-
-    trait_names_to_return = []
-    for trait in trait_list:
-        if len(trait) == 0:
-            continue
-        trait_names_to_return.append(trait[0].lower())
+            elif trait_name is None:
+                trait_name = name['elementValue']['value']
+        if trait_name is not None:
+            trait_names_to_return.append(trait_name.lower())
 
     return trait_names_to_return
 
