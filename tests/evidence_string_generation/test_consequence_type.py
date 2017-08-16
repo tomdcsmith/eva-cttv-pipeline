@@ -1,9 +1,10 @@
-from collections import defaultdict
-import os
 import unittest
 
-from eva_cttv_pipeline import consequence_type as CT
-from tests import config
+import os
+from collections import defaultdict
+
+from eva_cttv_pipeline.evidence_string_generation import consequence_type as CT
+from tests.evidence_string_generation import config
 
 
 class ProcessGeneTest(unittest.TestCase):

@@ -1,6 +1,6 @@
 import os
 
-from eva_cttv_pipeline import config
+from eva_cttv_pipeline.evidence_string_generation import config
 
 
 def get_available_terms(sparqlep, user, password):

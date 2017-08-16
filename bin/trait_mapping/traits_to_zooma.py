@@ -132,7 +132,6 @@ def build_zooma_query(trait_name, filters, zooma_host):
 def get_mappings_for_trait(zooma_response):
     mappings = []
     for result in zooma_response:
-        # uris = ",".join(result["semanticTags"])
         uris = result["semanticTags"]
         zooma_label = result["annotatedProperty"]["propertyValue"]
         confidence = result["confidence"]

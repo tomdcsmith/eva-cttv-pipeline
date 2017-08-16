@@ -1,15 +1,15 @@
-from datetime import datetime
 import unittest
+from datetime import datetime
+
 from types import SimpleNamespace
 
-from eva_cttv_pipeline import clinvar
-from eva_cttv_pipeline import efo_term
-from eva_cttv_pipeline import clinvar_to_evidence_strings
-from eva_cttv_pipeline import evidence_strings
-from eva_cttv_pipeline import consequence_type as CT
-
-from tests import config
-from tests import test_clinvar_to_evidence_strings
+from eva_cttv_pipeline.evidence_string_generation import clinvar
+from eva_cttv_pipeline.evidence_string_generation import clinvar_to_evidence_strings
+from eva_cttv_pipeline.evidence_string_generation import consequence_type as CT
+from eva_cttv_pipeline.evidence_string_generation import efo_term
+from eva_cttv_pipeline.evidence_string_generation import evidence_strings
+from tests.evidence_string_generation import test_clinvar_to_evidence_strings
+from tests.evidence_string_generation import config
 
 DATE_LAST_UPDATED = 1412982000000
 DATE_ASSERTED = datetime.fromtimestamp((DATE_LAST_UPDATED / 1000)).isoformat()

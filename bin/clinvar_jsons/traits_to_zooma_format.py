@@ -82,7 +82,17 @@ def write_zooma_record(clinvar_acc, variant_id, trait_name, ontology_uri, date, 
 
 def get_variant_ids(clinvar_json):
     variant_id_list = []
-    for measure in clinvar_json["clinvarSet"]['referenceClinVarAssertion']["measureSet"]["measure"]:
+    if "measureSet" in clinvar_json["clinvarSet"]['referenceClinVarAssertion']:
+        measure_list = clinvar_json["clinvarSet"]['referenceClinVarAssertion']["measureSet"]["measure"]
+    elif "measureSet" in clinvar_json["clinvarSet"]['referenceClinVarAssertion']["genotypeSet"]:
+        measure_list = []
+        for measure_set in clinvar_json["clinvarSet"]['referenceClinVarAssertion']["genotypeSet"]["measureSet"]:
+            for measure in measure_set["measure"]:
+                measure_list.append(measure)
+    else:
+        raise KeyError()
+
+    for measure in measure_list:
         if "xref" in measure:
             for xref in measure["xref"]:
                 if xref["db"].lower() == "dbsnp":

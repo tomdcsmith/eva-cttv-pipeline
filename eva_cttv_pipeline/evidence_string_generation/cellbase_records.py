@@ -1,6 +1,6 @@
 import json
 
-from eva_cttv_pipeline import utilities
+from eva_cttv_pipeline.evidence_string_generation import utilities
 
 
 class CellbaseRecords:
