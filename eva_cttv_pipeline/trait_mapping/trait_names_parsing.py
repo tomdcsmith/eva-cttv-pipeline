@@ -39,6 +39,7 @@ def get_trait_names(clinvar_json: dict) -> list:
             # First trait name in the list will always be the "Preferred" one
             if name['elementValue']['type'] == 'Preferred':
                 trait_name = name['elementValue']['value']
+                break
             elif name['elementValue']['type'] in ["EFO URL", "EFO id", "EFO name"]:
                 continue  # if the trait name not originally from clinvar
             elif trait_name is None:
