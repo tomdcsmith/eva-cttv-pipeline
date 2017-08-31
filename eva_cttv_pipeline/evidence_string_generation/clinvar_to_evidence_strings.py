@@ -249,11 +249,11 @@ def clinvar_to_evidence_strings(allowed_clinical_significance, mappings, json_fi
     cell_recs = cellbase_records.CellbaseRecords(json_file=json_file)
 
     for cellbase_record in cell_recs:
+        report.counters["record_counter"] += 1
         n_ev_strings_per_record = 0
         clinvar_record = clinvar.ClinvarRecord(cellbase_record['clinvarSet'])
 
         for clinvar_record_measure in clinvar_record.measures:
-            report.counters["record_counter"] += 1
             report.counters["n_nsvs"] += (clinvar_record_measure.nsv_id is not None)
             append_nsv(report.nsv_list, clinvar_record_measure)
 
