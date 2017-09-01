@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 def get_package_data():
     package_data = []
-    for root, dirnames, filenames in os.walk('./eva_cttv_pipeline/evidence_string_generation/resources/json_schema'):
+    for root, dirnames, filenames in os.walk('./eva_cttv_pipeline/evidence_string_generation/resources'):
         root = root.replace("./eva_cttv_pipeline/", "")
         for filename in filenames:
             new_fn = os.path.join(root, filename)
